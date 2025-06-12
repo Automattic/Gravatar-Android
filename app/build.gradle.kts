@@ -4,8 +4,6 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     // Detekt
     alias(libs.plugins.detekt)
-    // Ktlint
-    alias(libs.plugins.ktlint)
 }
 
 android {
@@ -63,4 +61,6 @@ dependencies {
 
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    detektPlugins(libs.detekt.ktlint.wrapper)
 }
