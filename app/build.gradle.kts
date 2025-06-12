@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     // Detekt
     alias(libs.plugins.detekt)
+    // Ktlint
+    alias(libs.plugins.ktlint)
 }
 
 android {
