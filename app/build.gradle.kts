@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    // Detekt
+    alias(libs.plugins.detekt)
 }
 
 android {
@@ -33,6 +35,14 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+
+    detekt {
+        config.setFrom("${project.rootDir}/config/detekt/detekt.yml")
+        source.setFrom("src")
+        autoCorrect = false
+        buildUponDefaultConfig = true
+        parallel = false
     }
 }
 
