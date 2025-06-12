@@ -49,3 +49,8 @@ style:
     excludeImportStatements: true
     excludeCommentStatements: false
     excludeRawStrings: true
+
+formatting:
+  MaximumLineLength:
+    active: true
+    maxLineLength: 140
