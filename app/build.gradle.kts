@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.koin.android)
 
     testImplementation(libs.junit)
+    testImplementation(libs.koin.test.junit4)
 
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
