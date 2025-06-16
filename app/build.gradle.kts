@@ -1,54 +1,6 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.gravatar.android.application)
     alias(libs.plugins.kotlin.compose)
-    // Detekt
-    alias(libs.plugins.detekt)
-}
-
-android {
-    namespace = "com.gravatar.app"
-    compileSdk = 35
-
-    defaultConfig {
-        applicationId = "com.gravatar.app"
-        minSdk = 24
-        targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-    buildFeatures {
-        compose = true
-    }
-
-    detekt {
-        config.setFrom("${project.rootDir}/config/detekt/detekt.yml")
-        source.setFrom("src")
-        autoCorrect = false
-        buildUponDefaultConfig = true
-        parallel = false
-    }
-
-    lint {
-        sarifReport = true
-    }
-
 }
 
 dependencies {
@@ -70,6 +22,4 @@ dependencies {
 
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
-    detektPlugins(libs.detekt.ktlint.wrapper)
 }
