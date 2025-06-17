@@ -44,6 +44,11 @@ android {
         buildUponDefaultConfig = true
         parallel = false
     }
+
+    lint {
+        sarifReport = true
+    }
+
 }
 
 dependencies {

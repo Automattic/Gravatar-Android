@@ -1,0 +1,47 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json
+---
+
+# Variables used in this pipeline are defined in `shared-pipeline-vars`, which is `source`'d before calling `buidkite-agent pipeline upload`
+
+agents:
+  queue: "android"
+
+steps:
+  - label: "Gradle Wrapper Validation"
+    command: |
+      validate_gradle_wrapper
+    plugins: [ $CI_TOOLKIT ]
+
+  # Wait for Gradle Wrapper to be validated before running any other jobs
+  - wait
+
+  - label: "⚒️ Build"
+    command: |
+      ./gradlew assembleDebug
+
+  - label: "🧪 Unit tests"
+    command: |
+      ./gradlew testDebug
+    artifact_paths:
+      - "**/build/test-results/*/*.xml"
+
+  - group: Linters
+    steps:
+      - label: "🕵️‍♂️ Lint"
+        command: |
+          ./gradlew lintDebug
+          
+          upload_sarif_to_github 'app/build/reports/lint-results-debug.sarif'
+        plugins: [ $CI_TOOLKIT ]
+        artifact_paths:
+          - "**/build/reports/lint-results*.*"
+
+      - label: "🕵️ Detekt"
+        command: |
+          echo "--- 🧹 Linting"
+          ./gradlew detekt
+          
+          upload_sarif_to_github 'app/build/reports/detekt/detekt.sarif'
+        plugins: [ $CI_TOOLKIT ]
+        artifact_paths:
+          - "**/build/reports/detekt/*.*"
