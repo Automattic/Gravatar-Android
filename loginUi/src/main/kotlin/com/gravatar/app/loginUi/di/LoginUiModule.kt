@@ -1,4 +1,4 @@
-package com.gravatar.app.login_ui.di
+package com.gravatar.app.loginUi.di
 
 import org.koin.dsl.module
 

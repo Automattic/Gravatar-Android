@@ -35,5 +35,9 @@ gradlePlugin {
             id = libs.plugins.gravatar.android.application.get().pluginId
             implementationClass = "GravatarAndroidApplicationConventionPlugin"
         }
+        register("gravatarAndroidLibrary") {
+            id = libs.plugins.gravatar.android.library.get().pluginId
+            implementationClass = "GravatarAndroidLibraryConventionPlugin"
+        }
     }
 }

@@ -1,5 +1,5 @@
-import com.android.build.api.dsl.ApplicationExtension
-import com.android.build.gradle.AppPlugin
+import com.android.build.gradle.LibraryExtension
+import com.android.build.gradle.LibraryPlugin
 import com.gravatar.app.configureDetekt
 import com.gravatar.app.configureKotlinAndroid
 import org.gradle.api.Plugin
@@ -8,24 +8,17 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.plugin.KotlinAndroidPluginWrapper
 
-const val TARGET_SDK = 35
-const val COMPILE_SDK = 35
-const val MIN_SDK = 24
-private const val APP_ID = "com.gravatar.app"
-
-class GravatarAndroidApplicationConventionPlugin : Plugin<Project> {
+class GravatarAndroidLibraryConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
-            apply<AppPlugin>()
+            apply<LibraryPlugin>()
             apply<KotlinAndroidPluginWrapper>()
 
-            extensions.configure<ApplicationExtension> {
+            extensions.configure<LibraryExtension> {
                 configureKotlinAndroid(this)
+                compileSdk = COMPILE_SDK
                 defaultConfig.apply {
-                    applicationId = APP_ID
-                    targetSdk = TARGET_SDK
-                    versionCode = 1
-                    versionName = "1.0"
+                    consumerProguardFiles("consumer-rules.pro")
                 }
                 configureBuildTypes()
                 buildFeatures {
@@ -39,7 +32,7 @@ class GravatarAndroidApplicationConventionPlugin : Plugin<Project> {
         }
     }
 
-    private fun ApplicationExtension.configureBuildTypes() {
+    private fun LibraryExtension.configureBuildTypes() {
         buildTypes {
             getByName("release") {
                 isMinifyEnabled = true

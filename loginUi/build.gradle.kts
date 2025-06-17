@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.gravatar.app.login_ui"
+    namespace = "com.gravatar.app.loginUi"
 }
 
 dependencies {

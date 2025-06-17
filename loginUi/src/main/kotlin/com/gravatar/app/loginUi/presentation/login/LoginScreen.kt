@@ -1,4 +1,4 @@
-package com.gravatar.app.login_ui.presentation.login
+package com.gravatar.app.loginUi.presentation.login
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

@@ -5,8 +5,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.gravatar.app.home_ui.presentation.home.HomeScreen
-import com.gravatar.app.login_ui.presentation.login.LoginScreen
+import com.gravatar.app.homeUi.presentation.home.HomeScreen
+import com.gravatar.app.loginUi.presentation.login.LoginScreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
