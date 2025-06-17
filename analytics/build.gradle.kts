@@ -14,4 +14,5 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.koin.test.junit4)
+    testImplementation(libs.mockk.android)
 }
