@@ -1,7 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     `kotlin-dsl`
-    alias(libs.plugins.detekt)
 }
 
 group = "com.gravatar.app.buildlogic"
@@ -21,8 +20,6 @@ dependencies {
     compileOnly(libs.kotlin.gradlePlugin)
     compileOnly(libs.compose.compiler.gradlePlugin)
     compileOnly(libs.detekt.gradlePlugin)
-
-    detektPlugins(libs.detekt.ktlint.wrapper)
 }
 
 tasks {
