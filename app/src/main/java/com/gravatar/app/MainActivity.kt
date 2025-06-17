@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.gravatar.analytics.Tracker
-import com.gravatar.app.analytics.TestEvent
+import com.gravatar.app.analytics.AppEvent
 import com.gravatar.app.navigation.RootNavigation
 import com.gravatar.app.ui.theme.GravatarTheme
 import org.koin.android.ext.android.inject
@@ -18,7 +18,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        tracker.trackEvent(TestEvent())
+        tracker.trackEvent(AppEvent.Test)
 
         setContent {
             GravatarTheme {
