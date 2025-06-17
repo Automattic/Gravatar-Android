@@ -10,6 +10,8 @@ android {
 dependencies {
     implementation(project(":homeUi"))
     implementation(project(":loginUi"))
+    implementation(project(":analytics"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

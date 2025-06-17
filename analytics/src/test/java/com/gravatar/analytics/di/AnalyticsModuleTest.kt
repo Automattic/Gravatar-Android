@@ -1,6 +1,7 @@
-package com.gravatar.app.di
+package com.gravatar.analytics.di
 
-import com.gravatar.analytics.Tracker
+import android.content.Context
+import com.gravatar.analytics.tracks.TracksTracker
 import org.junit.Test
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.test.KoinTest
@@ -8,14 +9,14 @@ import org.koin.test.verify.definition
 import org.koin.test.verify.injectedParameters
 import org.koin.test.verify.verify
 
-class AppModuleTest : KoinTest {
+class AnalyticsModuleTest : KoinTest {
 
     @OptIn(KoinExperimentalAPI::class)
     @Test
     fun checkAllModules() {
-        appModule.verify(
+        analyticsModule.verify(
             injections = injectedParameters(
-                definition<MainActivityViewModel>(Tracker::class)
+                definition<TracksTracker>(Context::class)
             )
         )
     }
