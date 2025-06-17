@@ -1,6 +1,7 @@
 package com.gravatar.analytics
 
-interface Tracker {
-    fun trackEvent(event: Event)
-    fun flush()
+abstract class Tracker {
+    abstract var userId: String?
+    abstract fun trackEvent(event: Event)
+    abstract fun flush()
 }
