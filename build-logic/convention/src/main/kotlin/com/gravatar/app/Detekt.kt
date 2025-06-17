@@ -12,7 +12,7 @@ internal fun Project.configureDetekt() {
 
     configure<DetektExtension> {
         config.setFrom("${project.rootDir}/config/detekt/detekt.yml")
-        source.setFrom("src")
+        source.setFrom(source + "$rootDir/build-logic/convention/src/main/kotlin")
         autoCorrect = false
         buildUponDefaultConfig = true
         parallel = false
