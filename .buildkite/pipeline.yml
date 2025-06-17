@@ -13,7 +13,7 @@ steps:
     plugins: [ $CI_TOOLKIT ]
     notify:
       - github_commit_status:
-          context: "✅ Gradle Wrapper Validation"
+          context: "Gradle Wrapper Validation"
 
   # Wait for Gradle Wrapper to be validated before running any other jobs
   - wait
@@ -23,7 +23,7 @@ steps:
       ./gradlew assembleDebug
     notify:
       - github_commit_status:
-          context: "⚒️ Build"
+          context: "Build"
 
   - label: "🧪 Unit tests"
     command: |
@@ -32,7 +32,7 @@ steps:
       - "**/build/test-results/*/*.xml"
     notify:
       - github_commit_status:
-          context: "🧪 Unit tests"
+          context: "Unit tests"
 
   - label: "🕵️‍♂️ Lint"
     command: |
@@ -44,7 +44,7 @@ steps:
       - "**/build/reports/lint-results*.*"
     notify:
       - github_commit_status:
-          context: "🕵️‍♂️ Lint"
+          context: "Lint"
 
   - label: "🕵️ Detekt"
     command: |
@@ -56,4 +56,4 @@ steps:
       - "**/build/reports/detekt/*.*"
     notify:
       - github_commit_status:
-          context: "🕵️ Detekt"
+          context: "Detekt"
