@@ -22,3 +22,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Gravatar"
 include(":app")
+include(":home-ui")
+include(":login-ui")

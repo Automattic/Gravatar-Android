@@ -1,9 +1,12 @@
 package com.gravatar.app.di
 
-import com.gravatar.app.MainActivityViewModel
-import org.koin.core.module.dsl.viewModelOf
+import com.gravatar.app.home_ui.di.homeUiModule
+import com.gravatar.app.login_ui.di.loginUiModule
 import org.koin.dsl.module
 
 val appModule = module {
-    viewModelOf(::MainActivityViewModel)
+    includes(
+        homeUiModule,
+        loginUiModule,
+    )
 }
