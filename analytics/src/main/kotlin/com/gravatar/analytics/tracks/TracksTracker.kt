@@ -1,13 +1,10 @@
 package com.gravatar.analytics.tracks
 
-import android.content.Context
 import com.automattic.android.tracks.TracksClient
 import com.gravatar.analytics.Event
 import com.gravatar.analytics.Tracker
 
-internal class TracksTracker(context: Context) : Tracker {
-
-    private val tracksClient = TracksClient.getClient(context)
+internal class TracksTracker(private val tracksClient: TracksClient) : Tracker {
 
     override fun trackEvent(event: Event) {
         // We should add the userId to the event if available and set the user type accordingly.
