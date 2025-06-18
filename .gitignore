@@ -11,3 +11,4 @@ local.properties
 # generated files
 /build
 /captures
+.kotlin/
