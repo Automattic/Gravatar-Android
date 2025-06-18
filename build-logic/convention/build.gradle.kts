@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     `kotlin-dsl`
 }
@@ -34,6 +35,14 @@ gradlePlugin {
         register("gravatarAndroidApplication") {
             id = libs.plugins.gravatar.android.application.get().pluginId
             implementationClass = "GravatarAndroidApplicationConventionPlugin"
+        }
+        register("gravatarAndroidLibrary") {
+            id = libs.plugins.gravatar.android.library.get().pluginId
+            implementationClass = "GravatarAndroidLibraryConventionPlugin"
+        }
+        register("gravatarComposePlugin") {
+            id = libs.plugins.gravatar.android.compose.get().pluginId
+            implementationClass = "GravatarComposeConventionPlugin"
         }
     }
 }

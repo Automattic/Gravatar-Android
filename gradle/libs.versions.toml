@@ -6,8 +6,9 @@ coreKtx = "1.16.0"
 composeBom = "2025.06.00"
 detekt = "1.23.8"
 junit = "4.13.2"
-koin-bom = "4.0.3"
+koin-bom = "4.1.0"
 lifecycleRuntimeKtx = "2.9.1"
+navigationCompose = "2.9.0"
 
 [libraries]
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
@@ -20,6 +21,7 @@ androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 detekt-ktlint-wrapper = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt"}
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
@@ -38,6 +40,10 @@ android-application = { id = "com.android.application", version.ref = "androidGr
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 
 # Plugins defined by this project
 gravatar-android-application = { id = "gravatar.android.application" }
+gravatar-android-library = { id = "gravatar.android.library" }
+gravatar-android-compose = { id = "gravatar.android.compose" }
