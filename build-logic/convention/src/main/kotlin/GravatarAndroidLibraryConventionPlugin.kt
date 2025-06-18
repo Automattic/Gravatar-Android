@@ -16,14 +16,10 @@ class GravatarAndroidLibraryConventionPlugin : Plugin<Project> {
 
             extensions.configure<LibraryExtension> {
                 configureKotlinAndroid(this)
-                compileSdk = COMPILE_SDK
                 defaultConfig.apply {
                     consumerProguardFiles("consumer-rules.pro")
                 }
                 configureBuildTypes()
-                buildFeatures {
-                    compose = true
-                }
                 lint {
                     sarifReport = true
                 }

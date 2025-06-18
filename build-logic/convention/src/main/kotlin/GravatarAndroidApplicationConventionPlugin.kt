@@ -21,6 +21,7 @@ class GravatarAndroidApplicationConventionPlugin : Plugin<Project> {
 
             extensions.configure<ApplicationExtension> {
                 configureKotlinAndroid(this)
+                configureCompose(this)
                 defaultConfig.apply {
                     applicationId = APP_ID
                     targetSdk = TARGET_SDK
@@ -28,9 +29,6 @@ class GravatarAndroidApplicationConventionPlugin : Plugin<Project> {
                     versionName = "1.0"
                 }
                 configureBuildTypes()
-                buildFeatures {
-                    compose = true
-                }
                 lint {
                     sarifReport = true
                 }

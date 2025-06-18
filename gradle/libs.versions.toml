@@ -46,3 +46,4 @@ android-library = { id = "com.android.library", version.ref = "androidGradlePlug
 # Plugins defined by this project
 gravatar-android-application = { id = "gravatar.android.application" }
 gravatar-android-library = { id = "gravatar.android.library" }
+gravatar-android-compose = { id = "gravatar.android.compose" }
