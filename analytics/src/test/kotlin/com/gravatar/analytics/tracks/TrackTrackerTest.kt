@@ -4,6 +4,7 @@ import com.automattic.android.tracks.TracksClient
 import com.gravatar.analytics.Event
 import io.mockk.mockk
 import io.mockk.verify
+import io.mockk.verifySequence
 import org.junit.Before
 import org.junit.Test
 
@@ -45,6 +46,8 @@ class TrackTrackerTest {
     fun `when flush is invoked then call flush on client`() {
         tracker.flush()
 
-        verify(exactly = 1) { mockClient.flush() }
+        verifySequence {
+            mockClient.flush()
+        }
     }
 }
