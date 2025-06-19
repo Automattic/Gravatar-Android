@@ -18,12 +18,18 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        tracker.trackEvent(AppEvent.Test)
-
         setContent {
             GravatarTheme {
                 RootNavigation()
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Remove this lines when we have the first real event to track.
+        tracker.userId = "hamorillo"
+        tracker.trackEvent(AppEvent.Test)
+        tracker.flush()
     }
 }

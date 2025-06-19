@@ -19,15 +19,26 @@ class TrackTrackerTest {
     }
 
     @Test
-    fun `when trackEvent is invoked then call track on client`() {
-        tracker.userId = "test_user_id"
+    fun `when trackEvent is invoked without userId then call track on client with ANON`() {
         val event = object : Event {
             override val name: String = "test_event"
         }
 
         tracker.trackEvent(event)
 
-        verify { mockClient.track(event.name, "test_user_id", TracksClient.NosaraUserType.ANON) }
+        verify { mockClient.track(event.name, any(), TracksClient.NosaraUserType.ANON) }
+    }
+
+    @Test
+    fun `when trackEvent is invoked with userId then call track on client with GRAVATAR`() {
+        val event = object : Event {
+            override val name: String = "test_event_with_user"
+        }
+        tracker.userId = "someUserId"
+
+        tracker.trackEvent(event)
+
+        verify { mockClient.track(event.name, "someUserId", TracksClient.NosaraUserType.WPCOM) }
     }
 
     @Test

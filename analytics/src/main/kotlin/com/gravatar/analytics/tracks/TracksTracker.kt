@@ -10,8 +10,10 @@ internal class TracksTracker(private val tracksClient: TracksClient) : Tracker()
     private val anonId: String = generateNewAnonID()
 
     override fun trackEvent(event: Event) {
-        // We should add GRAVATAR userType when available.
-        tracksClient.track(event.name, userId ?: anonId, TracksClient.NosaraUserType.ANON)
+        val userType = userId?.let {
+            TracksClient.NosaraUserType.WPCOM
+        } ?: TracksClient.NosaraUserType.ANON
+        tracksClient.track(event.name, userId ?: anonId, userType)
     }
 
     override fun flush() {
