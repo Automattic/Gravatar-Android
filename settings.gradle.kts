@@ -17,6 +17,13 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven {
+            setUrl("https://a8c-libs.s3.amazonaws.com/android")
+            content {
+                includeGroup("com.automattic")
+                includeGroup("com.automattic.tracks")
+            }
+        }
     }
 }
 
@@ -24,3 +31,4 @@ rootProject.name = "Gravatar"
 include(":app")
 include(":homeUi")
 include(":loginUi")
+include(":analytics")

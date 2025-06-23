@@ -1,14 +1,16 @@
 [versions]
 androidGradlePlugin = "8.10.1"
 activityCompose = "1.10.1"
-kotlin = "2.1.21"
-coreKtx = "1.16.0"
 composeBom = "2025.06.00"
+coreKtx = "1.16.0"
 detekt = "1.23.8"
 junit = "4.13.2"
 koin-bom = "4.1.0"
+kotlin = "2.1.21"
 lifecycleRuntimeKtx = "2.9.1"
 navigationCompose = "2.9.0"
+mockk = "1.14.2"
+tracks = "6.0.3"
 
 [libraries]
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
@@ -16,18 +18,21 @@ androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", versi
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+# Tracks - Analytics and Crash Reporting
+automattic-tracks = { module = "com.automattic:Automattic-Tracks-Android", version.ref = "tracks" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
-detekt-ktlint-wrapper = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt"}
+detekt-ktlint-wrapper = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
-koin-core = { module = "io.insert-koin:koin-core"}
+koin-core = { module = "io.insert-koin:koin-core" }
 koin-android = { module = "io.insert-koin:koin-android" }
 koin-test-junit4 = { module = "io.insert-koin:koin-test-junit4" }
+mockk-android = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
 
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
@@ -37,11 +42,11 @@ detekt-gradlePlugin = { group = "io.gitlab.arturbosch.detekt", name = "io.gitlab
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 
 # Plugins defined by this project
 gravatar-android-application = { id = "gravatar.android.application" }

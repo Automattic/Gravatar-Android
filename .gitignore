@@ -9,6 +9,6 @@ local.properties
 *.iml
 
 # generated files
-/build
+build/
 /captures
 .kotlin/
