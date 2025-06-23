@@ -33,20 +33,11 @@ internal fun Project.configureCompose(commonExtension: CommonExtension<*, *, *, 
                 all {
                     // -Pscreenshot to filter screenshot tests
                     it.useJUnit {
-                        try {
-                            val screenshotTestClass = Class.forName(
-                                "com.gravatar.app.testUtils.roborazzi.ScreenshotTests"
-                            )
-                            if (project.hasProperty("screenshot")) {
-                                includeCategories(screenshotTestClass.name)
-                            } else {
-                                excludeCategories(screenshotTestClass.name)
-                            }
-                        } catch (_: ClassNotFoundException) {
-                            // ScreenshotTests class not found, skip configuration
-                            project.logger.info(
-                                "ScreenshotTests class not found, skipping screenshot test configuration"
-                            )
+                        val screenshotTestClassName = "com.gravatar.app.testUtils.roborazzi.ScreenshotTests"
+                        if (project.hasProperty("screenshot")) {
+                            includeCategories(screenshotTestClassName)
+                        } else {
+                            excludeCategories(screenshotTestClassName)
                         }
                     }
                     it.systemProperties["robolectric.pixelCopyRenderMode"] = "hardware"
