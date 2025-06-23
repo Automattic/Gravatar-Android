@@ -28,7 +28,8 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Gravatar"
+include(":analytics")
 include(":app")
 include(":homeUi")
 include(":loginUi")
-include(":analytics")
+include(":testUtils")

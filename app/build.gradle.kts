@@ -25,4 +25,5 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.koin.test.junit4)
+    testImplementation(project(":testUtils"))
 }

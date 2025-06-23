@@ -1,6 +1,7 @@
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.LibraryExtension
 import com.gravatar.app.libs
+import io.github.takahirom.roborazzi.RoborazziPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
@@ -19,10 +20,29 @@ class GravatarComposeConventionPlugin : Plugin<Project> {
 }
 
 internal fun Project.configureCompose(commonExtension: CommonExtension<*, *, *, *, *, *>) {
+    apply<RoborazziPlugin>()
     apply<ComposeCompilerGradleSubplugin>()
     commonExtension.apply {
         buildFeatures {
             compose = true
+        }
+        testOptions {
+            unitTests {
+                // For Roborazzi
+                isIncludeAndroidResources = true
+                all {
+                    // -Pscreenshot to filter screenshot tests
+                    it.useJUnit {
+                        val screenshotTestClassName = "com.gravatar.app.testUtils.roborazzi.ScreenshotTests"
+                        if (project.hasProperty("screenshot")) {
+                            includeCategories(screenshotTestClassName)
+                        } else {
+                            excludeCategories(screenshotTestClassName)
+                        }
+                    }
+                    it.systemProperties["robolectric.pixelCopyRenderMode"] = "hardware"
+                }
+            }
         }
     }
     addComposeDependencies()
