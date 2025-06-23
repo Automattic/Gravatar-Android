@@ -57,3 +57,13 @@ steps:
     notify:
       - github_commit_status:
           context: "Detekt"
+
+  - label: "🧪📸 Screenshot tests"
+    command: |
+      echo "--- 🧪📸 Screenshot Testing"
+      ./gradlew verifyRoborazziDebug -Pscreenshot
+    artifact_paths:
+      - "**/build/test-results/*/*.xml"
+    notify:
+      - github_commit_status:
+          context: "Screenshot tests"
