@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="gravatar">Gravatar</string>
-    <string name="share">Share</string>
-    <string name="profile">Profile</string>
+    <string name="home_screen_navigation_item_gravatar">Gravatar</string>
+    <string name="home_screen_navigation_item_share">Share</string>
+    <string name="home_screen_navigation_item_profile">Profile</string>
 </resources>

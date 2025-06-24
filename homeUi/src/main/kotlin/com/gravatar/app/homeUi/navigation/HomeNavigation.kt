@@ -41,21 +41,21 @@ internal sealed class HomeDestination(
     @Serializable
     data object Gravatar : HomeDestination(
         iconRes = com.gravatar.app.homeUi.R.drawable.gravatar,
-        labelRes = com.gravatar.app.homeUi.R.string.gravatar,
+        labelRes = com.gravatar.app.homeUi.R.string.home_screen_navigation_item_gravatar,
         position = 0
     )
 
     @Serializable
     data object Profile : HomeDestination(
         iconRes = com.gravatar.app.homeUi.R.drawable.profile_icon,
-        labelRes = com.gravatar.app.homeUi.R.string.profile,
+        labelRes = com.gravatar.app.homeUi.R.string.home_screen_navigation_item_profile,
         position = 1
     )
 
     @Serializable
     data object Share : HomeDestination(
         iconRes = com.gravatar.app.homeUi.R.drawable.qr_code_icon,
-        labelRes = com.gravatar.app.homeUi.R.string.share,
+        labelRes = com.gravatar.app.homeUi.R.string.home_screen_navigation_item_share,
         position = 2
     )
 
