@@ -9,31 +9,57 @@ import com.gravatar.app.homeUi.presentation.home.profile.ProfileScreen
 import com.gravatar.app.homeUi.presentation.home.share.ShareScreen
 import kotlinx.serialization.Serializable
 
-@Serializable
-data object GravatarDest
-
-@Serializable
-data object ProfileDest
-
-@Serializable
-data object ShareDest
-
 @Composable
-fun HomeNavigation(
+internal fun HomeNavigation(
     navController: NavHostController,
     onLoggedOut: () -> Unit
 ) {
-    NavHost(navController = navController, startDestination = GravatarDest) {
-        composable<GravatarDest> {
+    NavHost(navController = navController, startDestination = HomeDestination.Gravatar) {
+        composable<HomeDestination.Gravatar> {
             GravatarScreen(onLoggedOut)
         }
 
-        composable<ProfileDest> {
+        composable<HomeDestination.Profile> {
             ProfileScreen()
         }
 
-        composable<ShareDest> {
+        composable<HomeDestination.Share> {
             ShareScreen()
         }
+    }
+}
+
+@Serializable
+internal sealed class HomeDestination(
+    val iconRes: Int,
+    val labelRes: Int,
+    val position: Int,
+) {
+    val route: String =
+        this::class.qualifiedName ?: error("Route name is not defined for $this")
+
+    @Serializable
+    data object Gravatar : HomeDestination(
+        iconRes = com.gravatar.app.homeUi.R.drawable.gravatar,
+        labelRes = com.gravatar.app.homeUi.R.string.gravatar,
+        position = 0
+    )
+
+    @Serializable
+    data object Profile : HomeDestination(
+        iconRes = com.gravatar.app.homeUi.R.drawable.profile_icon,
+        labelRes = com.gravatar.app.homeUi.R.string.profile,
+        position = 1
+    )
+
+    @Serializable
+    data object Share : HomeDestination(
+        iconRes = com.gravatar.app.homeUi.R.drawable.qr_code_icon,
+        labelRes = com.gravatar.app.homeUi.R.string.share,
+        position = 2
+    )
+
+    companion object {
+        val allDestinations = listOf(Gravatar, Profile, Share)
     }
 }

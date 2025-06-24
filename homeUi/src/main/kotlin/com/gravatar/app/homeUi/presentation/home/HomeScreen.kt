@@ -19,11 +19,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.gravatar.app.homeUi.R
-import com.gravatar.app.homeUi.navigation.GravatarDest
+import com.gravatar.app.homeUi.navigation.HomeDestination
 import com.gravatar.app.homeUi.navigation.HomeNavigation
-import com.gravatar.app.homeUi.navigation.ProfileDest
-import com.gravatar.app.homeUi.navigation.ShareDest
 
 @Composable
 fun HomeScreen(
@@ -35,9 +32,9 @@ fun HomeScreen(
     DisposableEffect(navController) {
         val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
             selectedItem = when (destination.route) {
-                GravatarDest::class.qualifiedName -> 0
-                ProfileDest::class.qualifiedName -> 1
-                ShareDest::class.qualifiedName -> 2
+                HomeDestination.Gravatar.route -> HomeDestination.Gravatar.position
+                HomeDestination.Profile.route -> HomeDestination.Profile.position
+                HomeDestination.Share.route -> HomeDestination.Share.position
                 else -> selectedItem
             }
         }
@@ -52,60 +49,28 @@ fun HomeScreen(
     Scaffold(
         bottomBar = {
             NavigationBar {
-                NavigationBarItem(
-                    icon = {
-                        Icon(
-                            painterResource(id = R.drawable.gravatar),
-                            contentDescription = stringResource(R.string.gravatar)
-                        )
-                    },
-                    label = { Text(stringResource(R.string.gravatar)) },
-                    selected = selectedItem == 0,
-                    onClick = {
-                        if (selectedItem != 0) {
-                            navController.navigate(GravatarDest) {
-                                popUpTo(navController.graph.startDestinationId)
-                                launchSingleTop = true
+                HomeDestination.allDestinations
+                    .sortedBy { it.position }
+                    .forEach { destination ->
+                        NavigationBarItem(
+                            icon = {
+                                Icon(
+                                    painterResource(id = destination.iconRes),
+                                    contentDescription = stringResource(destination.labelRes)
+                                )
+                            },
+                            label = { Text(stringResource(destination.labelRes)) },
+                            selected = selectedItem == destination.position,
+                            onClick = {
+                                if (selectedItem != destination.position) {
+                                    navController.navigate(destination) {
+                                        popUpTo(navController.graph.startDestinationId)
+                                        launchSingleTop = true
+                                    }
+                                }
                             }
-                        }
-                    }
-                )
-                NavigationBarItem(
-                    icon = {
-                        Icon(
-                            painterResource(id = R.drawable.profile_icon),
-                            contentDescription = stringResource(R.string.profile)
                         )
-                    },
-                    label = { Text(stringResource(R.string.profile)) },
-                    selected = selectedItem == 1,
-                    onClick = {
-                        if (selectedItem != 1) {
-                            navController.navigate(ProfileDest) {
-                                popUpTo(navController.graph.startDestinationId)
-                                launchSingleTop = true
-                            }
-                        }
                     }
-                )
-                NavigationBarItem(
-                    icon = {
-                        Icon(
-                            painterResource(id = R.drawable.qr_code_icon),
-                            contentDescription = stringResource(R.string.share)
-                        )
-                    },
-                    label = { Text(stringResource(R.string.share)) },
-                    selected = selectedItem == 2,
-                    onClick = {
-                        if (selectedItem != 2) {
-                            navController.navigate(ShareDest) {
-                                popUpTo(navController.graph.startDestinationId)
-                                launchSingleTop = true
-                            }
-                        }
-                    }
-                )
             }
         }
     ) { innerPadding ->
