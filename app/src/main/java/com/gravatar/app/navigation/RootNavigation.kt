@@ -23,12 +23,11 @@ data object HomeDest
 @Composable
 fun RootNavigation() {
     val navController = rememberNavController()
-
     NavHost(navController = navController, startDestination = SplashDest) {
         composable<SplashDest> {
             val scope = rememberCoroutineScope()
             scope.launch {
-                delay(2000) // Simulate a loading delay
+                delay(1000) // Simulate a loading delay
                 navController.navigate(LoginDest) {
                     popUpTo(SplashDest) { inclusive = true }
                 }
@@ -38,6 +37,7 @@ fun RootNavigation() {
             LoginScreen(
                 onLoggedIn = {
                     navController.navigate(HomeDest) {
+                        // Clear the entire back stack to prevent multiple LoginScreen instances
                         popUpTo(LoginDest) { inclusive = true }
                     }
                 }
