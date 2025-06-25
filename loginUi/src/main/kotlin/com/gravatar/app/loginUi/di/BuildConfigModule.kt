@@ -8,7 +8,8 @@ internal val buildConfigModule = module {
     single {
         OAuthConfig(
             clientId = BuildConfig.OAUTH_CLIENT_ID,
-            redirectUri = BuildConfig.OAUTH_REDIRECT_URI
+            redirectUri = BuildConfig.OAUTH_REDIRECT_URI,
+            clientSecret = BuildConfig.OAUTH_CLIENT_SECRET,
         )
     }
 }
