@@ -11,7 +11,6 @@ dependencies {
     implementation(project(":homeUi"))
     implementation(project(":loginUi"))
     implementation(project(":analytics"))
-    implementation(project(":foundations"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

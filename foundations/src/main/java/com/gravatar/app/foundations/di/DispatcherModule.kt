@@ -1,4 +1,4 @@
-package com.gravatar.app.di
+package com.gravatar.app.foundations.di
 
 import com.gravatar.app.foundations.DispatcherProvider
 import kotlinx.coroutines.CoroutineDispatcher

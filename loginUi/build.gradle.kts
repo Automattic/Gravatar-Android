@@ -48,6 +48,7 @@ android {
 dependencies {
     implementation(project(":foundations"))
     implementation(project(":userComponent"))
+    implementation(project(":foundations"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.material3)

@@ -10,6 +10,5 @@ val appModule = module {
         homeUiModule,
         loginUiModule,
         analyticsModule,
-        dispatcherModule,
     )
 }

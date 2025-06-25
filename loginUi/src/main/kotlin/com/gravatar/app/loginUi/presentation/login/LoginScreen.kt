@@ -22,10 +22,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
+import com.gravatar.app.loginUi.di.loginUiModule
 import com.gravatar.app.loginUi.presentation.oauth.OAuthResultContract
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.KoinApplicationPreview
 
 @Composable
 fun LoginScreen(
@@ -114,7 +116,9 @@ internal fun LoginScreen(
 @Preview
 @Composable
 private fun LoginScreenPreview() {
-    LoginScreen(
-        onLoggedIn = { },
-    )
+    KoinApplicationPreview(application = { modules(loginUiModule) }) {
+        LoginScreen(
+            onLoggedIn = { },
+        )
+    }
 }
