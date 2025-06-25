@@ -21,7 +21,7 @@ import com.gravatar.restapi.models.Profile
 import com.gravatar.ui.components.atomic.Avatar
 
 @Composable
-fun ProfileHeader(
+internal fun ProfileHeader(
     profile: Profile,
     modifier: Modifier = Modifier
 ) {

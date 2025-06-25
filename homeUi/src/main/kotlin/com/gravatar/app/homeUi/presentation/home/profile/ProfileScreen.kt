@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun ProfileScreen(viewModel: ProfileViewModel = koinViewModel()) {
+internal fun ProfileScreen(viewModel: ProfileViewModel = koinViewModel()) {
     val uiState by viewModel.uiState.collectAsState()
 
     Box(
