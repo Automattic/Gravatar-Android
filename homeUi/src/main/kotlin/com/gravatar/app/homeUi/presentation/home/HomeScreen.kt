@@ -8,16 +8,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.gravatar.app.homeUi.navigation.HomeDestination
 import com.gravatar.app.homeUi.navigation.HomeNavigation
@@ -27,24 +22,7 @@ fun HomeScreen(
     onLoggedOut: () -> Unit,
 ) {
     val navController = rememberNavController()
-    var selectedItem by rememberSaveable { mutableIntStateOf(0) }
-
-    DisposableEffect(navController) {
-        val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
-            selectedItem = when (destination.route) {
-                HomeDestination.Gravatar.route -> HomeDestination.Gravatar.position
-                HomeDestination.Profile.route -> HomeDestination.Profile.position
-                HomeDestination.Share.route -> HomeDestination.Share.position
-                else -> selectedItem
-            }
-        }
-
-        navController.addOnDestinationChangedListener(listener)
-
-        onDispose {
-            navController.removeOnDestinationChangedListener(listener)
-        }
-    }
+    val backStackEntry = navController.currentBackStackEntryAsState()
 
     Scaffold(
         bottomBar = {
@@ -60,9 +38,9 @@ fun HomeScreen(
                                 )
                             },
                             label = { Text(stringResource(destination.labelRes)) },
-                            selected = selectedItem == destination.position,
+                            selected = destination.route == backStackEntry.value?.destination?.route,
                             onClick = {
-                                if (selectedItem != destination.position) {
+                                if (backStackEntry.value?.destination?.route != destination.route) {
                                     navController.navigate(destination) {
                                         popUpTo(navController.graph.startDestinationId)
                                         launchSingleTop = true
