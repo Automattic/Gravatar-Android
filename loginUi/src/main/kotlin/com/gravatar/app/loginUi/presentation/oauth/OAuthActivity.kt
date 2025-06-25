@@ -117,20 +117,20 @@ internal class OAuthResultContract :
 
     override fun parseResult(resultCode: Int, intent: Intent?): OAuthResult {
         return when (intent?.getIntExtra(OAuthActivity.ACTIVITY_RESULT, -1)) {
-            OAuthActivity.RESULT_TOKEN_RETRIEVED -> OAuthResult.TOKEN(
+            OAuthActivity.RESULT_TOKEN_RETRIEVED -> OAuthResult.Token(
                 intent.getStringExtra(OAuthActivity.TOKEN_KEY)!!,
             )
 
-            OAuthActivity.RESULT_TOKEN_ERROR -> OAuthResult.ERROR
-            else -> OAuthResult.DISMISSED
+            OAuthActivity.RESULT_TOKEN_ERROR -> OAuthResult.Error
+            else -> OAuthResult.Dismissed
         }
     }
 }
 
 internal sealed class OAuthResult {
-    data class TOKEN(val token: String) : OAuthResult()
+    data class Token(val token: String) : OAuthResult()
 
-    data object DISMISSED : OAuthResult()
+    data object Dismissed : OAuthResult()
 
-    data object ERROR : OAuthResult()
+    data object Error : OAuthResult()
 }

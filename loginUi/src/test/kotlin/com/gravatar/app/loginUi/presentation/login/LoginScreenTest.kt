@@ -9,7 +9,8 @@ class LoginScreenTest : RoborazziTest() {
     fun loginScreen_captureScreenshot() {
         screenshotTest {
             LoginScreen(
-                onLoggedIn = { }
+                uiState = LoginUiState(),
+                onEvent = { }
             )
         }
     }
