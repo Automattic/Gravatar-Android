@@ -15,7 +15,7 @@ internal interface AuthTokenStorage {
 
     suspend fun save(token: String)
 
-    suspend fun clearToken()
+    suspend fun clear()
 }
 
 internal class DatastoreAuthTokenStorage(
@@ -27,10 +27,12 @@ internal class DatastoreAuthTokenStorage(
         private const val KEY = "auth_token"
     }
 
+    private val tokenKey = stringPreferencesKey(KEY)
+
     @Suppress("SwallowedException")
     override suspend fun get(): String? = withContext(dispatcherProvider.io) {
         try {
-            dataStore.data.first()[stringPreferencesKey(KEY)]
+            dataStore.data.first()[tokenKey]
         } catch (_: IOException) {
             null
         }
@@ -38,13 +40,13 @@ internal class DatastoreAuthTokenStorage(
 
     override suspend fun save(token: String): Unit = withContext(dispatcherProvider.io) {
         dataStore.edit { preferences ->
-            preferences[stringPreferencesKey(KEY)] = token
+            preferences[tokenKey] = token
         }
     }
 
-    override suspend fun clearToken(): Unit = withContext(dispatcherProvider.io) {
+    override suspend fun clear(): Unit = withContext(dispatcherProvider.io) {
         dataStore.edit { preferences ->
-            preferences.remove(stringPreferencesKey(KEY))
+            preferences.remove(tokenKey)
         }
     }
 }

@@ -5,4 +5,8 @@ import com.gravatar.app.usercomponent.domain.model.LoginRequest
 interface AuthRepository {
 
     suspend fun login(loginRequest: LoginRequest): Result<Unit>
+
+    suspend fun isUserLoggedIn(): Boolean
+
+    suspend fun logout()
 }

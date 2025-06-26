@@ -21,4 +21,10 @@ internal class RealAuthRepository(
             onFailure = { Result.failure(it) }
         )
     }
+
+    override suspend fun isUserLoggedIn(): Boolean = tokenStorage.get() != null
+
+    override suspend fun logout() {
+        tokenStorage.clear()
+    }
 }
