@@ -1,0 +1,25 @@
+package com.gravatar.app.usercomponent.di
+
+import com.gravatar.app.foundations.DispatcherProvider
+import com.gravatar.app.usercomponent.data.DatastoreAuthTokenStorage
+import com.gravatar.app.usercomponent.data.WordPressClient
+import org.junit.Test
+import org.koin.core.annotation.KoinExperimentalAPI
+import org.koin.test.KoinTest
+import org.koin.test.verify.definition
+import org.koin.test.verify.injectedParameters
+import org.koin.test.verify.verify
+
+class UserComponentModuleTest : KoinTest {
+
+    @OptIn(KoinExperimentalAPI::class)
+    @Test
+    fun checkAllModules() {
+        userComponentModule.verify(
+            injections = injectedParameters(
+                definition<DatastoreAuthTokenStorage>(DispatcherProvider::class),
+                definition<WordPressClient>(DispatcherProvider::class)
+            )
+        )
+    }
+}

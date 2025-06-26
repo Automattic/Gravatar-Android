@@ -5,6 +5,7 @@ import com.gravatar.app.usercomponent.domain.repository.AuthRepository
 
 internal class RealAuthRepository(
     private val wordPressClient: WordPressClient,
+    private val tokenStorage: AuthTokenStorage,
 ) : AuthRepository {
     override suspend fun login(loginRequest: LoginRequest): Result<Unit> {
         return wordPressClient.login(
@@ -13,7 +14,10 @@ internal class RealAuthRepository(
             redirectUri = loginRequest.redirectUri,
             clientId = loginRequest.clientId
         ).fold(
-            onSuccess = { Result.success(Unit) },
+            onSuccess = { token ->
+                tokenStorage.save(token)
+                Result.success(Unit)
+            },
             onFailure = { Result.failure(it) }
         )
     }
