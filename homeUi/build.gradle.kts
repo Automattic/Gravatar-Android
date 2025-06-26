@@ -25,5 +25,8 @@ dependencies {
     implementation(libs.gravatar.ui)
 
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk.android)
+    testImplementation(libs.turbine)
     testImplementation(project(":testUtils"))
 }
