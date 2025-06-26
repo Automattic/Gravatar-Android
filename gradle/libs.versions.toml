@@ -1,9 +1,11 @@
 [versions]
 androidGradlePlugin = "8.10.1"
 activityCompose = "1.10.1"
+coil = "2.7.0"
 composeBom = "2025.06.00"
 coreKtx = "1.16.0"
 detekt = "1.23.8"
+gravatarSdk = "2.5.0"
 junit = "4.13.2"
 koin-bom = "4.1.0"
 kotlin = "2.1.21"
@@ -36,6 +38,10 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 detekt-ktlint-wrapper = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+coil-test = { group = "io.coil-kt", name = "coil-test", version.ref = "coil" }
+gravatar-core = { group = "com.gravatar", name = "gravatar", version.ref = "gravatarSdk" }
+gravatar-ui = { group = "com.gravatar", name = "gravatar-ui", version.ref = "gravatarSdk" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
 koin-core = { module = "io.insert-koin:koin-core" }

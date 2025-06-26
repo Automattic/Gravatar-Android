@@ -1,13 +1,12 @@
-package com.gravatar.app.homeUi.presentation.login
+package com.gravatar.app.homeUi.presentation.home
 
-import com.gravatar.app.homeUi.presentation.home.HomeScreen
 import com.gravatar.app.testUtils.roborazzi.RoborazziTest
 import org.junit.Test
 
 class HomeScreenTest : RoborazziTest() {
 
     @Test
-    fun loginScreen_captureScreenshot() {
+    fun homeScreen() {
         screenshotTest {
             HomeScreen(
                 onLoggedOut = { }

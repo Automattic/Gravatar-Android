@@ -12,6 +12,8 @@ dependencies {
 
     implementation(libs.robolectric)
     implementation(libs.androidx.ui.junit)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.test)
     implementation(libs.roborazzi)
     implementation(libs.roborazzi.junit.rule)
 }
