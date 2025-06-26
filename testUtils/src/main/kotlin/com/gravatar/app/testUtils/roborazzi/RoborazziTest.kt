@@ -1,12 +1,20 @@
 package com.gravatar.app.testUtils.roborazzi
 
+import android.graphics.Color
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
+import androidx.core.graphics.drawable.toDrawable
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import coil.Coil
+import coil.ImageLoader
+import coil.annotation.ExperimentalCoilApi
+import coil.test.FakeImageLoaderEngine
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import com.github.takahirom.roborazzi.RoborazziRule
 import com.github.takahirom.roborazzi.captureRoboImage
+import org.junit.Before
 import org.junit.Rule
 import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith
@@ -31,6 +39,18 @@ abstract class RoborazziTest {
             outputDirectoryPath = SCREENSHOTS_PATH,
         ),
     )
+
+    @OptIn(ExperimentalCoilApi::class)
+    @Before
+    fun setUp() {
+        val engine = FakeImageLoaderEngine.Builder()
+            .default(Color.GRAY.toDrawable())
+            .build()
+        val imageLoader = ImageLoader.Builder(ApplicationProvider.getApplicationContext())
+            .components { add(engine) }
+            .build()
+        Coil.setImageLoader(imageLoader)
+    }
 
     fun screenshotTest(composable: @Composable () -> Unit) {
         composeRule.setContent {
