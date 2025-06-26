@@ -60,4 +60,17 @@ class ProfileHeaderTest : RoborazziTest() {
             modifier = Modifier.padding(16.dp),
         )
     }
+
+    @Test
+    fun profileHeader_longTextWithEllipsis() = screenshotTest {
+        ProfileHeader(
+            profile = defaultProfile(
+                hash = "",
+                displayName = "John Doe with a very long name that should trigger ellipsis in the UI",
+                jobTitle = "Senior Software Engineer with a very long title",
+                company = "Automattic Inc. - A very long company name that should also trigger ellipsis"
+            ),
+            modifier = Modifier.padding(16.dp),
+        )
+    }
 }

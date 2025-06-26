@@ -7,15 +7,18 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.gravatar.extensions.defaultProfile
 import com.gravatar.restapi.models.Profile
 import com.gravatar.ui.components.atomic.Avatar
@@ -39,17 +42,30 @@ internal fun ProfileHeader(
         Spacer(modifier = Modifier.width(16.dp))
 
         Column {
-            Text(
+            BasicText(
                 text = profile.displayName,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                ),
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
+                autoSize = TextAutoSize.StepBased(
+                    maxFontSize = 18.sp
+                )
             )
 
             profile.jobInfo().takeIf { it.isNotBlank() }?.let { jobInfo ->
-                Text(
+                BasicText(
                     text = jobInfo,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+
+                    ),
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    autoSize = TextAutoSize.StepBased(
+                        maxFontSize = 14.sp
+                    )
                 )
             }
         }
@@ -105,6 +121,20 @@ fun ProfileHeaderPreviewCompanyOnly() {
 fun ProfileHeaderPreviewNeither() {
     ProfileHeader(
         profile = defaultProfile(hash = "", displayName = "John Doe", jobTitle = "", company = ""),
+        modifier = Modifier.padding(16.dp)
+    )
+}
+
+@Preview(showBackground = true, name = "Long text with ellipsis")
+@Composable
+fun ProfileHeaderPreviewLongText() {
+    ProfileHeader(
+        profile = defaultProfile(
+            hash = "",
+            displayName = "John Doe with a very long name that should trigger ellipsis in the UI",
+            jobTitle = "Senior Software Engineer with a very long title",
+            company = "Automattic Inc. - A very long company name that should also trigger ellipsis"
+        ),
         modifier = Modifier.padding(16.dp)
     )
 }
