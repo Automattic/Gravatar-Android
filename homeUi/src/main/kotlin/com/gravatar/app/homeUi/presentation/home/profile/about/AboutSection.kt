@@ -25,7 +25,7 @@ internal fun AboutSection(
     ) {
         if (aboutFields.any { it.type.isName }) {
             AboutFieldsSection(
-                label = aboutFields.personalLabelRes?.let { stringResource(it) },
+                label = stringResource(R.string.about_field_section_label_name),
                 fields = aboutFields.filter { it.type.isName }.toSet(),
                 formEnabled = formEnabled,
                 onValueChange = onValueChange,
@@ -33,7 +33,7 @@ internal fun AboutSection(
         }
         if (aboutFields.any { it.type.isProfessional }) {
             AboutFieldsSection(
-                label = aboutFields.professionalLabelRes?.let { stringResource(it) },
+                label = stringResource(R.string.about_field_section_label_professional),
                 fields = aboutFields.filter { it.type.isProfessional }.toSet(),
                 formEnabled = formEnabled,
                 onValueChange = onValueChange,
@@ -48,24 +48,6 @@ internal fun AboutSection(
             )
         }
     }
-}
-
-private val Set<AboutEditorField>.personalLabelRes: Int?
-    @StringRes get() = if (hasOtherSectionsThan(Section.NAME)) {
-        R.string.about_field_section_label_name
-    } else {
-        null
-    }
-
-private val Set<AboutEditorField>.professionalLabelRes: Int?
-    @StringRes get() = if (hasOtherSectionsThan(Section.PROFESSIONAL)) {
-        R.string.about_field_section_label_professional
-    } else {
-        null
-    }
-
-private fun Set<AboutEditorField>.hasOtherSectionsThan(other: Section): Boolean {
-    return any { it.type.section != other }
 }
 
 internal val AboutEditorField.labelRes: Int
@@ -85,20 +67,6 @@ internal val AboutEditorField.labelRes: Int
 internal val AboutEditorField.descriptionRes: Int?
     @StringRes get() = when (this.type) {
         else -> null
-    }
-
-private enum class Section {
-    NAME,
-    PROFESSIONAL,
-    ABOUT,
-}
-
-private val AboutInputField.section: Section
-    get() = when {
-        isName -> Section.NAME
-        isProfessional -> Section.PROFESSIONAL
-        isAbout -> Section.ABOUT
-        else -> Section.NAME
     }
 
 @Preview(showBackground = true)
