@@ -4,6 +4,7 @@ import app.cash.turbine.test
 import com.gravatar.app.homeUi.presentation.home.profile.about.AboutInputField
 import com.gravatar.app.testUtils.CoroutineTestRule
 import com.gravatar.restapi.models.Profile
+import com.gravatar.restapi.models.ProfileContactInfo
 import com.gravatar.services.GravatarResult
 import com.gravatar.services.ProfileService
 import io.mockk.coEvery
@@ -85,6 +86,12 @@ class ProfileViewModelTest {
 
         val lastNameField = aboutFields.find { it.type == AboutInputField.LAST_NAME }
         assertEquals("LastName should match mock profile", profile.lastName.orEmpty(), lastNameField?.value)
+
+        val cellPhoneField = aboutFields.find { it.type == AboutInputField.CELL_PHONE }
+        assertEquals("CellPhone should match mock profile", profile.contactInfo?.cellPhone, cellPhoneField?.value)
+
+        val contactEmailField = aboutFields.find { it.type == AboutInputField.CONTACT_EMAIL }
+        assertEquals("ContactEmail should match mock profile", profile.contactInfo?.email, contactEmailField?.value)
     }
 
     private fun profile() = Profile {
@@ -102,6 +109,10 @@ class ProfileViewModelTest {
         firstName = "John"
         lastName = "Doe"
         verifiedAccounts = emptyList()
+        contactInfo = ProfileContactInfo {
+            cellPhone = "123-456-7890"
+            email = "gravatar@automattic.com"
+        }
     }
 
     private fun initViewModel() = ProfileViewModel(profileService)

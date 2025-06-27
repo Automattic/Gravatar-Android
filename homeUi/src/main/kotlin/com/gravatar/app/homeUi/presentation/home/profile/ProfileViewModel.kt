@@ -61,6 +61,8 @@ internal fun Profile.aboutFields(): Set<AboutEditorField> {
                     AboutInputField.COMPANY -> company
                     AboutInputField.FIRST_NAME -> firstName.orEmpty()
                     AboutInputField.LAST_NAME -> lastName.orEmpty()
+                    AboutInputField.CELL_PHONE -> contactInfo?.cellPhone.orEmpty()
+                    AboutInputField.CONTACT_EMAIL -> contactInfo?.email.orEmpty()
                 },
                 maxLines = when (it) {
                     AboutInputField.ABOUT_ME -> 4

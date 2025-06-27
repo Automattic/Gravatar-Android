@@ -12,7 +12,8 @@ internal enum class AboutInputField(
     COMPANY(Section.PROFESSIONAL),
     ABOUT_ME(Section.ABOUT),
     LOCATION(Section.ABOUT),
-    ;
+    CELL_PHONE(Section.CONTACT),
+    CONTACT_EMAIL(Section.CONTACT);
 
     internal val isName: Boolean
         get() = section == Section.NAME
@@ -22,6 +23,9 @@ internal enum class AboutInputField(
 
     internal val isAbout: Boolean
         get() = section == Section.ABOUT
+
+    internal val isContact: Boolean
+        get() = section == Section.CONTACT
 
     internal val order: Int
         get() = when (this) {
@@ -34,5 +38,7 @@ internal enum class AboutInputField(
             COMPANY -> 101
             ABOUT_ME -> 200
             LOCATION -> 201
+            CELL_PHONE -> 300
+            CONTACT_EMAIL -> 301
         }
 }

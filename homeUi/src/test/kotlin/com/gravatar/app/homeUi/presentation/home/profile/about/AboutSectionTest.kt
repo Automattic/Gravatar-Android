@@ -51,6 +51,14 @@ class AboutSectionTest : RoborazziTest() {
                         type = AboutInputField.LAST_NAME,
                         value = "Doe",
                     ),
+                    AboutEditorField(
+                        type = AboutInputField.CELL_PHONE,
+                        value = "123-456-7890",
+                    ),
+                    AboutEditorField(
+                        type = AboutInputField.CONTACT_EMAIL,
+                        value = "gravatar@automattic.com",
+                    ),
                 ),
                 formEnabled = false,
                 onValueChange = { },

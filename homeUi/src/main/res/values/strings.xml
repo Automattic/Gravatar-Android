@@ -12,9 +12,12 @@
     <string name="about_field_label_company">Organization</string>
     <string name="about_field_label_about_me">Bio</string>
     <string name="about_field_label_location">Location</string>
+    <string name="about_field_label_cell_phone">Phone</string>
+    <string name="about_field_label_contact_email">Email</string>
     <string name="about_field_section_label_name">Name</string>
     <string name="about_field_section_label_professional">Professional</string>
     <string name="about_field_section_label_about">About</string>
+    <string name="about_field_section_label_contact">Contact</string>
     <string name="gravatar_tab_previous_avatars">Previous Avatars</string>
     <string name="gravatar_tab_tap_for_options">Tap for options</string>
 </resources>
