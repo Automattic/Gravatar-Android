@@ -40,9 +40,8 @@ class ProfileViewModelTest {
             viewModel.uiState.test {
                 assertEquals(ProfileUiState(isLoading = false), awaitItem())
                 assertEquals(ProfileUiState(isLoading = true), awaitItem())
-                assertEquals(ProfileUiState(isLoading = false, profile = profile), awaitItem())
                 assertEquals(
-                    ProfileUiState(isLoading = false, profile = profile, aboutFields = profile.aboutFields()),
+                    ProfileUiState(isLoading = false, profile = profile),
                     awaitItem()
                 )
             }

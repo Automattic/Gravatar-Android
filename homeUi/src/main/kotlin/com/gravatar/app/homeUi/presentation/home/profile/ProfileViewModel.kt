@@ -10,9 +10,6 @@ import com.gravatar.services.ProfileService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -24,7 +21,6 @@ internal class ProfileViewModel(private val profileService: ProfileService) : Vi
     init {
         // -> Remove the hardcoded username <-
         fetchProfile("hamorillo")
-        profileObserver()
     }
 
     private fun fetchProfile(username: String) {
@@ -47,17 +43,6 @@ internal class ProfileViewModel(private val profileService: ProfileService) : Vi
                 }
             }
         }
-    }
-
-    private fun profileObserver() {
-        uiState
-            .distinctUntilChanged { old, new -> old.profile == new.profile }
-            .onEach {
-                _uiState.update { currentState ->
-                    currentState.copy(aboutFields = currentState.profile?.aboutFields() ?: emptySet())
-                }
-            }
-            .launchIn(viewModelScope)
     }
 }
 

@@ -6,5 +6,7 @@ import com.gravatar.restapi.models.Profile
 internal data class ProfileUiState(
     val isLoading: Boolean = false,
     val profile: Profile? = null,
-    val aboutFields: Set<AboutEditorField> = emptySet(),
-)
+) {
+
+    val aboutFields: Set<AboutEditorField> = profile?.aboutFields() ?: emptySet()
+}
