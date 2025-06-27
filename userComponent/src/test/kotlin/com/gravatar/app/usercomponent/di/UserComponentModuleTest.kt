@@ -1,7 +1,6 @@
 package com.gravatar.app.usercomponent.di
 
 import com.gravatar.app.foundations.DispatcherProvider
-import com.gravatar.app.usercomponent.data.DatastoreAuthTokenStorage
 import com.gravatar.app.usercomponent.data.WordPressClient
 import org.junit.Test
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -17,7 +16,6 @@ class UserComponentModuleTest : KoinTest {
     fun checkAllModules() {
         userComponentModule.verify(
             injections = injectedParameters(
-                definition<DatastoreAuthTokenStorage>(DispatcherProvider::class),
                 definition<WordPressClient>(DispatcherProvider::class)
             )
         )
