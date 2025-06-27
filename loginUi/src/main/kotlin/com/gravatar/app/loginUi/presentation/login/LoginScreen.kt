@@ -28,18 +28,14 @@ import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun LoginScreen(
-    onLoggedIn: () -> Unit,
-) {
+fun LoginScreen() {
     LoginScreen(
-        onLoggedIn = onLoggedIn,
         viewModel = koinViewModel(),
     )
 }
 
 @Composable
 internal fun LoginScreen(
-    onLoggedIn: () -> Unit,
     viewModel: LoginViewModel,
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -51,10 +47,6 @@ internal fun LoginScreen(
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.actions.collect { action ->
                     when (action) {
-                        LoginAction.UserLoggedIn -> {
-                            onLoggedIn()
-                        }
-
                         LoginAction.ShowError -> {
                             Toast.makeText(context, "Login error", Toast.LENGTH_SHORT)
                                 .show()
@@ -115,6 +107,7 @@ internal fun LoginScreen(
 @Composable
 private fun LoginScreenPreview() {
     LoginScreen(
-        onLoggedIn = { },
+        onEvent = { },
+        uiState = LoginUiState(isLoading = false)
     )
 }

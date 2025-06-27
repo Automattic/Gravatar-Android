@@ -12,6 +12,7 @@ dependencies {
     implementation(project(":loginUi"))
     implementation(project(":analytics"))
     implementation(project(":foundations"))
+    implementation(project(":userComponent"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -24,6 +25,7 @@ dependencies {
     implementation(project.dependencies.platform(libs.koin.bom))
     implementation(libs.koin.core)
     implementation(libs.koin.android)
+    implementation(libs.koin.compose)
 
     testImplementation(libs.junit)
     testImplementation(libs.koin.test.junit4)

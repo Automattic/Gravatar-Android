@@ -11,4 +11,5 @@ val userComponentModule = module {
     factoryOf(::RealAuthRepository) { bind<AuthRepository>() }
     factoryOf(::WordPressClient)
     includes(httpClientModule)
+    includes(datastoreModule)
 }

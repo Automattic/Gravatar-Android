@@ -12,11 +12,10 @@ import kotlinx.serialization.Serializable
 @Composable
 internal fun HomeNavigation(
     navController: NavHostController,
-    onLoggedOut: () -> Unit
 ) {
     NavHost(navController = navController, startDestination = HomeDestination.Gravatar) {
         composable<HomeDestination.Gravatar> {
-            GravatarScreen(onLoggedOut)
+            GravatarScreen()
         }
 
         composable<HomeDestination.Profile> {

@@ -54,9 +54,6 @@ internal class LoginViewModel(
             )
 
             authRepository.login(loginRequest)
-                .onSuccess {
-                    sendAction(LoginAction.UserLoggedIn)
-                }
                 .onFailure { error ->
                     sendAction(LoginAction.ShowError)
                 }
@@ -82,6 +79,5 @@ internal sealed class LoginEvent {
 }
 
 internal sealed class LoginAction {
-    data object UserLoggedIn : LoginAction()
     data object ShowError : LoginAction()
 }
