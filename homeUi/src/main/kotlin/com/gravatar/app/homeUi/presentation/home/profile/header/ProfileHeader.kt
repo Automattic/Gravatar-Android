@@ -1,4 +1,4 @@
-package com.gravatar.app.homeUi.presentation.home.profile
+package com.gravatar.app.homeUi.presentation.home.profile.header
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

@@ -1,0 +1,61 @@
+package com.gravatar.app.homeUi.presentation.home.profile.about
+
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.Modifier
+import com.gravatar.app.testUtils.roborazzi.RoborazziTest
+import org.junit.Test
+
+class AboutSectionTest : RoborazziTest() {
+
+    @Test
+    fun aboutSection_formEnabledFalse() = screenshotTest {
+        MaterialTheme {
+            AboutSection(
+                aboutFields = setOf(
+                    AboutEditorField(
+                        type = AboutInputField.DISPLAY_NAME,
+                        value = "John Doe",
+                        maxLines = 1,
+                    ),
+                    AboutEditorField(
+                        type = AboutInputField.ABOUT_ME,
+                        value = "My description",
+                        maxLines = 3,
+                    ),
+                    AboutEditorField(
+                        type = AboutInputField.PRONUNCIATION,
+                        value = "John Doe",
+                    ),
+                    AboutEditorField(
+                        type = AboutInputField.PRONOUNS,
+                        value = "he/him",
+                    ),
+                    AboutEditorField(
+                        type = AboutInputField.LOCATION,
+                        value = "San Francisco, CA",
+                    ),
+                    AboutEditorField(
+                        type = AboutInputField.COMPANY,
+                        value = "Automattic",
+                    ),
+                    AboutEditorField(
+                        type = AboutInputField.JOB_TITLE,
+                        value = "Software Engineer",
+                    ),
+                    AboutEditorField(
+                        type = AboutInputField.FIRST_NAME,
+                        value = "John",
+                    ),
+                    AboutEditorField(
+                        type = AboutInputField.LAST_NAME,
+                        value = "Doe",
+                    ),
+                ),
+                formEnabled = false,
+                onValueChange = { },
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+    }
+}

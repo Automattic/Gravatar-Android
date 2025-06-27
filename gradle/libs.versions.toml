@@ -16,6 +16,7 @@ mockk = "1.14.2"
 roborazzi = "1.45.1"
 robolectric = "4.14.1"
 tracks = "6.0.3"
+turbine = "1.2.1"
 browser = "1.8.0"
 ktor = "3.1.3"
 kotlinCoroutines = "1.10.2"
@@ -63,6 +64,7 @@ ktor-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor"
 ktor-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
 ktor-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
