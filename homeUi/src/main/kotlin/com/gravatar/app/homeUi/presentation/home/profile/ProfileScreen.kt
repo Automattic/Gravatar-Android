@@ -40,11 +40,7 @@ internal fun ProfileScreen(uiState: ProfileUiState) {
             uiState.profile.let { profile ->
                 if (profile != null) {
                     Column {
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        ProfileHeader(profile = profile, modifier = Modifier.padding(horizontal = 16.dp))
-
-                        Spacer(modifier = Modifier.height(16.dp))
+                        ProfileHeader(profile = profile, modifier = Modifier.padding(16.dp))
 
                         Column(Modifier.verticalScroll(rememberScrollState())) {
                             AboutSection(

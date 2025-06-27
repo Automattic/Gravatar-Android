@@ -22,27 +22,27 @@ class ProfileViewModelTest {
     @get:Rule
     var coroutineTestRule = CoroutineTestRule(testDispatcher)
 
-    private val profileService = mockk<ProfileService>(relaxed = true)
+    private val profileService = mockk<ProfileService>()
 
     private lateinit var viewModel: ProfileViewModel
 
     @Test
     fun `when viewmodel is initialized and fetch profile finishes successfully then uiState contains profile`() =
         runTest {
-            val mockProfile = mockProfile()
+            val profile = profile()
 
             coEvery {
                 profileService.retrieveCatching(any<String>())
-            } returns GravatarResult.Success(mockProfile)
+            } returns GravatarResult.Success(profile)
 
             viewModel = initViewModel()
 
             viewModel.uiState.test {
                 assertEquals(ProfileUiState(isLoading = false), awaitItem())
                 assertEquals(ProfileUiState(isLoading = true), awaitItem())
-                assertEquals(ProfileUiState(isLoading = false, profile = mockProfile), awaitItem())
+                assertEquals(ProfileUiState(isLoading = false, profile = profile), awaitItem())
                 assertEquals(
-                    ProfileUiState(isLoading = false, profile = mockProfile, aboutFields = mockProfile.aboutFields()),
+                    ProfileUiState(isLoading = false, profile = profile, aboutFields = profile.aboutFields()),
                     awaitItem()
                 )
             }
@@ -51,29 +51,29 @@ class ProfileViewModelTest {
     @Test
     fun `when profile is available then aboutFields are correctly populated`() {
         // Given
-        val mockProfile = mockProfile()
+        val profile = profile()
 
         // When
-        val aboutFields = mockProfile.aboutFields()
+        val aboutFields = profile.aboutFields()
 
         // Then
         assertTrue("aboutFields should not be empty", aboutFields.isNotEmpty())
 
         // Verify all fields are correctly populated
         val displayNameField = aboutFields.find { it.type == AboutInputField.DisplayName }
-        assertEquals("DisplayName should match mock profile", mockProfile.displayName, displayNameField?.value)
+        assertEquals("DisplayName should match mock profile", profile.displayName, displayNameField?.value)
 
         val aboutMeField = aboutFields.find { it.type == AboutInputField.AboutMe }
-        assertEquals("AboutMe should match mock profile", mockProfile.description, aboutMeField?.value)
+        assertEquals("AboutMe should match mock profile", profile.description, aboutMeField?.value)
 
         val pronounsField = aboutFields.find { it.type == AboutInputField.Pronouns }
-        assertEquals("Pronouns should match mock profile", mockProfile.pronouns, pronounsField?.value)
+        assertEquals("Pronouns should match mock profile", profile.pronouns, pronounsField?.value)
 
         val pronunciationField = aboutFields.find { it.type == AboutInputField.Pronunciation }
-        assertEquals("Pronunciation should match mock profile", mockProfile.pronunciation, pronunciationField?.value)
+        assertEquals("Pronunciation should match mock profile", profile.pronunciation, pronunciationField?.value)
 
         val locationField = aboutFields.find { it.type == AboutInputField.Location }
-        assertEquals("Location should match mock profile", mockProfile.location, locationField?.value)
+        assertEquals("Location should match mock profile", profile.location, locationField?.value)
 
         val jobTitleField = aboutFields.find { it.type == AboutInputField.JobTitle }
         assertEquals("JobTitle should match mock profile", "Software Engineer", jobTitleField?.value)
@@ -82,13 +82,13 @@ class ProfileViewModelTest {
         assertEquals("Company should match mock profile", "Test Company", companyField?.value)
 
         val firstNameField = aboutFields.find { it.type == AboutInputField.FirstName }
-        assertEquals("FirstName should match mock profile", mockProfile.firstName.orEmpty(), firstNameField?.value)
+        assertEquals("FirstName should match mock profile", profile.firstName.orEmpty(), firstNameField?.value)
 
         val lastNameField = aboutFields.find { it.type == AboutInputField.LastName }
-        assertEquals("LastName should match mock profile", mockProfile.lastName.orEmpty(), lastNameField?.value)
+        assertEquals("LastName should match mock profile", profile.lastName.orEmpty(), lastNameField?.value)
     }
 
-    private fun mockProfile() = Profile {
+    private fun profile() = Profile {
         hash = "mock-hash"
         displayName = "John Doe"
         profileUrl = URI("https://www.gravatar.com/mock-hash")

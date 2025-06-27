@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class ProfileViewModel(private val profileService: ProfileService) : ViewModel() {
+internal class ProfileViewModel(private val profileService: ProfileService) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
     internal val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
