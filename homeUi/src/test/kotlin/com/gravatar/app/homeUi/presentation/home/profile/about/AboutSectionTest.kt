@@ -14,41 +14,41 @@ class AboutSectionTest : RoborazziTest() {
             AboutSection(
                 aboutFields = setOf(
                     AboutEditorField(
-                        type = AboutInputField.DisplayName,
+                        type = AboutInputField.DISPLAY_NAME,
                         value = "John Doe",
                         maxLines = 1,
                     ),
                     AboutEditorField(
-                        type = AboutInputField.AboutMe,
+                        type = AboutInputField.ABOUT_ME,
                         value = "My description",
                         maxLines = 3,
                     ),
                     AboutEditorField(
-                        type = AboutInputField.Pronunciation,
+                        type = AboutInputField.PRONUNCIATION,
                         value = "John Doe",
                     ),
                     AboutEditorField(
-                        type = AboutInputField.Pronouns,
+                        type = AboutInputField.PRONOUNS,
                         value = "he/him",
                     ),
                     AboutEditorField(
-                        type = AboutInputField.Location,
+                        type = AboutInputField.LOCATION,
                         value = "San Francisco, CA",
                     ),
                     AboutEditorField(
-                        type = AboutInputField.Company,
+                        type = AboutInputField.COMPANY,
                         value = "Automattic",
                     ),
                     AboutEditorField(
-                        type = AboutInputField.JobTitle,
+                        type = AboutInputField.JOB_TITLE,
                         value = "Software Engineer",
                     ),
                     AboutEditorField(
-                        type = AboutInputField.FirstName,
+                        type = AboutInputField.FIRST_NAME,
                         value = "John",
                     ),
                     AboutEditorField(
-                        type = AboutInputField.LastName,
+                        type = AboutInputField.LAST_NAME,
                         value = "Doe",
                     ),
                 ),

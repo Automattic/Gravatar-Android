@@ -60,31 +60,31 @@ class ProfileViewModelTest {
         assertTrue("aboutFields should not be empty", aboutFields.isNotEmpty())
 
         // Verify all fields are correctly populated
-        val displayNameField = aboutFields.find { it.type == AboutInputField.DisplayName }
+        val displayNameField = aboutFields.find { it.type == AboutInputField.DISPLAY_NAME }
         assertEquals("DisplayName should match mock profile", profile.displayName, displayNameField?.value)
 
-        val aboutMeField = aboutFields.find { it.type == AboutInputField.AboutMe }
+        val aboutMeField = aboutFields.find { it.type == AboutInputField.ABOUT_ME }
         assertEquals("AboutMe should match mock profile", profile.description, aboutMeField?.value)
 
-        val pronounsField = aboutFields.find { it.type == AboutInputField.Pronouns }
+        val pronounsField = aboutFields.find { it.type == AboutInputField.PRONOUNS }
         assertEquals("Pronouns should match mock profile", profile.pronouns, pronounsField?.value)
 
-        val pronunciationField = aboutFields.find { it.type == AboutInputField.Pronunciation }
+        val pronunciationField = aboutFields.find { it.type == AboutInputField.PRONUNCIATION }
         assertEquals("Pronunciation should match mock profile", profile.pronunciation, pronunciationField?.value)
 
-        val locationField = aboutFields.find { it.type == AboutInputField.Location }
+        val locationField = aboutFields.find { it.type == AboutInputField.LOCATION }
         assertEquals("Location should match mock profile", profile.location, locationField?.value)
 
-        val jobTitleField = aboutFields.find { it.type == AboutInputField.JobTitle }
+        val jobTitleField = aboutFields.find { it.type == AboutInputField.JOB_TITLE }
         assertEquals("JobTitle should match mock profile", "Software Engineer", jobTitleField?.value)
 
-        val companyField = aboutFields.find { it.type == AboutInputField.Company }
+        val companyField = aboutFields.find { it.type == AboutInputField.COMPANY }
         assertEquals("Company should match mock profile", "Test Company", companyField?.value)
 
-        val firstNameField = aboutFields.find { it.type == AboutInputField.FirstName }
+        val firstNameField = aboutFields.find { it.type == AboutInputField.FIRST_NAME }
         assertEquals("FirstName should match mock profile", profile.firstName.orEmpty(), firstNameField?.value)
 
-        val lastNameField = aboutFields.find { it.type == AboutInputField.LastName }
+        val lastNameField = aboutFields.find { it.type == AboutInputField.LAST_NAME }
         assertEquals("LastName should match mock profile", profile.lastName.orEmpty(), lastNameField?.value)
     }
 

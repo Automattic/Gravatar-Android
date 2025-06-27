@@ -63,11 +63,11 @@ private fun AboutFieldsSectionPreview() {
             "Web Profile, but other apps and services can use it.",
         fields = setOf(
             AboutEditorField(
-                type = AboutInputField.FirstName,
+                type = AboutInputField.FIRST_NAME,
                 value = "John",
             ),
             AboutEditorField(
-                type = AboutInputField.LastName,
+                type = AboutInputField.LAST_NAME,
                 value = "Doe",
             ),
         ),

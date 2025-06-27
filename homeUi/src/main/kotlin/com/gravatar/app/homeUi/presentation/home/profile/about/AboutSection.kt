@@ -52,22 +52,27 @@ internal fun AboutSection(
 
 internal val AboutEditorField.labelRes: Int
     @StringRes get() = when (this.type) {
-        AboutInputField.AboutMe -> R.string.about_field_label_about_me
-        AboutInputField.DisplayName -> R.string.about_field_label_display_name
-        AboutInputField.Location -> R.string.about_field_label_location
-        AboutInputField.Pronouns -> R.string.about_field_label_pronouns
-        AboutInputField.Pronunciation -> R.string.about_field_label_pronunciation
-        AboutInputField.Company -> R.string.about_field_label_company
-        AboutInputField.JobTitle -> R.string.about_field_label_job_title
-        AboutInputField.FirstName -> R.string.about_field_label_first_name
-        AboutInputField.LastName -> R.string.about_field_label_last_name
-        else -> R.string.about_field_label_display_name
+        AboutInputField.ABOUT_ME -> R.string.about_field_label_about_me
+        AboutInputField.DISPLAY_NAME -> R.string.about_field_label_display_name
+        AboutInputField.LOCATION -> R.string.about_field_label_location
+        AboutInputField.PRONOUNS -> R.string.about_field_label_pronouns
+        AboutInputField.PRONUNCIATION -> R.string.about_field_label_pronunciation
+        AboutInputField.COMPANY -> R.string.about_field_label_company
+        AboutInputField.JOB_TITLE -> R.string.about_field_label_job_title
+        AboutInputField.FIRST_NAME -> R.string.about_field_label_first_name
+        AboutInputField.LAST_NAME -> R.string.about_field_label_last_name
     }
 
 internal val AboutEditorField.descriptionRes: Int?
     @StringRes get() = when (this.type) {
         else -> null
     }
+
+internal enum class Section {
+    NAME,
+    PROFESSIONAL,
+    ABOUT,
+}
 
 @Preview(showBackground = true)
 @Composable
@@ -76,41 +81,41 @@ internal fun AboutSectionPreview() {
         AboutSection(
             aboutFields = setOf(
                 AboutEditorField(
-                    type = AboutInputField.DisplayName,
+                    type = AboutInputField.DISPLAY_NAME,
                     value = "John Doe",
                     maxLines = 1,
                 ),
                 AboutEditorField(
-                    type = AboutInputField.AboutMe,
+                    type = AboutInputField.ABOUT_ME,
                     value = "My description",
                     maxLines = 3,
                 ),
                 AboutEditorField(
-                    type = AboutInputField.Pronunciation,
+                    type = AboutInputField.PRONUNCIATION,
                     value = "John Doe",
                 ),
                 AboutEditorField(
-                    type = AboutInputField.Pronouns,
+                    type = AboutInputField.PRONOUNS,
                     value = "he/him",
                 ),
                 AboutEditorField(
-                    type = AboutInputField.Location,
+                    type = AboutInputField.LOCATION,
                     value = "San Francisco, CA",
                 ),
                 AboutEditorField(
-                    type = AboutInputField.Company,
+                    type = AboutInputField.COMPANY,
                     value = "Automattic",
                 ),
                 AboutEditorField(
-                    type = AboutInputField.JobTitle,
+                    type = AboutInputField.JOB_TITLE,
                     value = "Software Engineer",
                 ),
                 AboutEditorField(
-                    type = AboutInputField.FirstName,
+                    type = AboutInputField.FIRST_NAME,
                     value = "John",
                 ),
                 AboutEditorField(
-                    type = AboutInputField.LastName,
+                    type = AboutInputField.LAST_NAME,
                     value = "Doe",
                 ),
             ),

@@ -62,24 +62,23 @@ internal class ProfileViewModel(private val profileService: ProfileService) : Vi
 }
 
 internal fun Profile.aboutFields(): Set<AboutEditorField> {
-    return AboutInputField.all
+    return AboutInputField.entries
         .map {
             AboutEditorField(
                 type = it,
                 value = when (it) {
-                    AboutInputField.DisplayName -> displayName
-                    AboutInputField.AboutMe -> description
-                    AboutInputField.Pronouns -> pronouns
-                    AboutInputField.Pronunciation -> pronunciation
-                    AboutInputField.Location -> location
-                    AboutInputField.JobTitle -> jobTitle
-                    AboutInputField.Company -> company
-                    AboutInputField.FirstName -> firstName.orEmpty()
-                    AboutInputField.LastName -> lastName.orEmpty()
-                    else -> ""
+                    AboutInputField.DISPLAY_NAME -> displayName
+                    AboutInputField.ABOUT_ME -> description
+                    AboutInputField.PRONOUNS -> pronouns
+                    AboutInputField.PRONUNCIATION -> pronunciation
+                    AboutInputField.LOCATION -> location
+                    AboutInputField.JOB_TITLE -> jobTitle
+                    AboutInputField.COMPANY -> company
+                    AboutInputField.FIRST_NAME -> firstName.orEmpty()
+                    AboutInputField.LAST_NAME -> lastName.orEmpty()
                 },
                 maxLines = when (it) {
-                    AboutInputField.AboutMe -> 4
+                    AboutInputField.ABOUT_ME -> 4
                     else -> 1
                 },
             )
