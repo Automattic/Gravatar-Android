@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.gravatar.app.homeUi.navigation.HomeDestination
@@ -19,6 +20,15 @@ import com.gravatar.app.homeUi.navigation.HomeNavigation
 
 @Composable
 fun HomeScreen() {
+    HomeScreen { navController ->
+        HomeNavigation(navController)
+    }
+}
+
+@Composable
+internal fun HomeScreen(
+    content: @Composable (NavHostController) -> Unit
+) {
     val navController = rememberNavController()
     val backStackEntry = navController.currentBackStackEntryAsState()
 
@@ -53,7 +63,7 @@ fun HomeScreen() {
         Surface(
             modifier = Modifier.padding(innerPadding)
         ) {
-            HomeNavigation(navController)
+            content(navController)
         }
     }
 }
