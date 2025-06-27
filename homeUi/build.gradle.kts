@@ -10,6 +10,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":userComponent"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.ui)

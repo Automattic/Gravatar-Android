@@ -18,9 +18,7 @@ import com.gravatar.app.homeUi.navigation.HomeDestination
 import com.gravatar.app.homeUi.navigation.HomeNavigation
 
 @Composable
-fun HomeScreen(
-    onLoggedOut: () -> Unit,
-) {
+fun HomeScreen() {
     val navController = rememberNavController()
     val backStackEntry = navController.currentBackStackEntryAsState()
 
@@ -55,7 +53,7 @@ fun HomeScreen(
         Surface(
             modifier = Modifier.padding(innerPadding)
         ) {
-            HomeNavigation(navController, onLoggedOut)
+            HomeNavigation(navController)
         }
     }
 }
@@ -63,7 +61,5 @@ fun HomeScreen(
 @Preview
 @Composable
 private fun HomeScreenPreview() {
-    HomeScreen(
-        onLoggedOut = { }
-    )
+    HomeScreen()
 }

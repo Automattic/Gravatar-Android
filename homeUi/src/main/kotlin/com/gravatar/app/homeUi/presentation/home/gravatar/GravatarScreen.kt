@@ -6,11 +6,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.gravatar.app.usercomponent.domain.repository.AuthRepository
+import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 @Composable
-fun GravatarScreen(onLoggedOut: () -> Unit) {
+fun GravatarScreen() {
+    val scope = rememberCoroutineScope()
+    val authRepository = koinInject<AuthRepository>()
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -18,7 +24,11 @@ fun GravatarScreen(onLoggedOut: () -> Unit) {
     ) {
         Text("Gravatar Screen")
         Button(
-            onClick = onLoggedOut
+            onClick = {
+                scope.launch {
+                    authRepository.logout()
+                }
+            }
         ) {
             Text("Log out")
         }
