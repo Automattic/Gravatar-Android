@@ -136,6 +136,25 @@ class RealUserRepositoryTest {
         coVerify(exactly = 0) { profileService.retrieveAuthenticatedCatching(any()) }
     }
 
+    @Test
+    fun `getProfile should return failure when retrieveAuthenticatedCatching returns null profile`() = runTest {
+        // Given
+        tokenStorage.save(testToken)
+        val profileResult = mockk<GravatarResult<Profile, ErrorType>>()
+        coEvery { profileResult.valueOrNull() } returns null
+        coEvery { profileService.retrieveAuthenticatedCatching(testToken) } returns profileResult
+
+        // When
+        val result = repository.getProfile()
+
+        // Then
+        assertTrue(result.isFailure)
+        val exception = result.exceptionOrNull()
+        assertTrue(exception is IllegalStateException)
+        assertEquals("Failed to retrieve profile", exception?.message)
+        coVerify { profileService.retrieveAuthenticatedCatching(testToken) }
+    }
+
     private fun createTestProfile(): Profile {
         return Profile {
             hash = testHash
