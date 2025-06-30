@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.dp
 import com.gravatar.app.homeUi.R
 import com.gravatar.app.homeUi.presentation.home.gravatar.AvatarUi
 import com.gravatar.restapi.models.Avatar
-import com.gravatar.ui.GravatarTheme
 import java.net.URI
 
 internal fun LazyGridScope.avatarsGridSection(

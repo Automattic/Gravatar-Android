@@ -97,7 +97,8 @@ class RealUserRepositoryTest {
         coVerify(exactly = 0) {
             avatarService.retrieveCatching(
                 any(),
-                match { it.toString() == testHash })
+                match { it.toString() == testHash }
+            )
         }
     }
 
