@@ -39,7 +39,6 @@ class GravatarViewModelTest {
         viewModel.uiState.test {
             assertEquals(GravatarUiState(), awaitItem())
             assertEquals(GravatarUiState(isLoading = true), awaitItem())
-            assertEquals(GravatarUiState(isLoading = true, avatars = avatars), awaitItem())
             assertEquals(GravatarUiState(isLoading = false, avatars = avatars), awaitItem())
         }
         coVerify { userRepository.getAvatars() }
@@ -63,10 +62,6 @@ class GravatarViewModelTest {
         viewModel.uiState.test {
             expectMostRecentItem()
             assertEquals(GravatarUiState(isRefreshing = true, avatars = avatars), awaitItem())
-            assertEquals(
-                GravatarUiState(isRefreshing = true, avatars = refreshedAvatars),
-                awaitItem()
-            )
             assertEquals(
                 GravatarUiState(isRefreshing = false, avatars = refreshedAvatars),
                 awaitItem()
