@@ -3,7 +3,6 @@
     <string name="home_screen_navigation_item_gravatar">Gravatar</string>
     <string name="home_screen_navigation_item_share">Share</string>
     <string name="home_screen_navigation_item_profile">Profile</string>
-
     <string name="about_field_label_first_name">First</string>
     <string name="about_field_label_last_name">Last</string>
     <string name="about_field_label_display_name">Display</string>
@@ -16,4 +15,6 @@
     <string name="about_field_section_label_name">Name</string>
     <string name="about_field_section_label_professional">Professional</string>
     <string name="about_field_section_label_about">About</string>
+    <string name="gravatar_tab_previous_avatars">Previous Avatars</string>
+    <string name="gravatar_tab_tap_for_options">Tap for options</string>
 </resources>
