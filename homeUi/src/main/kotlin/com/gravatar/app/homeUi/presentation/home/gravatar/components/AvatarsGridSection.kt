@@ -68,8 +68,8 @@ internal fun LazyGridScope.avatarsGridSection(
 
 @Composable
 @Preview(showBackground = true)
-private fun VerticalAvatarSectionPreview() {
-    GravatarTheme {
+private fun AvatarsGridSectionPreview() {
+    MaterialTheme {
         Box(
             modifier = Modifier.padding(10.dp),
         ) {
@@ -103,8 +103,8 @@ private fun VerticalAvatarSectionPreview() {
 
 @Composable
 @Preview(showBackground = true)
-private fun VerticalAvatarSectionEmptyPreview() {
-    GravatarTheme {
+private fun AvatarsGridSectionEmptyPreview() {
+    MaterialTheme {
         Box(
             modifier = Modifier.padding(10.dp),
         ) {

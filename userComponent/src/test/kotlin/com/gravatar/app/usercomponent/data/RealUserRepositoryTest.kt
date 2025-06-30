@@ -63,7 +63,7 @@ class RealUserRepositoryTest {
             // Mock avatar service
             val avatarResult = GravatarResult.Success<List<Avatar>, ErrorType>(avatars)
             coEvery {
-                avatarService.retrieveCatching(testToken, any<Hash>())
+                avatarService.retrieveCatching(testToken, match { it.toString() == testHash })
             } returns avatarResult
 
             // When
@@ -94,7 +94,11 @@ class RealUserRepositoryTest {
 
         // Verify no interactions with services
         coVerify(exactly = 0) { profileService.retrieveAuthenticatedCatching(any()) }
-        coVerify(exactly = 0) { avatarService.retrieveCatching(any(), any()) }
+        coVerify(exactly = 0) {
+            avatarService.retrieveCatching(
+                any(),
+                match { it.toString() == testHash })
+        }
     }
 
     private fun createTestProfile(): Profile {

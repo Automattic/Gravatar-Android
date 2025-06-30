@@ -37,17 +37,21 @@ internal class GravatarViewModel(
             userRepository.getAvatars()
                 .onSuccess { avatars ->
                     _uiState.update { currentState ->
-                        currentState.copy(avatars = avatars)
+                        currentState.copy(
+                            avatars = avatars,
+                            isRefreshing = false,
+                            isLoading = false,
+                        )
                     }
                 }
                 .onFailure {
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            isRefreshing = false,
+                            isLoading = false,
+                        )
+                    }
                 }
-            _uiState.update { currentState ->
-                currentState.copy(
-                    isRefreshing = false,
-                    isLoading = false
-                )
-            }
         }
     }
 }
