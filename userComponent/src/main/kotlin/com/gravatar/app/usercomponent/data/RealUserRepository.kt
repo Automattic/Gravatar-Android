@@ -2,6 +2,7 @@ package com.gravatar.app.usercomponent.data
 
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import com.gravatar.restapi.models.Avatar
+import com.gravatar.restapi.models.Profile
 import com.gravatar.services.AvatarService
 import com.gravatar.services.ProfileService
 import com.gravatar.types.Hash
@@ -28,6 +29,20 @@ internal class RealUserRepository(
                 Result.success(avatars)
             } else {
                 Result.failure(IllegalStateException("Failed to retrieve avatars"))
+            }
+        } else {
+            Result.failure(IllegalStateException("User is not logged in"))
+        }
+    }
+
+    override suspend fun getProfile(): Result<Profile> {
+        val token = tokenStorage.get().first()
+        return if (token != null) {
+            val profile = profileService.retrieveAuthenticatedCatching(token).valueOrNull()
+            if (profile != null) {
+                Result.success(profile)
+            } else {
+                Result.failure(IllegalStateException("Failed to retrieve profile"))
             }
         } else {
             Result.failure(IllegalStateException("User is not logged in"))

@@ -102,6 +102,40 @@ class RealUserRepositoryTest {
         }
     }
 
+    @Test
+    fun `getProfile should return success when user is logged in and service returns success`() =
+        runTest {
+            // Given
+            val profile = createTestProfile()
+            tokenStorage.save(testToken)
+            val profileResult = GravatarResult.Success<Profile, ErrorType>(profile)
+            coEvery { profileService.retrieveAuthenticatedCatching(testToken) } returns profileResult
+
+            // When
+            val result = repository.getProfile()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(profile, result.getOrNull())
+            coVerify { profileService.retrieveAuthenticatedCatching(testToken) }
+        }
+
+    @Test
+    fun `getProfile should return failure when user is not logged in`() = runTest {
+        // Given
+        tokenStorage.clear()
+
+        // When
+        val result = repository.getProfile()
+
+        // Then
+        assertTrue(result.isFailure)
+        val exception = result.exceptionOrNull()
+        assertTrue(exception is IllegalStateException)
+        assertEquals("User is not logged in", exception?.message)
+        coVerify(exactly = 0) { profileService.retrieveAuthenticatedCatching(any()) }
+    }
+
     private fun createTestProfile(): Profile {
         return Profile {
             hash = testHash
