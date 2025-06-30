@@ -20,4 +20,5 @@
     <string name="about_field_section_label_contact">Contact</string>
     <string name="gravatar_tab_previous_avatars">Previous Avatars</string>
     <string name="gravatar_tab_tap_for_options">Tap for options</string>
+    <string name="picker_submenu_icon_description">Expand</string>
 </resources>

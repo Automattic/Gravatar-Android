@@ -1,6 +1,7 @@
 package com.gravatar.app.homeUi.presentation.home.gravatar.components
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,11 +9,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.gravatar.app.homeUi.presentation.home.gravatar.AvatarUi
 import com.gravatar.ui.components.ComponentState
@@ -26,6 +33,7 @@ internal fun SelectableAvatar(
     avatar: AvatarUi,
     size: Dp,
     modifier: Modifier,
+    onAvatarOptionClicked: ((AvatarOption) -> Unit)? = null,
 ) {
     when (avatar) {
         is AvatarUi.Uploaded -> {
@@ -34,6 +42,7 @@ internal fun SelectableAvatar(
                 imageUrl = avatar.imageUrlWithSize(sizePx),
                 isSelected = avatar.isSelected,
                 modifier = modifier,
+                onAvatarOptionClicked = onAvatarOptionClicked,
             )
         }
     }
@@ -44,16 +53,21 @@ private fun SelectableAvatar(
     imageUrl: String,
     isSelected: Boolean,
     modifier: Modifier = Modifier,
+    onAvatarOptionClicked: ((AvatarOption) -> Unit)? = null,
 ) {
     val cornerRadius = 8.dp
+    var moreOptionsPopupVisible by remember { mutableStateOf(false) }
     Box(
         modifier = modifier
             .aspectRatio(1f)
+            .clickable {
+                moreOptionsPopupVisible = true
+            }
             .then(
                 if (isSelected) {
                     Modifier.border(
                         4.dp,
-                        MaterialTheme.colorScheme.primary,
+                        MaterialTheme.colorScheme.onSurface,
                         RoundedCornerShape(cornerRadius)
                     )
                 } else {
@@ -72,6 +86,17 @@ private fun SelectableAvatar(
                 .fillMaxSize()
                 .clip(RoundedCornerShape(cornerRadius)),
         )
+        if (moreOptionsPopupVisible) {
+            AvatarMoreOptionsPickerPopup(
+                anchorAlignment = Alignment.Start,
+                offset = DpOffset(0.dp, 10.dp),
+                onDismissRequest = { moreOptionsPopupVisible = false },
+                onAvatarOptionClicked = { avatarOption ->
+                    moreOptionsPopupVisible = false
+                    onAvatarOptionClicked?.let { it(avatarOption) }
+                },
+            )
+        }
     }
 }
 

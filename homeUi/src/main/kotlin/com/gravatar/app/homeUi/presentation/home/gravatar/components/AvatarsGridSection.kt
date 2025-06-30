@@ -26,6 +26,7 @@ import java.net.URI
 
 internal fun LazyGridScope.avatarsGridSection(
     avatars: List<AvatarUi>,
+    onAvatarOptionClicked: ((AvatarOption) -> Unit)? = null,
 ) {
     item(
         span = { GridItemSpan((maxLineSpan)) },
@@ -60,6 +61,7 @@ internal fun LazyGridScope.avatarsGridSection(
                 avatar = avatarModel,
                 size = avatarSize,
                 modifier = Modifier,
+                onAvatarOptionClicked = onAvatarOptionClicked,
             )
         }
     }
