@@ -4,6 +4,7 @@ import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import com.gravatar.restapi.models.Avatar
 import com.gravatar.restapi.models.Profile
 import com.gravatar.services.AvatarService
+import com.gravatar.services.GravatarResult
 import com.gravatar.services.ProfileService
 import com.gravatar.types.Hash
 import kotlinx.coroutines.flow.first
@@ -13,6 +14,28 @@ internal class RealUserRepository(
     private val profileService: ProfileService,
     private val tokenStorage: AuthTokenStorage,
 ) : UserRepository {
+
+    override suspend fun selectAvatar(avatarId: String): Result<Unit> {
+        val token = tokenStorage.get().first()
+        return if (token != null) {
+            val result = profileService.retrieveAuthenticatedCatching(token)
+                .valueOrNull()
+                ?.let { profile ->
+                    avatarService.setAvatarCatching(
+                        oauthToken = token,
+                        hash = profile.hash,
+                        avatarId = avatarId,
+                    )
+                }
+            if (result is GravatarResult.Success) {
+                Result.success(Unit)
+            } else {
+                Result.failure(IllegalStateException("Failed to select avatar"))
+            }
+        } else {
+            Result.failure(IllegalStateException("User is not logged in"))
+        }
+    }
 
     override suspend fun getAvatars(): Result<List<Avatar>> {
         val token = tokenStorage.get().first()

@@ -1,6 +1,5 @@
 package com.gravatar.app.homeUi.presentation.home.gravatar
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,9 +19,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.gravatar.app.homeUi.presentation.home.gravatar.components.AvatarOption
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.avatarSize
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.avatarsGridSection
 import com.gravatar.restapi.models.Avatar
@@ -47,7 +46,6 @@ internal fun GravatarScreen(
     uiState: GravatarUiState,
     onEvent: (GravatarEvent) -> Unit = {},
 ) {
-    val context = LocalContext.current
     Surface(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -82,9 +80,12 @@ internal fun GravatarScreen(
                 } else {
                     avatarsGridSection(
                         avatars = uiState.avatarsUi,
-                        onAvatarOptionClicked = { option ->
-                            Toast.makeText(context, "Selected option: $option", Toast.LENGTH_SHORT)
-                                .show()
+                        onAvatarOptionClicked = { avatar, option ->
+                            when (option) {
+                                AvatarOption.Select -> {
+                                    onEvent(GravatarEvent.OnAvatarSelected(avatar.imageId))
+                                }
+                            }
                         }
                     )
                 }

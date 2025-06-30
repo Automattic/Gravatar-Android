@@ -23,6 +23,31 @@ internal class GravatarViewModel(
     fun onEvent(event: GravatarEvent) {
         when (event) {
             GravatarEvent.Refresh -> fetchAvatars(isRefreshing = true)
+            is GravatarEvent.OnAvatarSelected -> selectAvatar(event.avatarId)
+        }
+    }
+
+    private fun selectAvatar(avatarId: String) {
+        viewModelScope.launch {
+            _uiState.update { currentState ->
+                currentState.copy(selectingAvatarId = avatarId)
+            }
+            userRepository.selectAvatar(avatarId)
+                .onSuccess {
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            selectingAvatarId = null,
+                            selectedAvatarId = avatarId,
+                        )
+                    }
+                }
+                .onFailure {
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            selectingAvatarId = null,
+                        )
+                    }
+                }
         }
     }
 
@@ -39,6 +64,7 @@ internal class GravatarViewModel(
                     _uiState.update { currentState ->
                         currentState.copy(
                             avatars = avatars,
+                            selectedAvatarId = avatars.firstOrNull { it.selected == true }?.imageId,
                             isRefreshing = false,
                             isLoading = false,
                         )
