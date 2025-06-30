@@ -4,44 +4,40 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gravatar.app.homeUi.presentation.home.profile.about.AboutEditorField
 import com.gravatar.app.homeUi.presentation.home.profile.about.AboutInputField
+import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import com.gravatar.restapi.models.Profile
-import com.gravatar.services.GravatarResult
-import com.gravatar.services.ProfileService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class ProfileViewModel(private val profileService: ProfileService) : ViewModel() {
+internal class ProfileViewModel(private val userRepository: UserRepository) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
     internal val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
     init {
-        // -> Remove the hardcoded username <-
-        fetchProfile("hamorillo")
+        fetchProfile()
     }
 
-    private fun fetchProfile(username: String) {
+    private fun fetchProfile() {
         viewModelScope.launch {
             _uiState.update { currentState -> currentState.copy(isLoading = true) }
-            when (val result = profileService.retrieveCatching(hashOrUsername = username)) {
-                is GravatarResult.Success -> {
+            userRepository.getProfile()
+                .onSuccess { profile ->
                     _uiState.update { currentState ->
                         currentState.copy(
                             isLoading = false,
-                            profile = result.value,
+                            profile = profile,
                         )
                     }
                 }
-
-                is GravatarResult.Failure -> {
+                .onFailure {
                     _uiState.update { currentState ->
                         currentState.copy(isLoading = false, profile = null)
                     }
                 }
-            }
         }
     }
 }
