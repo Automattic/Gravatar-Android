@@ -9,40 +9,10 @@ import org.junit.Test
 class AboutSectionTest : RoborazziTest() {
 
     @Test
-    fun aboutSection_formEnabledFalse() = screenshotTest {
+    fun aboutSection_nameSection_formEnabledFalse() = screenshotTest {
         MaterialTheme {
             AboutSection(
                 aboutFields = setOf(
-                    AboutEditorField(
-                        type = AboutInputField.DISPLAY_NAME,
-                        value = "John Doe",
-                        maxLines = 1,
-                    ),
-                    AboutEditorField(
-                        type = AboutInputField.ABOUT_ME,
-                        value = "My description",
-                        maxLines = 3,
-                    ),
-                    AboutEditorField(
-                        type = AboutInputField.PRONUNCIATION,
-                        value = "John Doe",
-                    ),
-                    AboutEditorField(
-                        type = AboutInputField.PRONOUNS,
-                        value = "he/him",
-                    ),
-                    AboutEditorField(
-                        type = AboutInputField.LOCATION,
-                        value = "San Francisco, CA",
-                    ),
-                    AboutEditorField(
-                        type = AboutInputField.COMPANY,
-                        value = "Automattic",
-                    ),
-                    AboutEditorField(
-                        type = AboutInputField.JOB_TITLE,
-                        value = "Software Engineer",
-                    ),
                     AboutEditorField(
                         type = AboutInputField.FIRST_NAME,
                         value = "John",
@@ -52,8 +22,106 @@ class AboutSectionTest : RoborazziTest() {
                         value = "Doe",
                     ),
                     AboutEditorField(
+                        type = AboutInputField.DISPLAY_NAME,
+                        value = "John Doe",
+                        maxLines = 1,
+                    ),
+                    AboutEditorField(
+                        type = AboutInputField.PRONUNCIATION,
+                        value = "John Doe",
+                    ),
+                    AboutEditorField(
+                        type = AboutInputField.PRONOUNS,
+                        value = "he/him",
+                    ),
+                ),
+                formEnabled = false,
+                onValueChange = { },
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+    }
+
+    @Test
+    fun aboutSection_professionalSection_formEnabledFalse() = screenshotTest {
+        MaterialTheme {
+            AboutSection(
+                aboutFields = setOf(
+                    AboutEditorField(
+                        type = AboutInputField.JOB_TITLE,
+                        value = "Software Engineer",
+                    ),
+                    AboutEditorField(
+                        type = AboutInputField.COMPANY,
+                        value = "Automattic",
+                    ),
+                ),
+                formEnabled = false,
+                onValueChange = { },
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+    }
+
+    @Test
+    fun aboutSection_aboutSection_formEnabledFalse() = screenshotTest {
+        MaterialTheme {
+            AboutSection(
+                aboutFields = setOf(
+                    AboutEditorField(
+                        type = AboutInputField.ABOUT_ME,
+                        value = "My description",
+                        maxLines = 3,
+                    ),
+                    AboutEditorField(
+                        type = AboutInputField.LOCATION,
+                        value = "San Francisco, CA",
+                    ),
+                ),
+                formEnabled = false,
+                onValueChange = { },
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+    }
+
+    @Test
+    fun aboutSection_contactSection_formEnabledFalse() = screenshotTest {
+        MaterialTheme {
+            AboutSection(
+                aboutFields = setOf(
+                    AboutEditorField(
                         type = AboutInputField.CELL_PHONE,
                         value = "123-456-7890",
+                    ),
+                    AboutEditorField(
+                        type = AboutInputField.CONTACT_EMAIL,
+                        value = "gravatar@automattic.com",
+                    ),
+                ),
+                formEnabled = false,
+                onValueChange = { },
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+    }
+
+    @Test
+    fun aboutSection_mixSections_formEnabledFalse() = screenshotTest {
+        MaterialTheme {
+            AboutSection(
+                aboutFields = setOf(
+                    AboutEditorField(
+                        type = AboutInputField.FIRST_NAME,
+                        value = "John",
+                    ),
+                    AboutEditorField(
+                        type = AboutInputField.JOB_TITLE,
+                        value = "Software Engineer",
+                    ),
+                    AboutEditorField(
+                        type = AboutInputField.LOCATION,
+                        value = "San Francisco, CA",
                     ),
                     AboutEditorField(
                         type = AboutInputField.CONTACT_EMAIL,
