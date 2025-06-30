@@ -3,9 +3,9 @@ package com.gravatar.app.homeUi.presentation.home.profile
 import app.cash.turbine.test
 import com.gravatar.app.homeUi.presentation.home.profile.about.AboutInputField
 import com.gravatar.app.testUtils.CoroutineTestRule
+import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import com.gravatar.restapi.models.Profile
-import com.gravatar.services.GravatarResult
-import com.gravatar.services.ProfileService
+import com.gravatar.restapi.models.ProfileContactInfo
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -22,7 +22,7 @@ class ProfileViewModelTest {
     @get:Rule
     var coroutineTestRule = CoroutineTestRule(testDispatcher)
 
-    private val profileService = mockk<ProfileService>()
+    private val userRepository = mockk<UserRepository>()
 
     private lateinit var viewModel: ProfileViewModel
 
@@ -32,8 +32,8 @@ class ProfileViewModelTest {
             val profile = profile()
 
             coEvery {
-                profileService.retrieveCatching(any<String>())
-            } returns GravatarResult.Success(profile)
+                userRepository.getProfile()
+            } returns Result.success(profile)
 
             viewModel = initViewModel()
 
@@ -42,6 +42,27 @@ class ProfileViewModelTest {
                 assertEquals(ProfileUiState(isLoading = true), awaitItem())
                 assertEquals(
                     ProfileUiState(isLoading = false, profile = profile),
+                    awaitItem()
+                )
+            }
+        }
+
+    @Test
+    fun `when viewmodel is initialized and fetch profile fails then uiState has no profile`() =
+        runTest {
+            val exception = IllegalStateException("Failed to retrieve profile")
+
+            coEvery {
+                userRepository.getProfile()
+            } returns Result.failure(exception)
+
+            viewModel = initViewModel()
+
+            viewModel.uiState.test {
+                assertEquals(ProfileUiState(isLoading = false), awaitItem())
+                assertEquals(ProfileUiState(isLoading = true), awaitItem())
+                assertEquals(
+                    ProfileUiState(isLoading = false, profile = null),
                     awaitItem()
                 )
             }
@@ -85,6 +106,12 @@ class ProfileViewModelTest {
 
         val lastNameField = aboutFields.find { it.type == AboutInputField.LAST_NAME }
         assertEquals("LastName should match mock profile", profile.lastName.orEmpty(), lastNameField?.value)
+
+        val cellPhoneField = aboutFields.find { it.type == AboutInputField.CELL_PHONE }
+        assertEquals("CellPhone should match mock profile", profile.contactInfo?.cellPhone, cellPhoneField?.value)
+
+        val contactEmailField = aboutFields.find { it.type == AboutInputField.CONTACT_EMAIL }
+        assertEquals("ContactEmail should match mock profile", profile.contactInfo?.email, contactEmailField?.value)
     }
 
     private fun profile() = Profile {
@@ -102,7 +129,11 @@ class ProfileViewModelTest {
         firstName = "John"
         lastName = "Doe"
         verifiedAccounts = emptyList()
+        contactInfo = ProfileContactInfo {
+            cellPhone = "123-456-7890"
+            email = "gravatar@automattic.com"
+        }
     }
 
-    private fun initViewModel() = ProfileViewModel(profileService)
+    private fun initViewModel() = ProfileViewModel(userRepository)
 }
