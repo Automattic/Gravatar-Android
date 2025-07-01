@@ -8,6 +8,7 @@ import com.gravatar.services.GravatarResult
 import com.gravatar.services.ProfileService
 import com.gravatar.types.Hash
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 
 internal class RealUserRepository(
     private val avatarService: AvatarService,
@@ -16,7 +17,7 @@ internal class RealUserRepository(
 ) : UserRepository {
 
     override suspend fun selectAvatar(avatarId: String): Result<Unit> {
-        val token = tokenStorage.get().first()
+        val token = tokenStorage.get().firstOrNull()
         return if (token != null) {
             val result = profileService.retrieveAuthenticatedCatching(token)
                 .valueOrNull()
