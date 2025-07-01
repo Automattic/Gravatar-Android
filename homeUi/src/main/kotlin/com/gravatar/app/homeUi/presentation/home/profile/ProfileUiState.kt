@@ -8,6 +8,7 @@ internal data class ProfileUiState(
     val isLoading: Boolean = false,
     val profile: Profile? = null,
     val editedAboutFields: Map<AboutInputField, String> = emptyMap(),
+    val isSavingProfile: Boolean = false,
 ) {
 
     val originalAboutFields: Set<AboutEditorField> = profile?.aboutFields() ?: emptySet()

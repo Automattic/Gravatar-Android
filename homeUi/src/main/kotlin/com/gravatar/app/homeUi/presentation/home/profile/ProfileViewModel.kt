@@ -6,6 +6,7 @@ import com.gravatar.app.homeUi.presentation.home.profile.about.AboutEditorField
 import com.gravatar.app.homeUi.presentation.home.profile.about.AboutInputField
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import com.gravatar.restapi.models.Profile
+import com.gravatar.restapi.models.UpdateProfileRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,6 +25,7 @@ internal class ProfileViewModel(private val userRepository: UserRepository) : Vi
     fun onEvent(profileEvent: ProfileEvent) {
         when (profileEvent) {
             is ProfileEvent.OnProfileFieldUpdated -> updateProfileField(profileEvent.aboutField)
+            ProfileEvent.OnSaveClicked -> saveChanges()
         }
     }
 
@@ -65,7 +67,53 @@ internal class ProfileViewModel(private val userRepository: UserRepository) : Vi
             currentState.copy(editedAboutFields = updatedEditedFields)
         }
     }
+
+    private fun saveChanges() {
+        viewModelScope.launch {
+            val currentState = _uiState.value
+            val editedFields = currentState.editedAboutFields
+
+            if (editedFields.isEmpty()) return@launch
+
+            _uiState.update { it.copy(isSavingProfile = true) }
+
+            userRepository.updateProfile(editedFields.updateProfileRequest())
+                .onSuccess { updatedProfile ->
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            isSavingProfile = false,
+                            profile = updatedProfile,
+                            editedAboutFields = emptyMap()
+                        )
+                    }
+                }
+                .onFailure {
+                    _uiState.update { currentState ->
+                        currentState.copy(isSavingProfile = false)
+                    }
+                }
+        }
+    }
 }
+
+internal fun Map<AboutInputField, String>.updateProfileRequest() =
+    UpdateProfileRequest {
+        forEach { (field, value) ->
+            when (field) {
+                AboutInputField.DISPLAY_NAME -> displayName = value
+                AboutInputField.ABOUT_ME -> description = value
+                AboutInputField.PRONOUNS -> pronouns = value
+                AboutInputField.PRONUNCIATION -> pronunciation = value
+                AboutInputField.LOCATION -> location = value
+                AboutInputField.JOB_TITLE -> jobTitle = value
+                AboutInputField.COMPANY -> company = value
+                AboutInputField.FIRST_NAME -> firstName = value
+                AboutInputField.LAST_NAME -> lastName = value
+                AboutInputField.CELL_PHONE -> cellPhone = value
+                AboutInputField.CONTACT_EMAIL -> contactEmail = value
+            }
+        }
+    }
 
 internal fun Profile.aboutFields(): Set<AboutEditorField> {
     return AboutInputField.entries

@@ -21,4 +21,5 @@
     <string name="gravatar_tab_previous_avatars">Previous Avatars</string>
     <string name="gravatar_tab_tap_for_options">Tap for options</string>
     <string name="picker_submenu_icon_description">Expand</string>
+    <string name="profile_screen_save_button">Save</string>
 </resources>

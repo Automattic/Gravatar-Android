@@ -6,4 +6,6 @@ internal sealed class ProfileEvent {
     data class OnProfileFieldUpdated(
         val aboutField: AboutEditorField,
     ) : ProfileEvent()
+
+    object OnSaveClicked : ProfileEvent()
 }

@@ -8,6 +8,7 @@ import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import com.gravatar.restapi.models.Profile
 import com.gravatar.restapi.models.ProfileContactInfo
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -181,9 +182,138 @@ class ProfileViewModelTest {
             }
         }
 
-    private fun profile() = Profile {
+    @Test
+    fun `updateProfileRequest should map all fields correctly`() {
+        // Given
+        val fieldValues = mapOf(
+            AboutInputField.DISPLAY_NAME to "Test Display Name",
+            AboutInputField.ABOUT_ME to "Test About Me",
+            AboutInputField.PRONOUNS to "Test Pronouns",
+            AboutInputField.PRONUNCIATION to "Test Pronunciation",
+            AboutInputField.LOCATION to "Test Location",
+            AboutInputField.JOB_TITLE to "Test Job Title",
+            AboutInputField.COMPANY to "Test Company",
+            AboutInputField.FIRST_NAME to "Test First Name",
+            AboutInputField.LAST_NAME to "Test Last Name",
+            AboutInputField.CELL_PHONE to "Test Cell Phone",
+            AboutInputField.CONTACT_EMAIL to "test@example.com"
+        )
+
+        // When
+        val updateRequest = fieldValues.updateProfileRequest()
+
+        // Then
+        assertEquals("Test Display Name", updateRequest.displayName)
+        assertEquals("Test About Me", updateRequest.description)
+        assertEquals("Test Pronouns", updateRequest.pronouns)
+        assertEquals("Test Pronunciation", updateRequest.pronunciation)
+        assertEquals("Test Location", updateRequest.location)
+        assertEquals("Test Job Title", updateRequest.jobTitle)
+        assertEquals("Test Company", updateRequest.company)
+        assertEquals("Test First Name", updateRequest.firstName)
+        assertEquals("Test Last Name", updateRequest.lastName)
+        assertEquals("Test Cell Phone", updateRequest.cellPhone)
+        assertEquals("test@example.com", updateRequest.contactEmail)
+    }
+
+    @Test
+    fun `when saveChanges succeeds then profile is updated and editedAboutFields are cleared`() = runTest {
+        // Given
+        val originalProfile = profile()
+        val updatedProfile = profile(displayName = "Updated Name")
+
+        coEvery {
+            userRepository.getProfile()
+        } returns Result.success(originalProfile)
+
+        viewModel = initViewModel()
+        advanceUntilIdle()
+
+        val modifiedField = AboutEditorField(
+            type = AboutInputField.DISPLAY_NAME,
+            value = "Updated Name"
+        )
+        viewModel.onEvent(ProfileEvent.OnProfileFieldUpdated(modifiedField))
+
+        coEvery {
+            userRepository.updateProfile(any())
+        } returns Result.success(updatedProfile)
+
+        // When
+        viewModel.onEvent(ProfileEvent.OnSaveClicked)
+
+        viewModel.uiState.test {
+            var expectedUiState = ProfileUiState(
+                isLoading = false,
+                profile = originalProfile,
+                editedAboutFields = mapOf(AboutInputField.DISPLAY_NAME to "Updated Name"),
+                isSavingProfile = false,
+            )
+            assertEquals(expectedUiState, awaitItem())
+
+            expectedUiState = expectedUiState.copy(isSavingProfile = true)
+            assertEquals(expectedUiState, awaitItem())
+
+            expectedUiState = expectedUiState.copy(
+                isSavingProfile = false,
+                profile = updatedProfile,
+                editedAboutFields = emptyMap(),
+            )
+            assertEquals(expectedUiState, awaitItem())
+        }
+        coVerify(exactly = (1)) { userRepository.updateProfile(any()) }
+    }
+
+    @Test
+    fun `when saveChanges fails then state remains unchanged`() = runTest {
+        // Given
+        val originalProfile = profile()
+        val exception = IllegalStateException("Update failed")
+
+        coEvery {
+            userRepository.getProfile()
+        } returns Result.success(originalProfile)
+
+        viewModel = initViewModel()
+        advanceUntilIdle()
+
+        val modifiedField = AboutEditorField(
+            type = AboutInputField.DISPLAY_NAME,
+            value = "Updated Name"
+        )
+        viewModel.onEvent(ProfileEvent.OnProfileFieldUpdated(modifiedField))
+
+        coEvery {
+            userRepository.updateProfile(any())
+        } returns Result.failure(exception)
+
+        // When
+        viewModel.onEvent(ProfileEvent.OnSaveClicked)
+
+        // Then
+        viewModel.uiState.test {
+            var expectedUiState = ProfileUiState(
+                isLoading = false,
+                profile = originalProfile,
+                editedAboutFields = mapOf(AboutInputField.DISPLAY_NAME to "Updated Name"),
+                isSavingProfile = false,
+            )
+            assertEquals(expectedUiState, awaitItem())
+
+            expectedUiState = expectedUiState.copy(isSavingProfile = true)
+            assertEquals(expectedUiState, awaitItem())
+
+            expectedUiState = expectedUiState.copy(
+                isSavingProfile = false,
+            )
+            assertEquals(expectedUiState, awaitItem())
+        }
+        coVerify(exactly = (1)) { userRepository.updateProfile(any()) }
+    }
+
+    private fun profile(displayName: String = "John Doe") = Profile {
         hash = "mock-hash"
-        displayName = "John Doe"
+        this.displayName = displayName
         profileUrl = URI("https://www.gravatar.com/mock-hash")
         avatarUrl = URI("https://www.gravatar.com/avatar/mock-hash")
         avatarAltText = "Avatar for John Doe"
