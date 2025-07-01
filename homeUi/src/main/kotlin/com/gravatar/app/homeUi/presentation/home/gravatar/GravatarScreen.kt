@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.gravatar.app.homeUi.presentation.home.gravatar.components.AvatarOption
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.avatarSize
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.avatarsGridSection
 import com.gravatar.restapi.models.Avatar
@@ -78,7 +79,14 @@ internal fun GravatarScreen(
                     }
                 } else {
                     avatarsGridSection(
-                        avatars = uiState.avatarsUi
+                        avatars = uiState.avatarsUi,
+                        onAvatarOptionClicked = { avatar, option ->
+                            when (option) {
+                                AvatarOption.Select -> {
+                                    onEvent(GravatarEvent.OnAvatarSelected(avatar.imageId))
+                                }
+                            }
+                        }
                     )
                 }
             }

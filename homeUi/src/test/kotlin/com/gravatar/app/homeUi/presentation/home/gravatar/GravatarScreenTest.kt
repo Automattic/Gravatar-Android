@@ -20,8 +20,10 @@ class GravatarScreenTest : RoborazziTest() {
                             rating = Avatar.Rating.G
                             altText = "alt"
                             updatedDate = ""
+                            selected = it == 0
                         }
-                    }
+                    },
+                    selectedAvatarId = "0"
                 ),
                 onEvent = { }
             )

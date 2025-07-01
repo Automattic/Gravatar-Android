@@ -137,22 +137,153 @@ class RealUserRepositoryTest {
     }
 
     @Test
-    fun `getProfile should return failure when retrieveAuthenticatedCatching returns null profile`() = runTest {
+    fun `getProfile should return failure when retrieveAuthenticatedCatching returns null profile`() =
+        runTest {
+            // Given
+            tokenStorage.save(testToken)
+            val profileResult = mockk<GravatarResult<Profile, ErrorType>>()
+            coEvery { profileResult.valueOrNull() } returns null
+            coEvery { profileService.retrieveAuthenticatedCatching(testToken) } returns profileResult
+
+            // When
+            val result = repository.getProfile()
+
+            // Then
+            assertTrue(result.isFailure)
+            val exception = result.exceptionOrNull()
+            assertTrue(exception is IllegalStateException)
+            assertEquals("Failed to retrieve profile", exception?.message)
+            coVerify { profileService.retrieveAuthenticatedCatching(testToken) }
+        }
+
+    @Test
+    fun `selectAvatar should return success when user is logged in and services return success`() =
+        runTest {
+            // Given
+            val avatarId = "test-avatar-id"
+            val profile = createTestProfile()
+
+            // Save token
+            tokenStorage.save(testToken)
+
+            // Mock profile service
+            val profileResult = GravatarResult.Success<Profile, ErrorType>(profile)
+            coEvery { profileService.retrieveAuthenticatedCatching(testToken) } returns profileResult
+
+            // Mock avatar service
+            val avatarResult = GravatarResult.Success<Unit, ErrorType>(Unit)
+            coEvery {
+                avatarService.setAvatarCatching(
+                    hash = testHash,
+                    avatarId = avatarId,
+                    oauthToken = testToken,
+                )
+            } returns avatarResult
+
+            // When
+            val result = repository.selectAvatar(avatarId)
+
+            // Then
+            assertTrue(result.isSuccess)
+
+            // Verify interactions
+            coVerify { profileService.retrieveAuthenticatedCatching(testToken) }
+            coVerify {
+                avatarService.setAvatarCatching(
+                    hash = testHash,
+                    avatarId = avatarId,
+                    oauthToken = testToken,
+                )
+            }
+        }
+
+    @Test
+    fun `selectAvatar should return failure when user is not logged in`() = runTest {
         // Given
-        tokenStorage.save(testToken)
-        val profileResult = mockk<GravatarResult<Profile, ErrorType>>()
-        coEvery { profileResult.valueOrNull() } returns null
-        coEvery { profileService.retrieveAuthenticatedCatching(testToken) } returns profileResult
+        val avatarId = "test-avatar-id"
+        tokenStorage.clear()
 
         // When
-        val result = repository.getProfile()
+        val result = repository.selectAvatar(avatarId)
 
         // Then
         assertTrue(result.isFailure)
         val exception = result.exceptionOrNull()
         assertTrue(exception is IllegalStateException)
-        assertEquals("Failed to retrieve profile", exception?.message)
+        assertEquals("User is not logged in", exception?.message)
+
+        // Verify no interactions with services
+        coVerify(exactly = 0) { profileService.retrieveAuthenticatedCatching(any()) }
+        coVerify(exactly = 0) { avatarService.setAvatarCatching(any(), any(), any()) }
+    }
+
+    @Test
+    fun `selectAvatar should return failure when profile service returns null`() = runTest {
+        // Given
+        val avatarId = "test-avatar-id"
+        tokenStorage.save(testToken)
+
+        // Mock profile service to return null
+        val profileResult = mockk<GravatarResult<Profile, ErrorType>>()
+        coEvery { profileResult.valueOrNull() } returns null
+        coEvery { profileService.retrieveAuthenticatedCatching(testToken) } returns profileResult
+
+        // When
+        val result = repository.selectAvatar(avatarId)
+
+        // Then
+        assertTrue(result.isFailure)
+        val exception = result.exceptionOrNull()
+        assertTrue(exception is IllegalStateException)
+        assertEquals("Failed to select avatar", exception?.message)
+
+        // Verify interactions
         coVerify { profileService.retrieveAuthenticatedCatching(testToken) }
+        coVerify(exactly = 0) { avatarService.setAvatarCatching(any(), any(), any()) }
+    }
+
+    @Test
+    fun `selectAvatar should return failure when avatar service returns failure`() = runTest {
+        // Given
+        val avatarId = "test-avatar-id"
+        val profile = createTestProfile()
+
+        // Save token
+        tokenStorage.save(testToken)
+
+        // Mock profile service
+        val profileResult = GravatarResult.Success<Profile, ErrorType>(profile)
+        coEvery { profileService.retrieveAuthenticatedCatching(testToken) } returns profileResult
+
+        // Mock avatar service to return a result that is not a Success
+        val avatarResult = mockk<GravatarResult<Unit, ErrorType>>()
+        coEvery { avatarResult.valueOrNull() } returns null
+        coEvery {
+            avatarService.setAvatarCatching(
+                hash = testHash,
+                avatarId = avatarId,
+                oauthToken = testToken,
+            )
+        } returns avatarResult
+
+        // When
+        val result = repository.selectAvatar(avatarId)
+
+        // Then
+        assertTrue(result.isFailure)
+        val exception = result.exceptionOrNull()
+        assertTrue(exception is IllegalStateException)
+        assertEquals("Failed to select avatar", exception?.message)
+
+        // Verify interactions
+        coVerify { profileService.retrieveAuthenticatedCatching(testToken) }
+        coVerify {
+            avatarService.setAvatarCatching(
+                hash = testHash,
+                avatarId = avatarId,
+                oauthToken = testToken,
+            )
+        }
     }
 
     private fun createTestProfile(): Profile {
