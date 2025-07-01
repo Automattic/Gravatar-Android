@@ -71,7 +71,7 @@ internal fun PopupButton(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun PopupButtonPreview() {
     GravatarTheme {

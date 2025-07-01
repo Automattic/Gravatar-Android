@@ -87,6 +87,61 @@ class GravatarViewModelTest {
         coVerify { userRepository.getAvatars() }
     }
 
+    @Test
+    fun `onEvent OnAvatarSelected should select avatar successfully`() = runTest {
+        // Given
+        val avatars = createAvatars()
+        coEvery { userRepository.getAvatars() } returns Result.success(avatars)
+        viewModel = GravatarViewModel(userRepository)
+        advanceUntilIdle()
+
+        val avatarId = "1"
+        coEvery { userRepository.selectAvatar(avatarId) } returns Result.success(Unit)
+
+        // When
+        viewModel.onEvent(GravatarEvent.OnAvatarSelected(avatarId))
+        advanceUntilIdle()
+
+        // Then
+        viewModel.uiState.test {
+            val expectedState = GravatarUiState(
+                isLoading = false,
+                avatars = avatars,
+                selectedAvatarId = avatarId
+            )
+            assertEquals(expectedState, awaitItem())
+        }
+        coVerify { userRepository.selectAvatar(avatarId) }
+    }
+
+    @Test
+    fun `onEvent OnAvatarSelected should handle failure`() = runTest {
+        // Given
+        val avatars = createAvatars()
+        coEvery { userRepository.getAvatars() } returns Result.success(avatars)
+        viewModel = GravatarViewModel(userRepository)
+        advanceUntilIdle()
+
+        val avatarId = "1"
+        coEvery {
+            userRepository.selectAvatar(avatarId)
+        } returns Result.failure(RuntimeException("Test exception"))
+
+        // When
+        viewModel.onEvent(GravatarEvent.OnAvatarSelected(avatarId))
+        advanceUntilIdle()
+
+        // Then
+        viewModel.uiState.test {
+            val expectedState = GravatarUiState(
+                isLoading = false,
+                avatars = avatars
+            )
+            assertEquals(expectedState, awaitItem())
+        }
+        coVerify { userRepository.selectAvatar(avatarId) }
+    }
+
     private fun createAvatars(count: Int = 3): List<Avatar> {
         return List(count) { index ->
             Avatar {
