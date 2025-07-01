@@ -3,6 +3,7 @@ package com.gravatar.app.usercomponent.data
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import com.gravatar.restapi.models.Avatar
 import com.gravatar.restapi.models.Profile
+import com.gravatar.restapi.models.UpdateProfileRequest
 import com.gravatar.services.AvatarService
 import com.gravatar.services.GravatarResult
 import com.gravatar.services.ProfileService
@@ -67,6 +68,20 @@ internal class RealUserRepository(
                 Result.success(profile)
             } else {
                 Result.failure(IllegalStateException("Failed to retrieve profile"))
+            }
+        } else {
+            Result.failure(IllegalStateException("User is not logged in"))
+        }
+    }
+
+    override suspend fun updateProfile(updateRequest: UpdateProfileRequest): Result<Profile> {
+        val token = tokenStorage.get().first()
+        return if (token != null) {
+            val result = profileService.updateProfileCatching(token, updateRequest).valueOrNull()
+            if (result != null) {
+                Result.success(result)
+            } else {
+                Result.failure(IllegalStateException("Failed to update profile"))
             }
         } else {
             Result.failure(IllegalStateException("User is not logged in"))
