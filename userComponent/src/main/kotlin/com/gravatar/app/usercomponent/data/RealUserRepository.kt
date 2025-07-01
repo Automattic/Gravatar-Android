@@ -103,7 +103,7 @@ internal class RealUserRepository(
             if (result is GravatarResult.Success) {
                 Result.success(result.value)
             } else {
-                Result.failure(IllegalStateException("Failed to select avatar"))
+                Result.failure(IllegalStateException("Failed to upload avatar"))
             }
         } else {
             Result.failure(IllegalStateException("User is not logged in"))
