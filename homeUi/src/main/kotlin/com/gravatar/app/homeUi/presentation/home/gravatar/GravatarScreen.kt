@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.AvatarOption
+import com.gravatar.app.homeUi.presentation.home.gravatar.components.UploadNewAvatarSection
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.avatarSize
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.avatarsGridSection
 import com.gravatar.restapi.models.Avatar
@@ -64,6 +65,14 @@ internal fun GravatarScreen(
                 horizontalArrangement = Arrangement.spacedBy(itemSpacing),
                 verticalArrangement = Arrangement.spacedBy(itemSpacing),
             ) {
+                item(
+                    span = { GridItemSpan((maxLineSpan)) },
+                ) {
+                    UploadNewAvatarSection(
+                        onTakePictureClicked = { },
+                        onChooseFromGalleryClicked = { }
+                    )
+                }
                 if (uiState.isLoading) {
                     item(
                         span = { GridItemSpan((maxLineSpan)) },
