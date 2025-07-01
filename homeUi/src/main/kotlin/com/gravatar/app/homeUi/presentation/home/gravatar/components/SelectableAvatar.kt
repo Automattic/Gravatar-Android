@@ -33,8 +33,8 @@ import androidx.compose.ui.unit.dp
 import com.gravatar.app.homeUi.presentation.home.gravatar.AvatarUi
 import com.gravatar.restapi.models.Avatar
 import com.gravatar.ui.components.ComponentState
-import com.gravatar.ui.components.atomic.Avatar
 import java.net.URL
+import com.gravatar.ui.components.atomic.Avatar as AtomicAvatar
 
 internal val avatarSize = 88.dp
 private val cornerRadius = 8.dp
@@ -87,7 +87,7 @@ private fun SelectableAvatar(
                 },
             ),
     ) {
-        Avatar(
+        AtomicAvatar(
             state = ComponentState.Loaded(imageUrl),
             size = avatarSize,
             modifier = Modifier
@@ -112,9 +112,12 @@ private fun SelectableAvatar(
     }
 }
 
-private fun AvatarUi.Uploaded.imageUrlWithSize(sizePx: Int) = avatar.imageUrl.toURL()?.let { url ->
-    URL(url.protocol, url.host, url.path.plus("?size=$sizePx"))
-}.toString()
+private fun AvatarUi.Uploaded.imageUrlWithSize(sizePx: Int): String {
+    return avatar.imageUrl.toURL()
+        ?.let { url ->
+            URL(url.protocol, url.host, url.path.plus("?size=$sizePx"))
+        }?.toString() ?: avatar.imageUrl.toString()
+}
 
 @Composable
 private fun BoxScope.LoadedOverlay(
