@@ -1,0 +1,8 @@
+package com.gravatar.app.homeUi.presentation.home.gravatar
+
+import android.net.Uri
+import java.io.File
+
+sealed class GravatarAction {
+    data class LaunchImageCropper(val imageUri: Uri, val tempFile: File) : GravatarAction()
+}
