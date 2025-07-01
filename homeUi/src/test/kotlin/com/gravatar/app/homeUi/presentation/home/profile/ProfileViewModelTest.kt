@@ -1,6 +1,7 @@
 package com.gravatar.app.homeUi.presentation.home.profile
 
 import app.cash.turbine.test
+import com.gravatar.app.homeUi.presentation.home.profile.about.AboutEditorField
 import com.gravatar.app.homeUi.presentation.home.profile.about.AboutInputField
 import com.gravatar.app.testUtils.CoroutineTestRule
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
@@ -8,7 +9,9 @@ import com.gravatar.restapi.models.Profile
 import com.gravatar.restapi.models.ProfileContactInfo
 import io.mockk.coEvery
 import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -16,6 +19,7 @@ import org.junit.Rule
 import org.junit.Test
 import java.net.URI
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ProfileViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
 
@@ -113,6 +117,69 @@ class ProfileViewModelTest {
         val contactEmailField = aboutFields.find { it.type == AboutInputField.CONTACT_EMAIL }
         assertEquals("ContactEmail should match mock profile", profile.contactInfo?.email, contactEmailField?.value)
     }
+
+    @Test
+    fun `when OnProfileFieldUpdated event with modified value then field is added to editedAboutFields`() =
+        runTest {
+            // Given
+            val profile = profile()
+            coEvery {
+                userRepository.getProfile()
+            } returns Result.success(profile)
+            viewModel = initViewModel()
+
+            advanceUntilIdle()
+
+            val modifiedField = AboutEditorField(
+                type = AboutInputField.DISPLAY_NAME,
+                value = "Modified Name" // Different from "John Doe" in the profile
+            )
+
+            // When
+            viewModel.onEvent(ProfileEvent.OnProfileFieldUpdated(modifiedField))
+
+            // Then
+            viewModel.uiState.test {
+                val state = awaitItem()
+                assertEquals("Modified Name", state.editedAboutFields[AboutInputField.DISPLAY_NAME])
+                assertTrue(state.hasUnsavedChanges)
+            }
+        }
+
+    @Test
+    fun `when OnProfileFieldUpdated event with original value then field is removed from editedAboutFields`() =
+        runTest {
+            // Given
+            val profile = profile()
+            coEvery {
+                userRepository.getProfile()
+            } returns Result.success(profile)
+            viewModel = initViewModel()
+
+            advanceUntilIdle()
+
+            val modifiedField = AboutEditorField(
+                type = AboutInputField.DISPLAY_NAME,
+                value = "Modified Name"
+            )
+            viewModel.onEvent(ProfileEvent.OnProfileFieldUpdated(modifiedField))
+
+            val originalField = AboutEditorField(
+                type = AboutInputField.DISPLAY_NAME,
+                value = profile.displayName
+            )
+            viewModel.onEvent(ProfileEvent.OnProfileFieldUpdated(originalField))
+
+            // Then
+            viewModel.uiState.test {
+                val state = awaitItem()
+                assertTrue(
+                    "Field should be removed from editedAboutFields",
+                    state.editedAboutFields[AboutInputField.DISPLAY_NAME] == null
+                )
+                assertEquals(false, state.hasUnsavedChanges)
+            }
+        }
 
     private fun profile() = Profile {
         hash = "mock-hash"

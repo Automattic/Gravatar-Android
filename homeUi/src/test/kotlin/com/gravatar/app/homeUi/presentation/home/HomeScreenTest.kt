@@ -12,7 +12,8 @@ class HomeScreenTest : RoborazziTest() {
         screenshotTest {
             HomeScreen {
                 ProfileScreen(
-                    uiState = ProfileUiState()
+                    uiState = ProfileUiState(),
+                    onEvent = {},
                 )
             }
         }

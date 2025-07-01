@@ -18,7 +18,8 @@ class ProfileScreenTest : RoborazziTest() {
                         jobTitle = "Software Engineer",
                         company = "Automattic"
                     )
-                )
+                ),
+                onEvent = { },
             )
         }
     }

@@ -21,6 +21,12 @@ internal class ProfileViewModel(private val userRepository: UserRepository) : Vi
         fetchProfile()
     }
 
+    fun onEvent(profileEvent: ProfileEvent) {
+        when (profileEvent) {
+            is ProfileEvent.OnProfileFieldUpdated -> updateProfileField(profileEvent.aboutField)
+        }
+    }
+
     private fun fetchProfile() {
         viewModelScope.launch {
             _uiState.update { currentState -> currentState.copy(isLoading = true) }
@@ -30,6 +36,7 @@ internal class ProfileViewModel(private val userRepository: UserRepository) : Vi
                         currentState.copy(
                             isLoading = false,
                             profile = profile,
+                            editedAboutFields = emptyMap()
                         )
                     }
                 }
@@ -38,6 +45,24 @@ internal class ProfileViewModel(private val userRepository: UserRepository) : Vi
                         currentState.copy(isLoading = false, profile = null)
                     }
                 }
+        }
+    }
+
+    private fun updateProfileField(aboutField: AboutEditorField) {
+        _uiState.update { currentState ->
+            val updatedEditedFields = currentState.editedAboutFields.toMutableMap()
+
+            val originalField = currentState.originalAboutFields.find { it.type == aboutField.type }
+
+            if (originalField != null && originalField.value == aboutField.value) {
+                // If the value is the same as the original, remove it from edited fields
+                updatedEditedFields.remove(aboutField.type)
+            } else {
+                // Otherwise, store the edited value
+                updatedEditedFields[aboutField.type] = aboutField.value
+            }
+
+            currentState.copy(editedAboutFields = updatedEditedFields)
         }
     }
 }

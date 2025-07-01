@@ -26,11 +26,16 @@ import org.koin.androidx.compose.koinViewModel
 internal fun ProfileScreen(viewModel: ProfileViewModel = koinViewModel()) {
     val uiState by viewModel.uiState.collectAsState()
 
-    ProfileScreen(uiState)
+    ProfileScreen(
+        uiState = uiState,
+        onEvent = { event ->
+            viewModel.onEvent(profileEvent = event)
+        }
+    )
 }
 
 @Composable
-internal fun ProfileScreen(uiState: ProfileUiState) {
+internal fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -45,8 +50,10 @@ internal fun ProfileScreen(uiState: ProfileUiState) {
                         Column(Modifier.verticalScroll(rememberScrollState())) {
                             AboutSection(
                                 aboutFields = uiState.aboutFields,
-                                formEnabled = false,
-                                onValueChange = {},
+                                formEnabled = true,
+                                onValueChange = {
+                                    onEvent(ProfileEvent.OnProfileFieldUpdated(it))
+                                },
                                 modifier = Modifier.padding(horizontal = 16.dp)
                             )
                             Spacer(modifier = Modifier.height(16.dp))
@@ -72,6 +79,7 @@ private fun ProfileScreenPreview() {
                 jobTitle = "Software Engineer",
                 company = "Automattic"
             )
-        )
+        ),
+        onEvent = {}
     )
 }
