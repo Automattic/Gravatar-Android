@@ -3,11 +3,11 @@ package com.gravatar.app.usercomponent.data
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import com.gravatar.restapi.models.Avatar
 import com.gravatar.restapi.models.Profile
+import com.gravatar.restapi.models.UpdateProfileRequest
 import com.gravatar.services.AvatarService
 import com.gravatar.services.GravatarResult
 import com.gravatar.services.ProfileService
 import com.gravatar.types.Hash
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 
 internal class RealUserRepository(
@@ -39,7 +39,7 @@ internal class RealUserRepository(
     }
 
     override suspend fun getAvatars(): Result<List<Avatar>> {
-        val token = tokenStorage.get().first()
+        val token = tokenStorage.get().firstOrNull()
         return if (token != null) {
             val avatars = profileService.retrieveAuthenticatedCatching(token)
                 .valueOrNull()
@@ -60,13 +60,27 @@ internal class RealUserRepository(
     }
 
     override suspend fun getProfile(): Result<Profile> {
-        val token = tokenStorage.get().first()
+        val token = tokenStorage.get().firstOrNull()
         return if (token != null) {
             val profile = profileService.retrieveAuthenticatedCatching(token).valueOrNull()
             if (profile != null) {
                 Result.success(profile)
             } else {
                 Result.failure(IllegalStateException("Failed to retrieve profile"))
+            }
+        } else {
+            Result.failure(IllegalStateException("User is not logged in"))
+        }
+    }
+
+    override suspend fun updateProfile(updateRequest: UpdateProfileRequest): Result<Profile> {
+        val token = tokenStorage.get().firstOrNull()
+        return if (token != null) {
+            val result = profileService.updateProfileCatching(token, updateRequest).valueOrNull()
+            if (result != null) {
+                Result.success(result)
+            } else {
+                Result.failure(IllegalStateException("Failed to update profile"))
             }
         } else {
             Result.failure(IllegalStateException("User is not logged in"))

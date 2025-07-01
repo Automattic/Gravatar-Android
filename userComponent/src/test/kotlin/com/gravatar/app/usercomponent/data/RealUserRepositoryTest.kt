@@ -3,6 +3,7 @@ package com.gravatar.app.usercomponent.data
 import com.gravatar.app.testUtils.CoroutineTestRule
 import com.gravatar.restapi.models.Avatar
 import com.gravatar.restapi.models.Profile
+import com.gravatar.restapi.models.UpdateProfileRequest
 import com.gravatar.services.AvatarService
 import com.gravatar.services.ErrorType
 import com.gravatar.services.GravatarResult
@@ -284,6 +285,61 @@ class RealUserRepositoryTest {
                 oauthToken = testToken,
             )
         }
+    }
+
+    @Test
+    fun `updateProfile should return success when user is logged in and service returns success`() = runTest {
+        // Given
+        val updateRequest = UpdateProfileRequest { }
+        val updatedProfile = createTestProfile()
+        tokenStorage.save(testToken)
+        val profileResult = GravatarResult.Success<Profile, ErrorType>(updatedProfile)
+        coEvery { profileService.updateProfileCatching(testToken, updateRequest) } returns profileResult
+
+        // When
+        val result = repository.updateProfile(updateRequest)
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(updatedProfile, result.getOrNull())
+        coVerify { profileService.updateProfileCatching(testToken, updateRequest) }
+    }
+
+    @Test
+    fun `updateProfile should return failure when user is not logged in`() = runTest {
+        // Given
+        val updateRequest = UpdateProfileRequest { }
+        tokenStorage.clear()
+
+        // When
+        val result = repository.updateProfile(updateRequest)
+
+        // Then
+        assertTrue(result.isFailure)
+        val exception = result.exceptionOrNull()
+        assertTrue(exception is IllegalStateException)
+        assertEquals("User is not logged in", exception?.message)
+        coVerify(exactly = 0) { profileService.updateProfileCatching(any(), any()) }
+    }
+
+    @Test
+    fun `updateProfile should return failure when updateProfileCatching fails`() = runTest {
+        // Given
+        val updateRequest = UpdateProfileRequest { }
+        tokenStorage.save(testToken)
+        val profileResult = mockk<GravatarResult<Profile, ErrorType>>()
+        coEvery { profileResult.valueOrNull() } returns null
+        coEvery { profileService.updateProfileCatching(testToken, updateRequest) } returns profileResult
+
+        // When
+        val result = repository.updateProfile(updateRequest)
+
+        // Then
+        assertTrue(result.isFailure)
+        val exception = result.exceptionOrNull()
+        assertTrue(exception is IllegalStateException)
+        assertEquals("Failed to update profile", exception?.message)
+        coVerify { profileService.updateProfileCatching(testToken, updateRequest) }
     }
 
     private fun createTestProfile(): Profile {
