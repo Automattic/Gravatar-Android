@@ -8,7 +8,6 @@ import com.gravatar.services.AvatarService
 import com.gravatar.services.GravatarResult
 import com.gravatar.services.ProfileService
 import com.gravatar.types.Hash
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 
 internal class RealUserRepository(
@@ -40,7 +39,7 @@ internal class RealUserRepository(
     }
 
     override suspend fun getAvatars(): Result<List<Avatar>> {
-        val token = tokenStorage.get().first()
+        val token = tokenStorage.get().firstOrNull()
         return if (token != null) {
             val avatars = profileService.retrieveAuthenticatedCatching(token)
                 .valueOrNull()
@@ -61,7 +60,7 @@ internal class RealUserRepository(
     }
 
     override suspend fun getProfile(): Result<Profile> {
-        val token = tokenStorage.get().first()
+        val token = tokenStorage.get().firstOrNull()
         return if (token != null) {
             val profile = profileService.retrieveAuthenticatedCatching(token).valueOrNull()
             if (profile != null) {
@@ -75,7 +74,7 @@ internal class RealUserRepository(
     }
 
     override suspend fun updateProfile(updateRequest: UpdateProfileRequest): Result<Profile> {
-        val token = tokenStorage.get().first()
+        val token = tokenStorage.get().firstOrNull()
         return if (token != null) {
             val result = profileService.updateProfileCatching(token, updateRequest).valueOrNull()
             if (result != null) {
