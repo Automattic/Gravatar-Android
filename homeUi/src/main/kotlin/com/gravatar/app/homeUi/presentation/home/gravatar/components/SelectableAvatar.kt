@@ -7,9 +7,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,7 +36,7 @@ import com.gravatar.ui.components.ComponentState
 import com.gravatar.ui.components.atomic.Avatar
 import java.net.URL
 
-internal val avatarSize = 96.dp
+internal val avatarSize = 88.dp
 private val cornerRadius = 8.dp
 
 @Composable
@@ -73,16 +78,12 @@ private fun SelectableAvatar(
             .then(
                 if (isSelected) {
                     Modifier.border(
-                        4.dp,
+                        3.dp,
                         MaterialTheme.colorScheme.onSurface,
                         RoundedCornerShape(cornerRadius)
                     )
                 } else {
-                    Modifier.border(
-                        1.dp,
-                        MaterialTheme.colorScheme.surfaceDim,
-                        RoundedCornerShape(cornerRadius),
-                    )
+                    Modifier
                 },
             ),
     ) {
@@ -94,7 +95,7 @@ private fun SelectableAvatar(
                 .clip(RoundedCornerShape(cornerRadius)),
         )
         when (loadingState) {
-            AvatarLoadingState.None -> {}
+            AvatarLoadingState.None -> LoadedOverlay(isSelected)
             AvatarLoadingState.Loading -> LoadingOverlay()
         }
         if (moreOptionsPopupVisible) {
@@ -114,6 +115,32 @@ private fun SelectableAvatar(
 private fun AvatarUi.Uploaded.imageUrlWithSize(sizePx: Int) = avatar.imageUrl.toURL()?.let { url ->
     URL(url.protocol, url.host, url.path.plus("?size=$sizePx"))
 }.toString()
+
+@Composable
+private fun BoxScope.LoadedOverlay(
+    isSelected: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    if (isSelected) {
+        Box(
+            modifier = modifier
+                .align(Alignment.Center)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primary)
+                .border(1.dp, Color.White, CircleShape)
+                .padding(5.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Done,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(22.dp)
+                    .align(Alignment.Center),
+                tint = Color.White,
+            )
+        }
+    }
+}
 
 @Composable
 private fun LoadingOverlay(modifier: Modifier = Modifier) {
