@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -26,15 +27,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.gravatar.app.homeUi.R
 import com.gravatar.app.homeUi.presentation.home.gravatar.AvatarUi
 import com.gravatar.restapi.models.Avatar
 import com.gravatar.ui.components.ComponentState
 import java.net.URL
-import kotlin.toString
 import com.gravatar.ui.components.atomic.Avatar as AtomicAvatar
 
 internal val avatarSize = 88.dp
@@ -107,6 +109,7 @@ private fun SelectableAvatar(
         when (loadingState) {
             AvatarLoadingState.None -> LoadedOverlay(isSelected)
             AvatarLoadingState.Loading -> LoadingOverlay()
+            is AvatarLoadingState.Failure -> FailureOverlay()
         }
         if (moreOptionsPopupVisible) {
             AvatarMoreOptionsPickerPopup(
@@ -169,6 +172,20 @@ private fun LoadingOverlay(modifier: Modifier = Modifier) {
 }
 
 @Composable
+private fun FailureOverlay(modifier: Modifier = Modifier) {
+    Overlay(modifier) {
+        Icon(
+            imageVector = Icons.Rounded.Warning,
+            contentDescription = stringResource(R.string.gravatar_tab_failed_to_load_avatar_content_description),
+            tint = Color.White,
+            modifier = Modifier
+                .size(50.dp)
+                .align(Alignment.Center),
+        )
+    }
+}
+
+@Composable
 private fun Overlay(modifier: Modifier = Modifier, content: @Composable BoxScope.() -> Unit) {
     Box(
         modifier = modifier
@@ -186,6 +203,8 @@ internal sealed class AvatarLoadingState {
     data object None : AvatarLoadingState()
 
     data object Loading : AvatarLoadingState()
+
+    data object Failure : AvatarLoadingState()
 }
 
 private val AvatarUi.Uploaded.loadingState: AvatarLoadingState
@@ -194,7 +213,7 @@ private val AvatarUi.Uploaded.loadingState: AvatarLoadingState
 private val AvatarUi.Local.loadingState: AvatarLoadingState
     get() = when {
         isLoading -> AvatarLoadingState.Loading
-        else -> AvatarLoadingState.None
+        else -> AvatarLoadingState.Failure
     }
 
 @Preview

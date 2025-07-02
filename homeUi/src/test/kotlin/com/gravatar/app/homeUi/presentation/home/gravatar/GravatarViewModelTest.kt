@@ -7,6 +7,8 @@ import com.gravatar.app.homeUi.presentation.FileUtils
 import com.gravatar.app.testUtils.CoroutineTestRule
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import com.gravatar.restapi.models.Avatar
+import com.gravatar.services.ErrorType
+import com.gravatar.services.GravatarResult
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -189,7 +191,7 @@ class GravatarViewModelTest {
         every { fileUtils.deleteFile(mockUri) } returns Unit
 
         val newAvatar = createAvatar(4)
-        coEvery { userRepository.uploadAvatar(file) } returns Result.success(newAvatar)
+        coEvery { userRepository.uploadAvatar(file) } returns GravatarResult.Success(newAvatar)
 
         // When
         viewModel.onEvent(GravatarEvent.OnImageCropped(mockUri))
@@ -234,7 +236,7 @@ class GravatarViewModelTest {
 
         coEvery {
             userRepository.uploadAvatar(any())
-        } returns Result.failure(IllegalStateException("Test exception"))
+        } returns GravatarResult.Failure(ErrorType.Server)
 
         // When
         viewModel.onEvent(GravatarEvent.OnImageCropped(mockUri))
@@ -253,13 +255,18 @@ class GravatarViewModelTest {
                 GravatarUiState(
                     avatars = avatars,
                     uploadingAvatar = null,
+                    failedUploads = listOf(
+                        AvatarUploadFailure(
+                            uri = mockUri,
+                            error = ErrorType.Server
+                        )
+                    )
                 ),
                 awaitItem()
             )
         }
 
         coVerify { userRepository.uploadAvatar(any()) }
-        verify { fileUtils.deleteFile(mockUri) }
     }
 
     private fun initViewModel() {

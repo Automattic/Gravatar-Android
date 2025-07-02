@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gravatar.app.homeUi.presentation.FileUtils
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
+import com.gravatar.services.GravatarResult
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -41,10 +42,14 @@ internal class GravatarViewModel(
     private fun uploadAvatar(uri: Uri) {
         viewModelScope.launch {
             _uiState.update { currentState ->
-                currentState.copy(uploadingAvatar = uri)
+                currentState.copy(
+                    uploadingAvatar = uri,
+                    failedUploads = currentState.failedUploads.filter { it.uri != uri },
+                )
             }
-            userRepository.uploadAvatar(uri.toFile())
-                .onSuccess { avatar ->
+            when (val result = userRepository.uploadAvatar(uri.toFile())) {
+                is GravatarResult.Success -> {
+                    val avatar = result.value
                     fileUtils.deleteFile(uri)
                     _uiState.update { currentState ->
                         currentState.copy(
@@ -59,12 +64,19 @@ internal class GravatarViewModel(
                         )
                     }
                 }
-                .onFailure {
-                    fileUtils.deleteFile(uri) // Temporary for now, handle properly later
+
+                is GravatarResult.Failure -> {
                     _uiState.update { currentState ->
-                        currentState.copy(uploadingAvatar = null)
+                        currentState.copy(
+                            uploadingAvatar = null,
+                            failedUploads = currentState.failedUploads + AvatarUploadFailure(
+                                uri,
+                                error = result.error
+                            ),
+                        )
                     }
                 }
+            }
         }
     }
 
