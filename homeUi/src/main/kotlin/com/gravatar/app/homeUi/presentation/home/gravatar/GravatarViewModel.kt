@@ -36,6 +36,31 @@ internal class GravatarViewModel(
             is GravatarEvent.OnAvatarSelected -> selectAvatar(event.avatarId)
             is GravatarEvent.OnLocalImageSelected -> localImageSelected(event.uri)
             is GravatarEvent.OnImageCropped -> uploadAvatar(event.uri)
+            GravatarEvent.OnFailedAvatarDialogDismissed -> dismissFailedUploadDialog()
+            is GravatarEvent.OnFailedAvatarDismissed -> removedFailedUpload(event.uri)
+            is GravatarEvent.OnFailedAvatarTapped -> showFailedUploadDialog(event.uri)
+        }
+    }
+
+    private fun showFailedUploadDialog(uri: Uri) {
+        _uiState.update { currentState ->
+            currentState.copy(failedUploadDialog = currentState.failedUploads.firstOrNull { it.uri == uri })
+        }
+    }
+
+    private fun dismissFailedUploadDialog() {
+        _uiState.update { currentState ->
+            currentState.copy(failedUploadDialog = null)
+        }
+    }
+
+    private fun removedFailedUpload(uri: Uri) {
+        _uiState.update { currentState ->
+            fileUtils.deleteFile(uri)
+            currentState.copy(
+                failedUploads = currentState.failedUploads.filter { it.uri != uri },
+                failedUploadDialog = null,
+            )
         }
     }
 
@@ -45,6 +70,7 @@ internal class GravatarViewModel(
                 currentState.copy(
                     uploadingAvatar = uri,
                     failedUploads = currentState.failedUploads.filter { it.uri != uri },
+                    failedUploadDialog = null,
                 )
             }
             when (val result = userRepository.uploadAvatar(uri.toFile())) {

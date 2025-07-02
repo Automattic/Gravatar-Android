@@ -39,6 +39,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.gravatar.app.homeUi.GravatarFileProvider
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.AvatarOption
+import com.gravatar.app.homeUi.presentation.home.gravatar.components.FailedAvatarUploadAlertDialog
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.UploadNewAvatarSection
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.avatarSize
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.avatarsGridSection
@@ -180,10 +181,19 @@ internal fun GravatarScreen(
                                     onEvent(GravatarEvent.OnAvatarSelected(avatar.imageId))
                                 }
                             }
+                        },
+                        onFailedAvatarClicked = { uri ->
+                            onEvent(GravatarEvent.OnFailedAvatarTapped(uri))
                         }
                     )
                 }
             }
+            FailedAvatarUploadAlertDialog(
+                avatarUploadFailure = uiState.failedUploadDialog,
+                onRemoveUploadClicked = { onEvent(GravatarEvent.OnFailedAvatarDismissed(it)) },
+                onRetryClicked = { onEvent(GravatarEvent.OnImageCropped(it)) },
+                onDismiss = { onEvent(GravatarEvent.OnFailedAvatarDialogDismissed) },
+            )
         }
     }
 }

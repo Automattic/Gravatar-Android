@@ -1,5 +1,6 @@
 package com.gravatar.app.homeUi.presentation.home.gravatar.components
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -48,6 +49,7 @@ internal fun SelectableAvatar(
     size: Dp,
     modifier: Modifier,
     onAvatarOptionClicked: (Avatar, AvatarOption) -> Unit,
+    onFailedAvatarClicked: ((Uri) -> Unit)? = null,
 ) {
     when (avatar) {
         is AvatarUi.Uploaded -> {
@@ -67,6 +69,7 @@ internal fun SelectableAvatar(
                 isSelected = false,
                 loadingState = avatar.loadingState,
                 modifier = modifier,
+                onFailedAvatarClicked = { onFailedAvatarClicked?.invoke(avatar.uri) }
             )
         }
     }
@@ -79,13 +82,20 @@ private fun SelectableAvatar(
     loadingState: AvatarLoadingState,
     modifier: Modifier = Modifier,
     onAvatarOptionClicked: ((AvatarOption) -> Unit)? = null,
+    onFailedAvatarClicked: (() -> Unit)? = null,
 ) {
     var moreOptionsPopupVisible by remember { mutableStateOf(false) }
     Box(
         modifier = modifier
             .aspectRatio(1f)
             .clickable {
-                moreOptionsPopupVisible = true
+                when (loadingState) {
+                    AvatarLoadingState.Failure -> onFailedAvatarClicked?.invoke()
+                    AvatarLoadingState.Loading -> Unit
+                    AvatarLoadingState.None -> {
+                        moreOptionsPopupVisible = true
+                    }
+                }
             }
             .then(
                 if (isSelected) {

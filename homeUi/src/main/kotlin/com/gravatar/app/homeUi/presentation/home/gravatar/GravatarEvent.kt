@@ -7,4 +7,7 @@ sealed class GravatarEvent {
     data class OnAvatarSelected(val avatarId: String) : GravatarEvent()
     data class OnLocalImageSelected(val uri: Uri) : GravatarEvent()
     data class OnImageCropped(val uri: Uri) : GravatarEvent()
+    data class OnFailedAvatarDismissed(val uri: Uri) : GravatarEvent()
+    data object OnFailedAvatarDialogDismissed : GravatarEvent()
+    data class OnFailedAvatarTapped(val uri: Uri) : GravatarEvent()
 }
