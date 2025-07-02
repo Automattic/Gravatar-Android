@@ -1,5 +1,7 @@
 package com.gravatar.app.homeUi.presentation.home.gravatar.components
 
+import android.net.Uri
+import androidx.compose.foundation.layout.size
 import androidx.compose.ui.Modifier
 import com.gravatar.app.homeUi.presentation.home.gravatar.AvatarUi
 import com.gravatar.app.testUtils.roborazzi.RoborazziTest
@@ -27,7 +29,7 @@ class SelectableAvatarTest : RoborazziTest() {
             ),
             size = avatarSize,
             onAvatarOptionClicked = { _, _ -> },
-            modifier = Modifier,
+            modifier = Modifier.size(avatarSize),
         )
     }
 
@@ -41,7 +43,7 @@ class SelectableAvatarTest : RoborazziTest() {
             ),
             size = avatarSize,
             onAvatarOptionClicked = { _, _ -> },
-            modifier = Modifier,
+            modifier = Modifier.size(avatarSize),
         )
     }
 
@@ -55,7 +57,20 @@ class SelectableAvatarTest : RoborazziTest() {
             ),
             size = avatarSize,
             onAvatarOptionClicked = { _, _ -> },
-            modifier = Modifier,
+            modifier = Modifier.size(avatarSize),
+        )
+    }
+
+    @Test
+    fun selectableAvatarFailure() = screenshotTest {
+        SelectableAvatar(
+            avatar = AvatarUi.Local(
+                isLoading = false,
+                uri = Uri.EMPTY
+            ),
+            size = avatarSize,
+            onAvatarOptionClicked = { _, _ -> },
+            modifier = Modifier.size(avatarSize),
         )
     }
 }
