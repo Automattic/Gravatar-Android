@@ -1,10 +1,12 @@
 package com.gravatar.app.homeUi.presentation.home.gravatar.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -17,11 +19,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.gravatar.app.homeUi.R
@@ -55,21 +60,27 @@ fun GravatarHeader(
                     .fillMaxWidth()
                     .systemBarsPadding()
             ) {
-                GravatarAvatar(
-                    state = ComponentState.Loaded(url),
-                    size = 44.dp,
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .align(Alignment.CenterVertically)
-                )
+                AvatarShadow(shape = CircleShape, size = 45.dp, modifier = Modifier.align(Alignment.CenterVertically)) {
+                    GravatarAvatar(
+                        state = ComponentState.Loaded(url),
+                        size = 44.dp,
+                        modifier = Modifier
+                            .clip(CircleShape)
+                    )
+                }
                 Spacer(modifier = Modifier.width(8.dp))
-                GravatarAvatar(
-                    state = ComponentState.Loaded(url),
-                    size = 30.dp,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
-                        .align(Alignment.CenterVertically)
-                )
+                AvatarShadow(
+                    shape = RoundedCornerShape(size = 8.dp),
+                    size = 31.dp,
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                ) {
+                    GravatarAvatar(
+                        state = ComponentState.Loaded(url),
+                        size = 30.dp,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                    )
+                }
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(
                     onClick = {},
@@ -83,6 +94,30 @@ fun GravatarHeader(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun AvatarShadow(
+    shape: RoundedCornerShape,
+    size: Dp,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+) {
+    val colorStops = arrayOf(
+        0.0f to Color.Black.copy(0.3f),
+        0.6f to Color.Black.copy(alpha = 0f)
+    )
+
+    Box(
+        modifier = modifier
+            .size(size)
+            .clip(shape)
+            .background(Brush.linearGradient(colorStops = colorStops))
+            .padding(1.dp)
+            .shadow(1.dp, shape)
+    ) {
+        content()
     }
 }
 
