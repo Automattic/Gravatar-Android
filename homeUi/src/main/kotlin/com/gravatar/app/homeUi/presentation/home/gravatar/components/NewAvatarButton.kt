@@ -2,7 +2,6 @@ package com.gravatar.app.homeUi.presentation.home.gravatar.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -37,10 +36,6 @@ fun NewAvatarButton(
                 color = MaterialTheme.colorScheme.surface,
             )
             .clip(RoundedCornerShape(12.dp))
-            .clickable(
-                enabled = true,
-                onClick = onClick,
-            )
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
