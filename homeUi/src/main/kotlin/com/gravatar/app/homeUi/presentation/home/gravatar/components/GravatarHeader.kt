@@ -23,17 +23,21 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.gravatar.app.homeUi.R
 import com.gravatar.restapi.models.Avatar
 import com.gravatar.ui.components.ComponentState
 import java.net.URI
 import com.gravatar.ui.components.atomic.Avatar as GravatarAvatar
+
+private const val CROSSFACE_DURATION_MS = 500
 
 @Composable
 fun GravatarHeader(
@@ -44,7 +48,10 @@ fun GravatarHeader(
     avatarUrl?.let { url ->
         Box(modifier.fillMaxWidth()) {
             AsyncImage(
-                model = url,
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(url)
+                    .crossfade(CROSSFACE_DURATION_MS)
+                    .build(),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
