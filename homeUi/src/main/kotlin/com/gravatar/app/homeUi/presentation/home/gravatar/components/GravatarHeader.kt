@@ -8,16 +8,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.gravatar.app.homeUi.R
 import com.gravatar.restapi.models.Avatar
 import com.gravatar.ui.components.ComponentState
 import java.net.URI
@@ -43,7 +49,9 @@ fun GravatarHeader(
                     )
             )
             Row(
-                Modifier.padding(16.dp)
+                Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
             ) {
                 GravatarAvatar(
                     state = ComponentState.Loaded(url),
@@ -60,6 +68,17 @@ fun GravatarHeader(
                         .clip(RoundedCornerShape(8.dp))
                         .align(Alignment.CenterVertically)
                 )
+                Spacer(modifier = Modifier.weight(1f))
+                IconButton(
+                    onClick = {},
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.more_button),
+                        tint = Color.White,
+                        contentDescription = stringResource(R.string.gravatar_tab_header_more_options)
+                    )
+                }
             }
         }
     }
