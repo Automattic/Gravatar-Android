@@ -34,7 +34,7 @@ internal class GravatarViewModel(
             GravatarEvent.Refresh -> fetchAvatars(isRefreshing = true)
             is GravatarEvent.OnAvatarSelected -> selectAvatar(event.avatarId)
             is GravatarEvent.OnLocalImageSelected -> localImageSelected(event.uri)
-            is GravatarEvent.OnImageCropped -> uploadAvatar(event.croppedImageUri)
+            is GravatarEvent.OnImageCropped -> uploadAvatar(event.uri)
         }
     }
 
