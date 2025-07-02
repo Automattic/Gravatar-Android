@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
@@ -45,15 +46,21 @@ fun NewAvatarButton(
             Icon(
                 painter = painterResource(iconRes),
                 contentDescription = contentDescription,
+                modifier = Modifier
+                    .size(24.dp)
             )
             BasicText(
                 text = label,
                 autoSize = TextAutoSize.StepBased(
-                    maxFontSize = MaterialTheme.typography.labelMedium.fontSize
+                    minFontSize = MaterialTheme.typography.bodySmall.fontSize,
+                    maxFontSize = MaterialTheme.typography.bodyLarge.fontSize
                 ),
                 style = MaterialTheme.typography.labelMedium.copy(
                     color = MaterialTheme.colorScheme.primary,
-                )
+                ),
+                maxLines = 1,
+                modifier = Modifier
+                    .padding(top = 8.dp),
             )
         }
     }
