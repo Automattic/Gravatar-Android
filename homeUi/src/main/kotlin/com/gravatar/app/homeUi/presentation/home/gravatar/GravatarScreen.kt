@@ -10,6 +10,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -41,6 +42,7 @@ import com.gravatar.app.homeUi.GravatarFileProvider
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.AvatarOption
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.FailedAvatarUploadAlertDialog
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.UploadNewAvatarSection
+import com.gravatar.app.homeUi.presentation.home.gravatar.components.GravatarHeader
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.avatarSize
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.avatarsGridSection
 import com.gravatar.restapi.models.Avatar
@@ -144,48 +146,54 @@ internal fun GravatarScreen(
             onRefresh = { onEvent(GravatarEvent.Refresh) },
             isRefreshing = uiState.isRefreshing,
         ) {
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = avatarSize),
-                state = gridState,
-                contentPadding = contentPadding,
-                horizontalArrangement = Arrangement.spacedBy(itemSpacing),
-                verticalArrangement = Arrangement.spacedBy(itemSpacing),
-            ) {
-                item(
-                    span = { GridItemSpan((maxLineSpan)) },
+            Column {
+                GravatarHeader(
+                    uiState.avatars.firstOrNull { it.imageId == uiState.selectedAvatarId },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                LazyVerticalGrid(
+                    columns = GridCells.Adaptive(minSize = avatarSize),
+                    state = gridState,
+                    contentPadding = contentPadding,
+                    horizontalArrangement = Arrangement.spacedBy(itemSpacing),
+                    verticalArrangement = Arrangement.spacedBy(itemSpacing),
                 ) {
-                    UploadNewAvatarSection(
-                        onTakePictureClicked = onTakePictureClicked,
-                        onChooseFromGalleryClicked = onPickMediaClicked,
-                    )
-                }
-                if (uiState.isLoading) {
                     item(
                         span = { GridItemSpan((maxLineSpan)) },
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .height(200.dp)
-                                .fillMaxWidth(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator()
-                        }
+                        UploadNewAvatarSection(
+                            onTakePictureClicked = onTakePictureClicked,
+                            onChooseFromGalleryClicked = onPickMediaClicked,
+                        )
                     }
-                } else {
-                    avatarsGridSection(
-                        avatars = uiState.avatarsUi,
-                        onAvatarOptionClicked = { avatar, option ->
-                            when (option) {
-                                AvatarOption.Select -> {
-                                    onEvent(GravatarEvent.OnAvatarSelected(avatar.imageId))
-                                }
+                    if (uiState.isLoading) {
+                        item(
+                            span = { GridItemSpan((maxLineSpan)) },
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .height(200.dp)
+                                    .fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator()
                             }
-                        },
-                        onFailedAvatarClicked = { uri ->
-                            onEvent(GravatarEvent.OnFailedAvatarTapped(uri))
                         }
-                    )
+                    } else {
+                        avatarsGridSection(
+                            avatars = uiState.avatarsUi,
+                            onAvatarOptionClicked = { avatar, option ->
+                                when (option) {
+                                    AvatarOption.Select -> {
+                                        onEvent(GravatarEvent.OnAvatarSelected(avatar.imageId))
+                                    }
+                                }
+                            },
+                            onFailedAvatarClicked = { uri ->
+                                onEvent(GravatarEvent.OnFailedAvatarTapped(uri))
+                            }
+                        )
+                    }
                 }
             }
             FailedAvatarUploadAlertDialog(
