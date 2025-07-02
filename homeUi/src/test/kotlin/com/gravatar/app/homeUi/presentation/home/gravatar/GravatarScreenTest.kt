@@ -25,7 +25,9 @@ class GravatarScreenTest : RoborazziTest() {
                     },
                     selectedAvatarId = "0"
                 ),
-                onEvent = { }
+                onEvent = { },
+                onTakePictureClicked = { },
+                onPickMediaClicked = { },
             )
         }
     }

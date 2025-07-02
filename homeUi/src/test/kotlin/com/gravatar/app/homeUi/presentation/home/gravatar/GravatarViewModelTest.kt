@@ -206,7 +206,7 @@ class GravatarViewModelTest {
             )
             assertEquals(
                 GravatarUiState(
-                    avatars = listOf(newAvatar) + avatars,
+                    avatars = listOf(newAvatar) + avatars.filter { it.imageId != newAvatar.imageId },
                     uploadingAvatar = null
                 ),
                 awaitItem()

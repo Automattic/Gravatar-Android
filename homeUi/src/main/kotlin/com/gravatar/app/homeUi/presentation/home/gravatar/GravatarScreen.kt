@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -59,6 +60,12 @@ internal fun GravatarScreen(
     val context = LocalContext.current
     var photoImageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
 
+    val pickMedia = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        uri?.let { viewModel.onEvent(GravatarEvent.OnLocalImageSelected(uri)) }
+    }
+
     val uCropLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
@@ -106,6 +113,9 @@ internal fun GravatarScreen(
         uiState = uiState,
         onEvent = viewModel::onEvent,
         onTakePictureClicked = takePhotoCallback,
+        onPickMediaClicked = {
+            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }
     )
 }
 
@@ -113,8 +123,9 @@ internal fun GravatarScreen(
 @Composable
 internal fun GravatarScreen(
     uiState: GravatarUiState,
+    onTakePictureClicked: () -> Unit,
+    onPickMediaClicked: () -> Unit,
     onEvent: (GravatarEvent) -> Unit = {},
-    onTakePictureClicked: () -> Unit = {},
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -139,7 +150,7 @@ internal fun GravatarScreen(
                 ) {
                     UploadNewAvatarSection(
                         onTakePictureClicked = onTakePictureClicked,
-                        onChooseFromGalleryClicked = { }
+                        onChooseFromGalleryClicked = onPickMediaClicked,
                     )
                 }
                 if (uiState.isLoading) {
@@ -213,5 +224,7 @@ private fun GravatarScreenPreview() {
                 }
             }
         ),
+        onTakePictureClicked = { },
+        onPickMediaClicked = { },
     )
 }
