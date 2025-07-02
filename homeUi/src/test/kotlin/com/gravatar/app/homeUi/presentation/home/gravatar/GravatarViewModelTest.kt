@@ -405,7 +405,7 @@ class GravatarViewModelTest {
             assertEquals(expectedState, awaitItem())
         }
     }
-    
+
     private fun initViewModel() {
         viewModel = GravatarViewModel(
             userRepository = userRepository,

@@ -55,8 +55,8 @@ internal class GravatarViewModel(
     }
 
     private fun removedFailedUpload(uri: Uri) {
+        fileUtils.deleteFile(uri)
         _uiState.update { currentState ->
-            fileUtils.deleteFile(uri)
             currentState.copy(
                 failedUploads = currentState.failedUploads.filter { it.uri != uri },
                 failedUploadDialog = null,
