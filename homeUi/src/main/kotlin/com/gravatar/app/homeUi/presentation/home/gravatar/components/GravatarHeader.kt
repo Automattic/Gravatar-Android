@@ -45,7 +45,7 @@ fun GravatarHeader(
                 modifier = Modifier
                     .matchParentSize()
                     .blur(
-                        radius = 24.dp,
+                        radius = 40.dp,
                         edgeTreatment = BlurredEdgeTreatment.Rectangle,
                     )
             )
