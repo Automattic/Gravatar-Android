@@ -1,5 +1,6 @@
 package com.gravatar.app.di
 
+import android.content.Context
 import org.junit.Test
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.test.KoinTest
@@ -10,6 +11,8 @@ class AppModuleTest : KoinTest {
     @OptIn(KoinExperimentalAPI::class)
     @Test
     fun checkAllModules() {
-        appModule.verify()
+        appModule.verify(
+            extraTypes = listOf(Context::class)
+        )
     }
 }
