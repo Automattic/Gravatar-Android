@@ -1,5 +1,6 @@
 package com.gravatar.app.homeUi.presentation.home
 
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -34,6 +35,7 @@ internal fun HomeScreen(
     val backStackEntry = navController.currentBackStackEntryAsState()
 
     Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
             NavigationBar {
                 HomeDestination.allDestinations
