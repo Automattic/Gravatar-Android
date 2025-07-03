@@ -34,6 +34,7 @@ import com.gravatar.app.homeUi.presentation.home.gravatar.AvatarUi
 import com.gravatar.restapi.models.Avatar
 import com.gravatar.ui.components.ComponentState
 import java.net.URL
+import kotlin.toString
 import com.gravatar.ui.components.atomic.Avatar as AtomicAvatar
 
 internal val avatarSize = 88.dp
@@ -55,6 +56,15 @@ internal fun SelectableAvatar(
                 loadingState = avatar.loadingState,
                 modifier = modifier,
                 onAvatarOptionClicked = { onAvatarOptionClicked(avatar.avatar, it) },
+            )
+        }
+
+        is AvatarUi.Local -> {
+            SelectableAvatar(
+                imageUrl = avatar.uri.toString(),
+                isSelected = false,
+                loadingState = avatar.loadingState,
+                modifier = modifier,
             )
         }
     }
@@ -180,6 +190,12 @@ internal sealed class AvatarLoadingState {
 
 private val AvatarUi.Uploaded.loadingState: AvatarLoadingState
     get() = if (isLoading) AvatarLoadingState.Loading else AvatarLoadingState.None
+
+private val AvatarUi.Local.loadingState: AvatarLoadingState
+    get() = when {
+        isLoading -> AvatarLoadingState.Loading
+        else -> AvatarLoadingState.None
+    }
 
 @Preview
 @Composable

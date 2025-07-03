@@ -22,6 +22,7 @@ dependencyResolutionManagement {
             content {
                 includeGroup("com.automattic")
                 includeGroup("com.automattic.tracks")
+                includeGroup("com.automattic.ucrop")
             }
         }
     }

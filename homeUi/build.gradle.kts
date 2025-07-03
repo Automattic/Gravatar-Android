@@ -15,6 +15,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.ui)
+    implementation(libs.androidx.activity)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.navigation)
     implementation(project.dependencies.platform(libs.koin.bom))
@@ -23,6 +24,7 @@ dependencies {
     implementation(libs.koin.compose)
     implementation(libs.gravatar.core)
     implementation(libs.gravatar.ui)
+    implementation(libs.ucrop)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

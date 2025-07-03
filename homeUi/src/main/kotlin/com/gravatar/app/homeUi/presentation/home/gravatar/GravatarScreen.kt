@@ -1,5 +1,12 @@
 package com.gravatar.app.homeUi.presentation.home.gravatar
 
+import android.content.Context
+import android.content.Intent
+import android.graphics.Color
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,17 +22,32 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
+import com.gravatar.app.homeUi.GravatarFileProvider
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.AvatarOption
+import com.gravatar.app.homeUi.presentation.home.gravatar.components.UploadNewAvatarSection
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.avatarSize
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.avatarsGridSection
 import com.gravatar.restapi.models.Avatar
+import com.yalantis.ucrop.UCrop
+import com.yalantis.ucrop.UCropActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.koinViewModel
+import java.io.File
 import java.net.URI
 
 @Composable
@@ -33,10 +55,57 @@ internal fun GravatarScreen(
     viewModel: GravatarViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val lifecycle = LocalLifecycleOwner.current
+    val context = LocalContext.current
+    var photoImageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
+
+    val uCropLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        it.data?.let { intentData ->
+            UCrop.getOutput(intentData)?.let { croppedImageUri ->
+                viewModel.onEvent(GravatarEvent.OnImageCropped(croppedImageUri))
+            }
+        }
+    }
+
+    val takePhoto = rememberLauncherForActivityResult(
+        ActivityResultContracts.TakePicture()
+    ) { success ->
+        val takenPictureUri = photoImageUri
+        if (success && takenPictureUri != null) {
+            viewModel.onEvent(GravatarEvent.OnLocalImageSelected(takenPictureUri))
+        }
+    }
+
+    val takePhotoCallback = {
+        val imageUri = GravatarFileProvider.getTempCameraImageUri(context)
+        photoImageUri = imageUri
+        takePhoto.launch(imageUri)
+    }
+
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.Main.immediate) {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.actions.collect { action ->
+                    when (action) {
+                        is GravatarAction.LaunchImageCropper -> {
+                            uCropLauncher.launchUCrop(
+                                context = context,
+                                targetImageUri = action.imageUri,
+                                currentImageFile = action.tempFile
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     GravatarScreen(
         uiState = uiState,
         onEvent = viewModel::onEvent,
+        onTakePictureClicked = takePhotoCallback,
     )
 }
 
@@ -45,6 +114,7 @@ internal fun GravatarScreen(
 internal fun GravatarScreen(
     uiState: GravatarUiState,
     onEvent: (GravatarEvent) -> Unit = {},
+    onTakePictureClicked: () -> Unit = {},
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -64,6 +134,14 @@ internal fun GravatarScreen(
                 horizontalArrangement = Arrangement.spacedBy(itemSpacing),
                 verticalArrangement = Arrangement.spacedBy(itemSpacing),
             ) {
+                item(
+                    span = { GridItemSpan((maxLineSpan)) },
+                ) {
+                    UploadNewAvatarSection(
+                        onTakePictureClicked = onTakePictureClicked,
+                        onChooseFromGalleryClicked = { }
+                    )
+                }
                 if (uiState.isLoading) {
                     item(
                         span = { GridItemSpan((maxLineSpan)) },
@@ -93,6 +171,31 @@ internal fun GravatarScreen(
         }
     }
 }
+
+private fun ActivityResultLauncher<Intent>.launchUCrop(
+    context: Context,
+    targetImageUri: Uri,
+    currentImageFile: File,
+) {
+    val options = UCrop.Options().apply {
+        setToolbarColor(Color.BLACK)
+        setStatusBarColor(Color.BLACK)
+        setToolbarWidgetColor(Color.WHITE)
+        setAllowedGestures(UCropActivity.SCALE, UCropActivity.ROTATE, UCropActivity.NONE)
+        setCompressionQuality(UCROP_COMPRESSION_QUALITY)
+        withMaxResultSize(UCROP_MAX_IMAGE_SIZE, UCROP_MAX_IMAGE_SIZE)
+        setCircleDimmedLayer(true)
+    }
+    launch(
+        UCrop.of(targetImageUri, Uri.fromFile(currentImageFile))
+            .withAspectRatio(1f, 1f)
+            .withOptions(options)
+            .getIntent(context)
+    )
+}
+
+private const val UCROP_COMPRESSION_QUALITY = 75
+private const val UCROP_MAX_IMAGE_SIZE = 1080
 
 @Preview(showBackground = true)
 @Composable

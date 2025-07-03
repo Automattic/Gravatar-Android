@@ -1,12 +1,18 @@
 package com.gravatar.app.homeUi.presentation.home.gravatar
 
+import android.net.Uri
+import androidx.core.net.toFile
 import app.cash.turbine.test
+import com.gravatar.app.homeUi.presentation.FileUtils
 import com.gravatar.app.testUtils.CoroutineTestRule
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import com.gravatar.restapi.models.Avatar
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -14,6 +20,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
+import java.io.File
 import java.net.URI
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -24,6 +31,7 @@ class GravatarViewModelTest {
     var coroutineTestRule = CoroutineTestRule(testDispatcher)
 
     private val userRepository: UserRepository = mockk()
+    private val fileUtils: FileUtils = mockk()
     private lateinit var viewModel: GravatarViewModel
 
     @Test
@@ -33,7 +41,7 @@ class GravatarViewModelTest {
         coEvery { userRepository.getAvatars() } returns Result.success(avatars)
 
         // When
-        viewModel = GravatarViewModel(userRepository)
+        initViewModel()
 
         // Then
         viewModel.uiState.test {
@@ -49,7 +57,7 @@ class GravatarViewModelTest {
         // Given
         val avatars = createAvatars()
         coEvery { userRepository.getAvatars() } returns Result.success(avatars)
-        viewModel = GravatarViewModel(userRepository)
+        initViewModel()
 
         advanceUntilIdle()
 
@@ -76,7 +84,7 @@ class GravatarViewModelTest {
         coEvery { userRepository.getAvatars() } returns Result.failure(RuntimeException("Test exception"))
 
         // When
-        viewModel = GravatarViewModel(userRepository)
+        initViewModel()
 
         // Then
         viewModel.uiState.test {
@@ -92,7 +100,7 @@ class GravatarViewModelTest {
         // Given
         val avatars = createAvatars()
         coEvery { userRepository.getAvatars() } returns Result.success(avatars)
-        viewModel = GravatarViewModel(userRepository)
+        initViewModel()
         advanceUntilIdle()
 
         val avatarId = "1"
@@ -119,7 +127,7 @@ class GravatarViewModelTest {
         // Given
         val avatars = createAvatars()
         coEvery { userRepository.getAvatars() } returns Result.success(avatars)
-        viewModel = GravatarViewModel(userRepository)
+        initViewModel()
         advanceUntilIdle()
 
         val avatarId = "1"
@@ -142,15 +150,136 @@ class GravatarViewModelTest {
         coVerify { userRepository.selectAvatar(avatarId) }
     }
 
+    @Test
+    fun `onEvent OnLocalImageSelected should send LaunchImageCropper action`() = runTest {
+        // Given
+        val avatars = createAvatars()
+        coEvery { userRepository.getAvatars() } returns Result.success(avatars)
+        val mockUri = mockk<Uri>()
+        val mockFile = mockk<File>()
+        every { fileUtils.createCroppedAvatarFile() } returns mockFile
+
+        initViewModel()
+        advanceUntilIdle()
+
+        // When
+        viewModel.onEvent(GravatarEvent.OnLocalImageSelected(mockUri))
+        advanceUntilIdle()
+
+        // Then
+        viewModel.actions.test {
+            assertEquals(GravatarAction.LaunchImageCropper(mockUri, mockFile), awaitItem())
+        }
+        verify { fileUtils.createCroppedAvatarFile() }
+    }
+
+    @Test
+    fun `onEvent OnImageCropped should upload avatar successfully`() = runTest {
+        // Given
+        val avatars = createAvatars()
+        coEvery { userRepository.getAvatars() } returns Result.success(avatars)
+        initViewModel()
+        advanceUntilIdle()
+
+        mockkStatic("androidx.core.net.UriKt")
+        val file = mockk<File>()
+        val mockUri = mockk<Uri> {
+            every { toFile() } returns file
+        }
+        every { fileUtils.deleteFile(mockUri) } returns Unit
+
+        val newAvatar = createAvatar(4)
+        coEvery { userRepository.uploadAvatar(file) } returns Result.success(newAvatar)
+
+        // When
+        viewModel.onEvent(GravatarEvent.OnImageCropped(mockUri))
+
+        // Verify the state after setting uploadingAvatar
+        viewModel.uiState.test {
+            expectMostRecentItem()
+            assertEquals(
+                GravatarUiState(
+                    avatars = avatars,
+                    uploadingAvatar = mockUri
+                ),
+                awaitItem()
+            )
+            assertEquals(
+                GravatarUiState(
+                    avatars = listOf(newAvatar) + avatars,
+                    uploadingAvatar = null
+                ),
+                awaitItem()
+            )
+        }
+
+        coVerify { userRepository.uploadAvatar(any()) }
+        verify { fileUtils.deleteFile(mockUri) }
+    }
+
+    @Test
+    fun `onEvent OnImageCropped should handle failure`() = runTest {
+        // Given
+        val avatars = createAvatars()
+        coEvery { userRepository.getAvatars() } returns Result.success(avatars)
+        initViewModel()
+        advanceUntilIdle()
+
+        mockkStatic("androidx.core.net.UriKt")
+        val file = mockk<File>()
+        val mockUri = mockk<Uri> {
+            every { toFile() } returns file
+        }
+        every { fileUtils.deleteFile(mockUri) } returns Unit
+
+        coEvery {
+            userRepository.uploadAvatar(any())
+        } returns Result.failure(IllegalStateException("Test exception"))
+
+        // When
+        viewModel.onEvent(GravatarEvent.OnImageCropped(mockUri))
+
+        // Verify the state after setting uploadingAvatar
+        viewModel.uiState.test {
+            expectMostRecentItem()
+            assertEquals(
+                GravatarUiState(
+                    avatars = avatars,
+                    uploadingAvatar = mockUri,
+                ),
+                awaitItem()
+            )
+            assertEquals(
+                GravatarUiState(
+                    avatars = avatars,
+                    uploadingAvatar = null,
+                ),
+                awaitItem()
+            )
+        }
+
+        coVerify { userRepository.uploadAvatar(any()) }
+        verify { fileUtils.deleteFile(mockUri) }
+    }
+
+    private fun initViewModel() {
+        viewModel = GravatarViewModel(
+            userRepository = userRepository,
+            fileUtils = fileUtils,
+        )
+    }
+
     private fun createAvatars(count: Int = 3): List<Avatar> {
         return List(count) { index ->
-            Avatar {
-                imageUrl = URI.create("https://gravatar.com/avatar/test$index")
-                imageId = index.toString()
-                rating = Avatar.Rating.G
-                altText = "alt$index"
-                updatedDate = ""
-            }
+            createAvatar(index)
         }
+    }
+
+    private fun createAvatar(id: Int): Avatar = Avatar {
+        imageUrl = URI.create("https://gravatar.com/avatar/test$id")
+        imageId = id.toString()
+        rating = Avatar.Rating.G
+        altText = "alt$id"
+        updatedDate = ""
     }
 }

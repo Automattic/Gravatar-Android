@@ -9,6 +9,7 @@ import com.gravatar.services.GravatarResult
 import com.gravatar.services.ProfileService
 import com.gravatar.types.Hash
 import kotlinx.coroutines.flow.firstOrNull
+import java.io.File
 
 internal class RealUserRepository(
     private val avatarService: AvatarService,
@@ -81,6 +82,28 @@ internal class RealUserRepository(
                 Result.success(result)
             } else {
                 Result.failure(IllegalStateException("Failed to update profile"))
+            }
+        } else {
+            Result.failure(IllegalStateException("User is not logged in"))
+        }
+    }
+
+    override suspend fun uploadAvatar(avatarFile: File): Result<Avatar> {
+        val token = tokenStorage.get().firstOrNull()
+        return if (token != null) {
+            val result = profileService.retrieveAuthenticatedCatching(token)
+                .valueOrNull()
+                ?.let { profile ->
+                    avatarService.uploadCatching(
+                        file = avatarFile,
+                        oauthToken = token,
+                        hash = Hash(profile.hash)
+                    )
+                }
+            if (result is GravatarResult.Success) {
+                Result.success(result.value)
+            } else {
+                Result.failure(IllegalStateException("Failed to upload avatar"))
             }
         } else {
             Result.failure(IllegalStateException("User is not logged in"))
