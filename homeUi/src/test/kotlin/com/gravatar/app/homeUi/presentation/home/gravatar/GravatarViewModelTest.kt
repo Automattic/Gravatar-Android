@@ -10,6 +10,7 @@ import com.gravatar.restapi.models.Avatar
 import com.gravatar.services.ErrorType
 import com.gravatar.services.GravatarResult
 import io.mockk.coEvery
+import io.mockk.coJustAwait
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -147,6 +148,49 @@ class GravatarViewModelTest {
             expectNoEvents()
         }
         coVerify(exactly = 1) { userRepository.selectAvatar(avatarId) }
+    }
+
+    @Test
+    fun `onEvent OnAvatarSelected should clean the loading state and skip selecting already selected avatar again`() = runTest {
+        // Given
+        val avatars = createAvatars()
+        coEvery { userRepository.getAvatars() } returns Result.success(avatars)
+        initViewModel()
+        advanceUntilIdle()
+
+        val initialAvatarId = "1"
+        val otherAvatarId = "2"
+        coEvery { userRepository.selectAvatar(initialAvatarId) } returns Result.success(Unit)
+        coJustAwait { userRepository.selectAvatar(otherAvatarId) }
+        viewModel.onEvent(GravatarEvent.OnAvatarSelected(initialAvatarId))
+        advanceUntilIdle()
+
+        viewModel.uiState.test {
+            expectMostRecentItem()
+
+            // When
+            viewModel.onEvent(GravatarEvent.OnAvatarSelected(otherAvatarId))
+            assertEquals(
+                GravatarUiState(
+                    avatars = avatars,
+                    selectedAvatarId = initialAvatarId,
+                    selectingAvatarId = otherAvatarId
+                ),
+                awaitItem()
+            )
+            viewModel.onEvent(GravatarEvent.OnAvatarSelected(initialAvatarId))
+
+            // Then
+            assertEquals(
+                GravatarUiState(
+                    avatars = avatars,
+                    selectedAvatarId = initialAvatarId,
+                    selectingAvatarId = null
+                ),
+                awaitItem()
+            )
+        }
+        coVerify(exactly = 1) { userRepository.selectAvatar(initialAvatarId) }
     }
 
     @Test

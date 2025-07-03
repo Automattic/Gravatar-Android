@@ -11,6 +11,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -26,19 +27,37 @@ internal class GravatarViewModel(
     private val _actions = Channel<GravatarAction>(Channel.BUFFERED)
     val actions = _actions.receiveAsFlow()
 
+    private val avatarSelectionQueue = Channel<String>(Channel.CONFLATED)
+
     init {
         fetchAvatars(isRefreshing = false)
+
+        viewModelScope.launch {
+            avatarSelectionQueue.receiveAsFlow()
+                .collectLatest { avatarId ->
+                    selectAvatar(avatarId)
+                }
+        }
     }
 
     fun onEvent(event: GravatarEvent) {
         when (event) {
             GravatarEvent.Refresh -> fetchAvatars(isRefreshing = true)
-            is GravatarEvent.OnAvatarSelected -> selectAvatar(event.avatarId)
+            is GravatarEvent.OnAvatarSelected -> addAvatarSelectionTOQueue(event.avatarId)
             is GravatarEvent.OnLocalImageSelected -> localImageSelected(event.uri)
             is GravatarEvent.OnImageCropped -> uploadAvatar(event.uri)
             GravatarEvent.OnFailedAvatarDialogDismissed -> dismissFailedUploadDialog()
             is GravatarEvent.OnFailedAvatarDismissed -> removedFailedUpload(event.uri)
             is GravatarEvent.OnFailedAvatarTapped -> showFailedUploadDialog(event.uri)
+        }
+    }
+
+    private fun addAvatarSelectionTOQueue(avatarId: String) {
+        val state = uiState.value
+        if (state.selectedAvatarId != avatarId || state.selectingAvatarId != avatarId) {
+            viewModelScope.launch {
+                avatarSelectionQueue.send(avatarId)
+            }
         }
     }
 
@@ -117,29 +136,31 @@ internal class GravatarViewModel(
         }
     }
 
-    private fun selectAvatar(avatarId: String) {
-        if (_uiState.value.selectedAvatarId != avatarId) {
-            viewModelScope.launch {
-                _uiState.update { currentState ->
-                    currentState.copy(selectingAvatarId = avatarId)
-                }
-                userRepository.selectAvatar(avatarId)
-                    .onSuccess {
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                selectingAvatarId = null,
-                                selectedAvatarId = avatarId,
-                            )
-                        }
-                    }
-                    .onFailure {
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                selectingAvatarId = null,
-                            )
-                        }
-                    }
+    private suspend fun selectAvatar(avatarId: String) {
+        if (uiState.value.selectedAvatarId == avatarId) {
+            _uiState.update { currentState ->
+                currentState.copy(selectingAvatarId = null)
             }
+        } else {
+            _uiState.update { currentState ->
+                currentState.copy(selectingAvatarId = avatarId)
+            }
+            userRepository.selectAvatar(avatarId)
+                .onSuccess {
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            selectingAvatarId = null,
+                            selectedAvatarId = avatarId,
+                        )
+                    }
+                }
+                .onFailure {
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            selectingAvatarId = null,
+                        )
+                    }
+                }
         }
     }
 
