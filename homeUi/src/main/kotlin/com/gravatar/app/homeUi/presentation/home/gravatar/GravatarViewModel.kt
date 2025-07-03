@@ -118,26 +118,28 @@ internal class GravatarViewModel(
     }
 
     private fun selectAvatar(avatarId: String) {
-        viewModelScope.launch {
-            _uiState.update { currentState ->
-                currentState.copy(selectingAvatarId = avatarId)
+        if (_uiState.value.selectedAvatarId != avatarId) {
+            viewModelScope.launch {
+                _uiState.update { currentState ->
+                    currentState.copy(selectingAvatarId = avatarId)
+                }
+                userRepository.selectAvatar(avatarId)
+                    .onSuccess {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                selectingAvatarId = null,
+                                selectedAvatarId = avatarId,
+                            )
+                        }
+                    }
+                    .onFailure {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                selectingAvatarId = null,
+                            )
+                        }
+                    }
             }
-            userRepository.selectAvatar(avatarId)
-                .onSuccess {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            selectingAvatarId = null,
-                            selectedAvatarId = avatarId,
-                        )
-                    }
-                }
-                .onFailure {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            selectingAvatarId = null,
-                        )
-                    }
-                }
         }
     }
 

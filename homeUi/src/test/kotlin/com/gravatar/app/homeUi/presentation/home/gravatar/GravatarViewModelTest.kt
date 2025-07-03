@@ -125,6 +125,31 @@ class GravatarViewModelTest {
     }
 
     @Test
+    fun `onEvent OnAvatarSelected shouldn't select the same avatar again`() = runTest {
+        // Given
+        val avatars = createAvatars()
+        coEvery { userRepository.getAvatars() } returns Result.success(avatars)
+        initViewModel()
+        advanceUntilIdle()
+
+        val avatarId = "1"
+        coEvery { userRepository.selectAvatar(avatarId) } returns Result.success(Unit)
+        viewModel.onEvent(GravatarEvent.OnAvatarSelected(avatarId))
+        advanceUntilIdle()
+
+        viewModel.uiState.test {
+            expectMostRecentItem()
+
+            // When
+            viewModel.onEvent(GravatarEvent.OnAvatarSelected(avatarId))
+
+            // Then
+            expectNoEvents()
+        }
+        coVerify(exactly = 1) { userRepository.selectAvatar(avatarId) }
+    }
+
+    @Test
     fun `onEvent OnAvatarSelected should handle failure`() = runTest {
         // Given
         val avatars = createAvatars()
