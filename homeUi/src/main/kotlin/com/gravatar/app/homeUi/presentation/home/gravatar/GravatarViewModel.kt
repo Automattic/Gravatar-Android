@@ -50,7 +50,10 @@ internal class GravatarViewModel(
                         currentState.copy(
                             avatars = buildList {
                                 add(avatar)
-                                addAll(currentState.avatars)
+                                addAll(
+                                    currentState.avatars
+                                        .filter { it.imageId != avatar.imageId }
+                                )
                             },
                             uploadingAvatar = null,
                         )
