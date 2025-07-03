@@ -41,8 +41,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.gravatar.app.homeUi.GravatarFileProvider
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.AvatarOption
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.FailedAvatarUploadAlertDialog
-import com.gravatar.app.homeUi.presentation.home.gravatar.components.UploadNewAvatarSection
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.GravatarHeader
+import com.gravatar.app.homeUi.presentation.home.gravatar.components.UploadNewAvatarSection
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.avatarSize
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.avatarsGridSection
 import com.gravatar.restapi.models.Avatar

@@ -47,47 +47,46 @@ fun GravatarHeader(
     avatar: Avatar?,
     modifier: Modifier = Modifier,
 ) {
-    val avatarUrl = avatar?.imageUrl?.toString()
-    avatarUrl?.let { url ->
-        Box(modifier.fillMaxWidth()) {
-            GravatarAvatar(
-                url,
+    val avatarUrl = avatar?.imageUrl?.toString() ?: ""
+
+    Box(modifier.fillMaxWidth()) {
+        GravatarAvatar(
+            avatarUrl,
+            modifier = Modifier
+                .matchParentSize()
+                .blur(radius = 40.dp, edgeTreatment = BlurredEdgeTreatment.Rectangle)
+        )
+        Row(
+            Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
+                .systemBarsPadding()
+        ) {
+            GravatarAvatarWithShadow(
+                url = avatarUrl,
+                borderShape = CircleShape,
                 modifier = Modifier
-                    .matchParentSize()
-                    .blur(radius = 40.dp, edgeTreatment = BlurredEdgeTreatment.Rectangle)
+                    .align(Alignment.CenterVertically)
+                    .size(44.dp)
             )
-            Row(
-                Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth()
-                    .systemBarsPadding()
+            Spacer(modifier = Modifier.width(8.dp))
+            GravatarAvatarWithShadow(
+                url = avatarUrl,
+                borderShape = RoundedCornerShape(8.dp),
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .size(30.dp)
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            IconButton(
+                onClick = {},
+                modifier = Modifier.align(Alignment.CenterVertically)
             ) {
-                GravatarAvatarWithShadow(
-                    url = url,
-                    borderShape = CircleShape,
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                        .size(44.dp)
+                Icon(
+                    painter = painterResource(id = R.drawable.more_button),
+                    tint = Color.White,
+                    contentDescription = stringResource(R.string.gravatar_tab_header_more_options)
                 )
-                Spacer(modifier = Modifier.width(8.dp))
-                GravatarAvatarWithShadow(
-                    url = url,
-                    borderShape = RoundedCornerShape(8.dp),
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                        .size(30.dp)
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                IconButton(
-                    onClick = {},
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.more_button),
-                        tint = Color.White,
-                        contentDescription = stringResource(R.string.gravatar_tab_header_more_options)
-                    )
-                }
             }
         }
     }
