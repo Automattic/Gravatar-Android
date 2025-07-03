@@ -59,10 +59,12 @@ internal fun GravatarScreen(
     val lifecycle = LocalLifecycleOwner.current
     val context = LocalContext.current
     var photoImageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
+    var mediaPickerLaunched by rememberSaveable { mutableStateOf(false) }
 
     val pickMedia = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia()
     ) { uri ->
+        mediaPickerLaunched = false
         uri?.let { viewModel.onEvent(GravatarEvent.OnLocalImageSelected(uri)) }
     }
 
@@ -114,7 +116,10 @@ internal fun GravatarScreen(
         onEvent = viewModel::onEvent,
         onTakePictureClicked = takePhotoCallback,
         onPickMediaClicked = {
-            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            if (!mediaPickerLaunched) {
+                pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                mediaPickerLaunched = true
+            }
         }
     )
 }
