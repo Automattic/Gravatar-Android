@@ -62,7 +62,7 @@ internal fun LazyGridScope.avatarsGridSection(
             SelectableAvatar(
                 avatar = avatarModel,
                 size = avatarSize,
-                modifier = Modifier,
+                modifier = Modifier.animateItem(),
                 onAvatarOptionClicked = onAvatarOptionClicked,
                 onFailedAvatarClicked = onFailedAvatarClicked,
             )

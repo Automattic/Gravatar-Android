@@ -15,14 +15,6 @@ internal data class GravatarUiState(
     val failedUploadDialog: AvatarUploadFailure? = null,
 ) {
     val avatarsUi: List<AvatarUi> = buildList {
-        uploadingAvatar?.let {
-            add(
-                AvatarUi.Local(
-                    uri = uploadingAvatar,
-                    isLoading = true,
-                ),
-            )
-        }
         addAll(
             failedUploads.reversed().map { localAvatar ->
                 AvatarUi.Local(
@@ -31,6 +23,14 @@ internal data class GravatarUiState(
                 )
             },
         )
+        uploadingAvatar?.let {
+            add(
+                AvatarUi.Local(
+                    uri = uploadingAvatar,
+                    isLoading = true,
+                ),
+            )
+        }
         avatars.forEach { avatar ->
             add(
                 AvatarUi.Uploaded(
