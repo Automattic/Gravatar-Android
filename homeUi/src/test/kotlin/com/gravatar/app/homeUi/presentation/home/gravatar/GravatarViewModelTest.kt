@@ -150,25 +150,6 @@ class GravatarViewModelTest {
         coVerify { userRepository.selectAvatar(avatarId) }
     }
 
-    private fun initViewModel() {
-        viewModel = GravatarViewModel(
-            userRepository = userRepository,
-            fileUtils = fileUtils,
-        )
-    }
-
-    private fun createAvatars(count: Int = 3): List<Avatar> {
-        return List(count) { index ->
-            Avatar {
-                imageUrl = URI.create("https://gravatar.com/avatar/test$index")
-                imageId = index.toString()
-                rating = Avatar.Rating.G
-                altText = "alt$index"
-                updatedDate = ""
-            }
-        }
-    }
-
     @Test
     fun `onEvent OnLocalImageSelected should send LaunchImageCropper action`() = runTest {
         // Given
@@ -207,7 +188,7 @@ class GravatarViewModelTest {
         }
         every { fileUtils.deleteFile(mockUri) } returns Unit
 
-        val newAvatar = createAvatars(5).last()
+        val newAvatar = createAvatar(4)
         coEvery { userRepository.uploadAvatar(file) } returns Result.success(newAvatar)
 
         // When
@@ -279,5 +260,26 @@ class GravatarViewModelTest {
 
         coVerify { userRepository.uploadAvatar(any()) }
         verify { fileUtils.deleteFile(mockUri) }
+    }
+
+    private fun initViewModel() {
+        viewModel = GravatarViewModel(
+            userRepository = userRepository,
+            fileUtils = fileUtils,
+        )
+    }
+
+    private fun createAvatars(count: Int = 3): List<Avatar> {
+        return List(count) { index ->
+            createAvatar(index)
+        }
+    }
+
+    private fun createAvatar(id: Int): Avatar = Avatar {
+        imageUrl = URI.create("https://gravatar.com/avatar/test$id")
+        imageId = id.toString()
+        rating = Avatar.Rating.G
+        altText = "alt$id"
+        updatedDate = ""
     }
 }

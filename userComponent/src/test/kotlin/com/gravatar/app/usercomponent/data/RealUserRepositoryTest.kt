@@ -360,7 +360,7 @@ class RealUserRepositoryTest {
             // Given
             val testFile = mockk<File>()
             val profile = createTestProfile()
-            val uploadedAvatar = createTestAvatars().first()
+            val uploadedAvatar = createAvatar(0)
 
             // Save token
             tokenStorage.save(testToken)
@@ -493,13 +493,15 @@ class RealUserRepositoryTest {
 
     private fun createTestAvatars(): List<Avatar> {
         return List(3) { index ->
-            Avatar {
-                imageUrl = URI.create("https://gravatar.com/avatar/test$index")
-                imageId = index.toString()
-                rating = Avatar.Rating.G
-                altText = "alt$index"
-                updatedDate = ""
-            }
+            createAvatar(index)
         }
+    }
+
+    private fun createAvatar(id: Int): Avatar = Avatar {
+        imageUrl = URI.create("https://gravatar.com/avatar/test$id")
+        imageId = id.toString()
+        rating = Avatar.Rating.G
+        altText = "alt$id"
+        updatedDate = ""
     }
 }
