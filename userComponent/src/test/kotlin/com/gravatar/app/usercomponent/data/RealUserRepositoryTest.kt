@@ -383,8 +383,8 @@ class RealUserRepositoryTest {
             val result = repository.uploadAvatar(testFile)
 
             // Then
-            assertTrue(result.isSuccess)
-            assertEquals(uploadedAvatar, result.getOrNull())
+            assertTrue(result is GravatarResult.Success)
+            assertEquals(uploadedAvatar, result.valueOrNull())
 
             // Verify interactions
             coVerify {
@@ -406,7 +406,7 @@ class RealUserRepositoryTest {
         val result = repository.uploadAvatar(testFile)
 
         // Then
-        assertTrue(result.isFailure)
+        assertTrue(result is GravatarResult.Failure)
 
         // Verify no interactions with services
         coVerify(exactly = 0) { profileService.retrieveAuthenticatedCatching(any()) }
@@ -427,7 +427,7 @@ class RealUserRepositoryTest {
         val result = repository.uploadAvatar(testFile)
 
         // Then
-        assertTrue(result.isFailure)
+        assertTrue(result is GravatarResult.Failure)
 
         // Verify interactions
         coVerify { profileService.retrieveAuthenticatedCatching(testToken) }
@@ -461,7 +461,7 @@ class RealUserRepositoryTest {
         val result = repository.uploadAvatar(testFile)
 
         // Then
-        assertTrue(result.isFailure)
+        assertTrue(result is GravatarResult.Failure)
 
         // Verify interactions
         coVerify { profileService.retrieveAuthenticatedCatching(testToken) }

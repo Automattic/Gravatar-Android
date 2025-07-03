@@ -5,6 +5,7 @@ import com.gravatar.restapi.models.Avatar
 import com.gravatar.restapi.models.Profile
 import com.gravatar.restapi.models.UpdateProfileRequest
 import com.gravatar.services.AvatarService
+import com.gravatar.services.ErrorType
 import com.gravatar.services.GravatarResult
 import com.gravatar.services.ProfileService
 import com.gravatar.types.Hash
@@ -88,10 +89,10 @@ internal class RealUserRepository(
         }
     }
 
-    override suspend fun uploadAvatar(avatarFile: File): Result<Avatar> {
+    override suspend fun uploadAvatar(avatarFile: File): GravatarResult<Avatar, ErrorType> {
         val token = tokenStorage.get().firstOrNull()
         return if (token != null) {
-            val result = profileService.retrieveAuthenticatedCatching(token)
+            profileService.retrieveAuthenticatedCatching(token)
                 .valueOrNull()
                 ?.let { profile ->
                     avatarService.uploadCatching(
@@ -100,13 +101,9 @@ internal class RealUserRepository(
                         hash = Hash(profile.hash)
                     )
                 }
-            if (result is GravatarResult.Success) {
-                Result.success(result.value)
-            } else {
-                Result.failure(IllegalStateException("Failed to upload avatar"))
-            }
+                ?: GravatarResult.Failure(ErrorType.Server)
         } else {
-            Result.failure(IllegalStateException("User is not logged in"))
+            GravatarResult.Failure(ErrorType.Unauthorized)
         }
     }
 }

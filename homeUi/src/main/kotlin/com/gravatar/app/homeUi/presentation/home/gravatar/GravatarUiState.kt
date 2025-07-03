@@ -2,6 +2,7 @@ package com.gravatar.app.homeUi.presentation.home.gravatar
 
 import android.net.Uri
 import com.gravatar.restapi.models.Avatar
+import com.gravatar.services.ErrorType
 
 internal data class GravatarUiState(
     val isLoading: Boolean = false,
@@ -10,8 +11,18 @@ internal data class GravatarUiState(
     val selectedAvatarId: String? = null,
     val avatars: List<Avatar> = emptyList(),
     val uploadingAvatar: Uri? = null,
+    val failedUploads: List<AvatarUploadFailure> = emptyList(),
+    val failedUploadDialog: AvatarUploadFailure? = null,
 ) {
     val avatarsUi: List<AvatarUi> = buildList {
+        addAll(
+            failedUploads.reversed().map { localAvatar ->
+                AvatarUi.Local(
+                    uri = localAvatar.uri,
+                    isLoading = false,
+                )
+            },
+        )
         uploadingAvatar?.let {
             add(
                 AvatarUi.Local(
@@ -44,3 +55,8 @@ internal sealed class AvatarUi(val avatarId: String) {
         val isLoading: Boolean,
     ) : AvatarUi(uri.toString())
 }
+
+internal data class AvatarUploadFailure(
+    val uri: Uri,
+    val error: ErrorType?,
+)

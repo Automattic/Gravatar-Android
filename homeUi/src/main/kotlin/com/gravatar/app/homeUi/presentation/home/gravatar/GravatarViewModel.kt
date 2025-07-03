@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gravatar.app.homeUi.presentation.FileUtils
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
+import com.gravatar.services.GravatarResult
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,16 +36,46 @@ internal class GravatarViewModel(
             is GravatarEvent.OnAvatarSelected -> selectAvatar(event.avatarId)
             is GravatarEvent.OnLocalImageSelected -> localImageSelected(event.uri)
             is GravatarEvent.OnImageCropped -> uploadAvatar(event.uri)
+            GravatarEvent.OnFailedAvatarDialogDismissed -> dismissFailedUploadDialog()
+            is GravatarEvent.OnFailedAvatarDismissed -> removedFailedUpload(event.uri)
+            is GravatarEvent.OnFailedAvatarTapped -> showFailedUploadDialog(event.uri)
+        }
+    }
+
+    private fun showFailedUploadDialog(uri: Uri) {
+        _uiState.update { currentState ->
+            currentState.copy(failedUploadDialog = currentState.failedUploads.firstOrNull { it.uri == uri })
+        }
+    }
+
+    private fun dismissFailedUploadDialog() {
+        _uiState.update { currentState ->
+            currentState.copy(failedUploadDialog = null)
+        }
+    }
+
+    private fun removedFailedUpload(uri: Uri) {
+        fileUtils.deleteFile(uri)
+        _uiState.update { currentState ->
+            currentState.copy(
+                failedUploads = currentState.failedUploads.filter { it.uri != uri },
+                failedUploadDialog = null,
+            )
         }
     }
 
     private fun uploadAvatar(uri: Uri) {
         viewModelScope.launch {
             _uiState.update { currentState ->
-                currentState.copy(uploadingAvatar = uri)
+                currentState.copy(
+                    uploadingAvatar = uri,
+                    failedUploads = currentState.failedUploads.filter { it.uri != uri },
+                    failedUploadDialog = null,
+                )
             }
-            userRepository.uploadAvatar(uri.toFile())
-                .onSuccess { avatar ->
+            when (val result = userRepository.uploadAvatar(uri.toFile())) {
+                is GravatarResult.Success -> {
+                    val avatar = result.value
                     fileUtils.deleteFile(uri)
                     _uiState.update { currentState ->
                         currentState.copy(
@@ -59,12 +90,19 @@ internal class GravatarViewModel(
                         )
                     }
                 }
-                .onFailure {
-                    fileUtils.deleteFile(uri) // Temporary for now, handle properly later
+
+                is GravatarResult.Failure -> {
                     _uiState.update { currentState ->
-                        currentState.copy(uploadingAvatar = null)
+                        currentState.copy(
+                            uploadingAvatar = null,
+                            failedUploads = currentState.failedUploads + AvatarUploadFailure(
+                                uri,
+                                error = result.error
+                            ),
+                        )
                     }
                 }
+            }
         }
     }
 

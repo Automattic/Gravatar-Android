@@ -7,6 +7,8 @@ import com.gravatar.app.homeUi.presentation.FileUtils
 import com.gravatar.app.testUtils.CoroutineTestRule
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import com.gravatar.restapi.models.Avatar
+import com.gravatar.services.ErrorType
+import com.gravatar.services.GravatarResult
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -189,7 +191,7 @@ class GravatarViewModelTest {
         every { fileUtils.deleteFile(mockUri) } returns Unit
 
         val newAvatar = createAvatar(4)
-        coEvery { userRepository.uploadAvatar(file) } returns Result.success(newAvatar)
+        coEvery { userRepository.uploadAvatar(file) } returns GravatarResult.Success(newAvatar)
 
         // When
         viewModel.onEvent(GravatarEvent.OnImageCropped(mockUri))
@@ -234,7 +236,7 @@ class GravatarViewModelTest {
 
         coEvery {
             userRepository.uploadAvatar(any())
-        } returns Result.failure(IllegalStateException("Test exception"))
+        } returns GravatarResult.Failure(ErrorType.Server)
 
         // When
         viewModel.onEvent(GravatarEvent.OnImageCropped(mockUri))
@@ -253,13 +255,155 @@ class GravatarViewModelTest {
                 GravatarUiState(
                     avatars = avatars,
                     uploadingAvatar = null,
+                    failedUploads = listOf(
+                        AvatarUploadFailure(
+                            uri = mockUri,
+                            error = ErrorType.Server
+                        )
+                    )
                 ),
                 awaitItem()
             )
         }
 
         coVerify { userRepository.uploadAvatar(any()) }
+    }
+
+    @Test
+    fun `onEvent OnFailedAvatarDialogDismissed should clear failedUploadDialog`() = runTest {
+        // Given
+        val avatars = createAvatars()
+        coEvery { userRepository.getAvatars() } returns Result.success(avatars)
+        initViewModel()
+        advanceUntilIdle()
+
+        // Create a failed upload first
+        mockkStatic("androidx.core.net.UriKt")
+        val file = mockk<File>()
+        val mockUri = mockk<Uri> {
+            every { toFile() } returns file
+        }
+        coEvery {
+            userRepository.uploadAvatar(any())
+        } returns GravatarResult.Failure(ErrorType.Server)
+
+        // Trigger a failed upload
+        viewModel.onEvent(GravatarEvent.OnImageCropped(mockUri))
+        advanceUntilIdle()
+
+        // Show the failed upload dialog
+        viewModel.onEvent(GravatarEvent.OnFailedAvatarTapped(mockUri))
+        advanceUntilIdle()
+
+        // When
+        viewModel.onEvent(GravatarEvent.OnFailedAvatarDialogDismissed)
+        advanceUntilIdle()
+
+        // Then
+        viewModel.uiState.test {
+            val expectedState = GravatarUiState(
+                isLoading = false,
+                avatars = avatars,
+                failedUploads = listOf(
+                    AvatarUploadFailure(
+                        uri = mockUri,
+                        error = ErrorType.Server
+                    )
+                ),
+                failedUploadDialog = null
+            )
+            assertEquals(expectedState, awaitItem())
+        }
+    }
+
+    @Test
+    fun `onEvent OnFailedAvatarDismissed should remove failed upload and clear dialog`() = runTest {
+        // Given
+        val avatars = createAvatars()
+        coEvery { userRepository.getAvatars() } returns Result.success(avatars)
+        initViewModel()
+        advanceUntilIdle()
+
+        // Create a failed upload first
+        mockkStatic("androidx.core.net.UriKt")
+        val file = mockk<File>()
+        val mockUri = mockk<Uri> {
+            every { toFile() } returns file
+        }
+        every { fileUtils.deleteFile(mockUri) } returns Unit
+        coEvery {
+            userRepository.uploadAvatar(any())
+        } returns GravatarResult.Failure(ErrorType.Server)
+
+        // Trigger a failed upload
+        viewModel.onEvent(GravatarEvent.OnImageCropped(mockUri))
+        advanceUntilIdle()
+
+        // Show the failed upload dialog
+        viewModel.onEvent(GravatarEvent.OnFailedAvatarTapped(mockUri))
+        advanceUntilIdle()
+
+        // When
+        viewModel.onEvent(GravatarEvent.OnFailedAvatarDismissed(mockUri))
+        advanceUntilIdle()
+
+        // Then
+        viewModel.uiState.test {
+            val expectedState = GravatarUiState(
+                isLoading = false,
+                avatars = avatars,
+                failedUploads = emptyList(),
+                failedUploadDialog = null
+            )
+            assertEquals(expectedState, awaitItem())
+        }
         verify { fileUtils.deleteFile(mockUri) }
+    }
+
+    @Test
+    fun `onEvent OnFailedAvatarTapped should show failed upload dialog`() = runTest {
+        // Given
+        val avatars = createAvatars()
+        coEvery { userRepository.getAvatars() } returns Result.success(avatars)
+        initViewModel()
+        advanceUntilIdle()
+
+        // Create a failed upload first
+        mockkStatic("androidx.core.net.UriKt")
+        val file = mockk<File>()
+        val mockUri = mockk<Uri> {
+            every { toFile() } returns file
+        }
+        coEvery {
+            userRepository.uploadAvatar(any())
+        } returns GravatarResult.Failure(ErrorType.Server)
+
+        // Trigger a failed upload
+        viewModel.onEvent(GravatarEvent.OnImageCropped(mockUri))
+        advanceUntilIdle()
+
+        // When
+        viewModel.onEvent(GravatarEvent.OnFailedAvatarTapped(mockUri))
+        advanceUntilIdle()
+
+        // Then
+        viewModel.uiState.test {
+            val expectedState = GravatarUiState(
+                isLoading = false,
+                avatars = avatars,
+                failedUploads = listOf(
+                    AvatarUploadFailure(
+                        uri = mockUri,
+                        error = ErrorType.Server
+                    )
+                ),
+                failedUploadDialog = AvatarUploadFailure(
+                    uri = mockUri,
+                    error = ErrorType.Server
+                )
+            )
+            assertEquals(expectedState, awaitItem())
+        }
     }
 
     private fun initViewModel() {

@@ -1,5 +1,6 @@
 package com.gravatar.app.homeUi.presentation.home.gravatar.components
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,6 +28,7 @@ import java.net.URI
 internal fun LazyGridScope.avatarsGridSection(
     avatars: List<AvatarUi>,
     onAvatarOptionClicked: (Avatar, AvatarOption) -> Unit,
+    onFailedAvatarClicked: ((Uri) -> Unit)? = null,
 ) {
     item(
         span = { GridItemSpan((maxLineSpan)) },
@@ -60,8 +62,9 @@ internal fun LazyGridScope.avatarsGridSection(
             SelectableAvatar(
                 avatar = avatarModel,
                 size = avatarSize,
-                modifier = Modifier,
+                modifier = Modifier.animateItem(),
                 onAvatarOptionClicked = onAvatarOptionClicked,
+                onFailedAvatarClicked = onFailedAvatarClicked,
             )
         }
     }
@@ -96,7 +99,8 @@ private fun AvatarsGridSectionPreview() {
                             isLoading = false,
                         )
                     },
-                    onAvatarOptionClicked = { _, _ -> }
+                    onAvatarOptionClicked = { _, _ -> },
+                    onFailedAvatarClicked = { },
                 )
             }
         }
@@ -120,7 +124,8 @@ private fun AvatarsGridSectionEmptyPreview() {
             ) {
                 avatarsGridSection(
                     avatars = emptyList(),
-                    onAvatarOptionClicked = { _, _ -> }
+                    onAvatarOptionClicked = { _, _ -> },
+                    onFailedAvatarClicked = { },
                 )
             }
         }

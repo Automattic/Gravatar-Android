@@ -27,4 +27,9 @@
     <string name="gravatar_tab_camera_content_description">Take new avatar with camera</string>
     <string name="gravatar_tab_photos">Photos</string>
     <string name="gravatar_tab_photos_content_description">Add new avatar from photos</string>
+    <string name="gravatar_tab_failed_to_load_avatar_content_description">Upload failed, tap to see actions.</string>
+    <string name="gravatar_tab_avatar_upload_failure_dialog_title">Couldn\'t upload image</string>
+    <string name="gravatar_tab_avatar_upload_failure_image_too_big">The provided image exceeds the maximum size: 10MB</string>
+    <string name="gravatar_tab_avatar_upload_error_action">Retry</string>
+    <string name="gravatar_tab_avatar_upload_failure_dialog_remove_upload">Remove upload</string>
 </resources>
