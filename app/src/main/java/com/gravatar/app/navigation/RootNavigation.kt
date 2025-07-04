@@ -7,7 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.gravatar.app.homeUi.presentation.home.HomeScreen
 import com.gravatar.app.loginUi.presentation.login.LoginScreen
-import com.gravatar.app.usercomponent.domain.repository.AuthRepository
+import com.gravatar.app.usercomponent.domain.usecase.IsUserLoggedIn
 import kotlinx.serialization.Serializable
 import org.koin.compose.koinInject
 
@@ -23,10 +23,10 @@ data object HomeDest
 @Composable
 fun RootNavigation() {
     val navController = rememberNavController()
-    val authRepository: AuthRepository = koinInject<AuthRepository>()
+    val isUserLoggedIn: IsUserLoggedIn = koinInject<IsUserLoggedIn>()
 
     LaunchedEffect(Unit) {
-        authRepository.isUserLoggedIn()
+        isUserLoggedIn()
             .collect { isLoggedIn ->
                 if (isLoggedIn) {
                     navController.navigate(HomeDest) {
