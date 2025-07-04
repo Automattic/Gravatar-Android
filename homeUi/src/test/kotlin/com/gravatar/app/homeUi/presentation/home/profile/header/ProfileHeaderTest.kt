@@ -29,7 +29,7 @@ class ProfileHeaderTest : RoborazziTest() {
                 jobTitle = "Software Engineer",
                 company = ""
             ),
-            saveState = ProfileHeaderSaveState.SAVED,
+            saveState = ProfileHeaderSaveState.UNSAVED,
             onSaveProfile = {},
         )
     }
@@ -43,7 +43,7 @@ class ProfileHeaderTest : RoborazziTest() {
                 jobTitle = "",
                 company = "Automattic"
             ),
-            saveState = ProfileHeaderSaveState.SAVED,
+            saveState = ProfileHeaderSaveState.SAVING,
             onSaveProfile = {},
         )
     }
