@@ -32,6 +32,7 @@ import java.net.URI
 fun GravatarHeader(
     avatar: Avatar?,
     modifier: Modifier = Modifier,
+    onMenuClick: () -> Unit = {},
 ) {
     val avatarUrl = avatar?.imageUrl?.toString() ?: ""
 
@@ -66,7 +67,7 @@ fun GravatarHeader(
             )
             Spacer(modifier = Modifier.weight(1f))
             IconButton(
-                onClick = {},
+                onClick = onMenuClick,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .size(44.dp)

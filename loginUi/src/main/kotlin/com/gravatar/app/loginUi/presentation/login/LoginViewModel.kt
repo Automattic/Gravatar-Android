@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.gravatar.app.loginUi.presentation.oauth.OAuthConfig
 import com.gravatar.app.loginUi.presentation.oauth.OAuthResult
 import com.gravatar.app.usercomponent.domain.model.LoginRequest
-import com.gravatar.app.usercomponent.domain.repository.AuthRepository
+import com.gravatar.app.usercomponent.domain.usecase.Login
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class LoginViewModel(
-    private val authRepository: AuthRepository,
+    private val login: Login,
     private val oAuthConfig: OAuthConfig
 ) : ViewModel() {
 
@@ -53,7 +53,7 @@ internal class LoginViewModel(
                 clientId = oAuthConfig.clientId
             )
 
-            authRepository.login(loginRequest)
+            login(loginRequest)
                 .onFailure { error ->
                     sendAction(LoginAction.ShowError)
                 }

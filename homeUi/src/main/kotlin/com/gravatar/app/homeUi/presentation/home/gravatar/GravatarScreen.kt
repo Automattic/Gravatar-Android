@@ -28,6 +28,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -45,12 +46,15 @@ import com.gravatar.app.homeUi.presentation.home.gravatar.components.GravatarHea
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.UploadNewAvatarSection
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.avatarSize
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.avatarsGridSection
+import com.gravatar.app.usercomponent.domain.usecase.Logout
 import com.gravatar.restapi.models.Avatar
 import com.yalantis.ucrop.UCrop
 import com.yalantis.ucrop.UCropActivity
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import java.io.File
 import java.net.URI
 
@@ -58,6 +62,8 @@ import java.net.URI
 internal fun GravatarScreen(
     viewModel: GravatarViewModel = koinViewModel()
 ) {
+    val logout = koinInject<Logout>()
+    val scope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsState()
     val lifecycle = LocalLifecycleOwner.current
     val context = LocalContext.current
@@ -123,6 +129,9 @@ internal fun GravatarScreen(
                 pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                 mediaPickerLaunched = true
             }
+        },
+        onMenuClick = {
+            scope.launch { logout() }
         }
     )
 }
@@ -131,6 +140,7 @@ internal fun GravatarScreen(
 @Composable
 internal fun GravatarScreen(
     uiState: GravatarUiState,
+    onMenuClick: () -> Unit = {},
     onTakePictureClicked: () -> Unit,
     onPickMediaClicked: () -> Unit,
     onEvent: (GravatarEvent) -> Unit = {},
@@ -150,6 +160,7 @@ internal fun GravatarScreen(
                 GravatarHeader(
                     uiState.avatars.firstOrNull { it.imageId == uiState.selectedAvatarId },
                     modifier = Modifier.fillMaxWidth(),
+                    onMenuClick = onMenuClick,
                 )
                 LazyVerticalGrid(
                     columns = GridCells.Adaptive(minSize = avatarSize),
