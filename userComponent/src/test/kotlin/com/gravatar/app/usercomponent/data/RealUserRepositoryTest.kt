@@ -152,7 +152,7 @@ class RealUserRepositoryTest {
             val profileResult = Result.success(profile)
             coEvery { profileRepository.get() } returns profileResult
 
-            // Mock avatar serviceL
+            // Mock avatar service
             val avatarResult = GravatarResult.Success<Unit, ErrorType>(Unit)
             coEvery {
                 avatarService.setAvatarCatching(

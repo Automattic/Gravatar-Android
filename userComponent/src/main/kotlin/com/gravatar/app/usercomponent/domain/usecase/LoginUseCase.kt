@@ -9,8 +9,8 @@ interface Login {
 }
 
 internal class LoginUseCase(
-    val authRepository: AuthRepository,
-    val profileRepository: ProfileRepository,
+    private val authRepository: AuthRepository,
+    private val profileRepository: ProfileRepository,
 ) : Login {
 
     override suspend fun invoke(loginRequest: LoginRequest): Result<Unit> {
