@@ -57,7 +57,6 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import java.io.File
 import java.net.URI
-import kotlin.math.log
 
 @Composable
 internal fun GravatarScreen(
