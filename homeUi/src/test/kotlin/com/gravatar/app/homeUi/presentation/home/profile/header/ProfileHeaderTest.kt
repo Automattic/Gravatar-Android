@@ -1,8 +1,5 @@
 package com.gravatar.app.homeUi.presentation.home.profile.header
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.gravatar.app.testUtils.roborazzi.RoborazziTest
 import com.gravatar.extensions.defaultProfile
 import org.junit.Test
@@ -18,7 +15,8 @@ class ProfileHeaderTest : RoborazziTest() {
                 jobTitle = "Software Engineer",
                 company = "Automattic"
             ),
-            modifier = Modifier.padding(16.dp),
+            saveState = ProfileHeaderSaveState.SAVED,
+            onSaveProfile = {},
         )
     }
 
@@ -31,7 +29,8 @@ class ProfileHeaderTest : RoborazziTest() {
                 jobTitle = "Software Engineer",
                 company = ""
             ),
-            modifier = Modifier.padding(16.dp),
+            saveState = ProfileHeaderSaveState.UNSAVED,
+            onSaveProfile = {},
         )
     }
 
@@ -44,7 +43,8 @@ class ProfileHeaderTest : RoborazziTest() {
                 jobTitle = "",
                 company = "Automattic"
             ),
-            modifier = Modifier.padding(16.dp)
+            saveState = ProfileHeaderSaveState.SAVING,
+            onSaveProfile = {},
         )
     }
 
@@ -57,7 +57,8 @@ class ProfileHeaderTest : RoborazziTest() {
                 jobTitle = "",
                 company = ""
             ),
-            modifier = Modifier.padding(16.dp),
+            saveState = ProfileHeaderSaveState.SAVED,
+            onSaveProfile = {},
         )
     }
 
@@ -70,7 +71,8 @@ class ProfileHeaderTest : RoborazziTest() {
                 jobTitle = "Senior Software Engineer with a very long title",
                 company = "Automattic Inc. - A very long company name that should also trigger ellipsis"
             ),
-            modifier = Modifier.padding(16.dp),
+            saveState = ProfileHeaderSaveState.SAVED,
+            onSaveProfile = {},
         )
     }
 }
