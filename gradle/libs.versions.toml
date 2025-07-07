@@ -15,6 +15,7 @@ navigationCompose = "2.9.0"
 mockk = "1.14.2"
 roborazzi = "1.45.1"
 robolectric = "4.14.1"
+room = "2.7.2"
 tracks = "6.0.3"
 turbine = "1.2.1"
 browser = "1.8.0"
@@ -66,6 +67,9 @@ ktor-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor"
 ktor-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
 ktor-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 ucrop = { group = "com.automattic", name = "ucrop", version.ref = "ucrop" }
 

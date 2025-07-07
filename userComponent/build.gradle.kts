@@ -24,6 +24,11 @@ dependencies {
     implementation(libs.ktor.serialization.json)
     implementation(libs.gravatar.core)
 
+    // Room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+
     testImplementation(libs.junit)
     testImplementation(libs.koin.test.junit4)
     testImplementation(libs.kotlinx.coroutines.test)

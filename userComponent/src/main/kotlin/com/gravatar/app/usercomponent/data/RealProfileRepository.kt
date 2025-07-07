@@ -1,5 +1,7 @@
 package com.gravatar.app.usercomponent.data
 
+import com.gravatar.app.usercomponent.data.database.ProfileDao
+import com.gravatar.app.usercomponent.data.database.model.ProfileEntity
 import com.gravatar.app.usercomponent.domain.repository.ProfileRepository
 import com.gravatar.restapi.models.Profile
 import com.gravatar.restapi.models.UpdateProfileRequest
@@ -9,10 +11,8 @@ import kotlinx.coroutines.flow.firstOrNull
 internal class RealProfileRepository(
     private val profileService: ProfileService,
     private val tokenStorage: AuthTokenStorage,
+    private val profileDao: ProfileDao,
 ) : ProfileRepository {
-
-    // Temporary in-memory storage for the profile
-    private var profile: Profile? = null
 
     override suspend fun refreshUserProfile(): Result<Unit> {
         return fetchProfile().fold(
@@ -26,8 +26,9 @@ internal class RealProfileRepository(
     }
 
     override suspend fun get(): Result<Profile> {
-        return if (profile != null) {
-            Result.success(profile!!)
+        val profileEntity = profileDao.getProfile()
+        return if (profileEntity != null) {
+            Result.success(profileEntity.toProfile())
         } else {
             fetchProfile()
         }
@@ -38,7 +39,7 @@ internal class RealProfileRepository(
         return if (token != null) {
             val result = profileService.updateProfileCatching(token, updateRequest).valueOrNull()
             if (result != null) {
-                profile = result
+                profileDao.insertProfile(ProfileEntity.fromProfile(result))
                 Result.success(result)
             } else {
                 Result.failure(IllegalStateException("Failed to update profile"))
@@ -49,7 +50,7 @@ internal class RealProfileRepository(
     }
 
     override suspend fun delete() {
-        profile = null
+        profileDao.delete()
     }
 
     private suspend fun fetchProfile(): Result<Profile> {
@@ -57,7 +58,7 @@ internal class RealProfileRepository(
         if (token != null) {
             val fetchedProfile = profileService.retrieveAuthenticatedCatching(withToken = token).valueOrNull()
             return if (fetchedProfile != null) {
-                profile = fetchedProfile
+                profileDao.insertProfile(ProfileEntity.fromProfile(fetchedProfile))
                 Result.success(fetchedProfile)
             } else {
                 Result.failure(IllegalStateException("Failed to fetch user profile"))
