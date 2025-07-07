@@ -2,6 +2,7 @@ package com.gravatar.app.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -29,23 +30,9 @@ fun RootNavigation() {
         isUserLoggedIn()
             .collect { isLoggedIn ->
                 if (isLoggedIn) {
-                    navController.navigate(HomeDest) {
-                        popUpTo(SplashDest) {
-                            inclusive = true
-                            saveState = true
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
+                    navController.navigateSavingState(HomeDest)
                 } else {
-                    navController.navigate(LoginDest) {
-                        popUpTo(SplashDest) {
-                            inclusive = true
-                            saveState = true
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
+                    navController.navigateSavingState(LoginDest)
                 }
             }
     }
@@ -58,5 +45,16 @@ fun RootNavigation() {
         composable<HomeDest> {
             HomeScreen()
         }
+    }
+}
+
+private fun NavHostController.navigateSavingState(destination: Any) {
+    navigate(destination) {
+        popUpTo(SplashDest) {
+            inclusive = true
+            saveState = true
+        }
+        launchSingleTop = true
+        restoreState = true
     }
 }
