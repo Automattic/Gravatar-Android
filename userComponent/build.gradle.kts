@@ -34,5 +34,7 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk.android)
     testImplementation(libs.turbine)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.robolectric)
     testImplementation(project(":testUtils"))
 }
