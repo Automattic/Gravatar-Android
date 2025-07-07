@@ -30,7 +30,12 @@ fun RootNavigation() {
             .collect { isLoggedIn ->
                 if (isLoggedIn) {
                     navController.navigate(HomeDest) {
-                        popUpTo(SplashDest) { inclusive = true }
+                        popUpTo(SplashDest) {
+                            inclusive = true
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
                     }
                 } else {
                     navController.navigate(LoginDest) {
