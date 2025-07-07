@@ -28,5 +28,6 @@ dependencies {
     testImplementation(libs.koin.test.junit4)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk.android)
+    testImplementation(libs.turbine)
     testImplementation(project(":testUtils"))
 }
