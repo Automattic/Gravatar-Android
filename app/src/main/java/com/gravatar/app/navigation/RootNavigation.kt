@@ -39,7 +39,12 @@ fun RootNavigation() {
                     }
                 } else {
                     navController.navigate(LoginDest) {
-                        popUpTo(SplashDest) { inclusive = true }
+                        popUpTo(SplashDest) {
+                            inclusive = true
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
                     }
                 }
             }
