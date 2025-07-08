@@ -2,8 +2,10 @@ package com.gravatar.app.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.gravatar.app.homeUi.presentation.home.HomeScreen
 import com.gravatar.app.loginUi.presentation.login.LoginScreen
@@ -11,42 +13,68 @@ import com.gravatar.app.usercomponent.domain.usecase.IsUserLoggedIn
 import kotlinx.serialization.Serializable
 import org.koin.compose.koinInject
 
-@Serializable
-data object SplashDest
-
-@Serializable
-data object LoginDest
-
-@Serializable
-data object HomeDest
-
 @Composable
 fun RootNavigation() {
     val navController = rememberNavController()
+    val backStackEntry = navController.currentBackStackEntryAsState()
     val isUserLoggedIn: IsUserLoggedIn = koinInject<IsUserLoggedIn>()
 
     LaunchedEffect(Unit) {
         isUserLoggedIn()
             .collect { isLoggedIn ->
+                val lastRoute = backStackEntry.value?.destination?.route?.let {
+                    RootDestination.fromRoute(it)
+                } ?: RootDestination.Splash
+
                 if (isLoggedIn) {
-                    navController.navigate(HomeDest) {
-                        popUpTo(SplashDest) { inclusive = true }
-                    }
+                    navController.navigateSavingState(RootDestination.Home, popTo = lastRoute)
                 } else {
-                    navController.navigate(LoginDest) {
-                        popUpTo(SplashDest) { inclusive = true }
-                    }
+                    navController.navigateSavingState(RootDestination.Login, popTo = lastRoute)
                 }
             }
     }
-    NavHost(navController = navController, startDestination = SplashDest) {
-        composable<SplashDest> {
+
+    NavHost(navController = navController, startDestination = RootDestination.Splash) {
+        composable<RootDestination.Splash> {
         }
-        composable<LoginDest> {
+        composable<RootDestination.Login> {
             LoginScreen()
         }
-        composable<HomeDest> {
+        composable<RootDestination.Home> {
             HomeScreen()
+        }
+    }
+}
+
+private fun NavHostController.navigateSavingState(destination: Any, popTo: Any) {
+    navigate(destination) {
+        popUpTo(popTo) {
+            inclusive = true
+            saveState = true
+        }
+        launchSingleTop = true
+        restoreState = true
+    }
+}
+
+internal sealed class RootDestination {
+    @Serializable
+    data object Splash : RootDestination()
+
+    @Serializable
+    data object Login : RootDestination()
+
+    @Serializable
+    data object Home : RootDestination()
+
+    companion object {
+        fun fromRoute(route: String): RootDestination? {
+            return when (route) {
+                Splash::class.qualifiedName -> Splash
+                Login::class.qualifiedName -> Login
+                Home::class.qualifiedName -> Home
+                else -> null
+            }
         }
     }
 }
