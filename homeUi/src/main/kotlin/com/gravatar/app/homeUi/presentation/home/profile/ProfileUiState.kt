@@ -6,6 +6,7 @@ import com.gravatar.restapi.models.Profile
 
 internal data class ProfileUiState(
     val isLoading: Boolean = false,
+    val avatarUrl: String? = null,
     val profile: Profile? = null,
     val editedAboutFields: Map<AboutInputField, String> = emptyMap(),
     val isSavingProfile: Boolean = false,

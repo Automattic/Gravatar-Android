@@ -25,16 +25,14 @@ import androidx.compose.ui.unit.dp
 import com.gravatar.app.homeUi.R
 import com.gravatar.app.homeUi.presentation.home.components.AsyncImageWithCachePlaceholder
 import com.gravatar.app.homeUi.presentation.home.components.GravatarAvatarWithShadow
-import com.gravatar.restapi.models.Avatar
-import java.net.URI
 
 @Composable
 fun GravatarHeader(
-    avatar: Avatar?,
+    avatarUrl: String?,
     modifier: Modifier = Modifier,
     onMenuClick: () -> Unit = {},
 ) {
-    val avatarUrl = avatar?.imageUrl?.toString() ?: ""
+    val avatarUrl = avatarUrl.orEmpty()
 
     Box(modifier.fillMaxWidth()) {
         AsyncImageWithCachePlaceholder(
@@ -84,13 +82,5 @@ fun GravatarHeader(
 @Preview
 @Composable
 fun GravatarHeaderPreview() {
-    GravatarHeader(
-        Avatar {
-            imageUrl = URI.create("https://gravatar.com/avatar/test")
-            imageId = "ID"
-            rating = Avatar.Rating.G
-            altText = "alt"
-            updatedDate = ""
-        }
-    )
+    GravatarHeader("https://gravatar.com/avatar/test")
 }

@@ -5,9 +5,11 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.gravatar.app.usercomponent.data.AuthTokenStorage
+import com.gravatar.app.usercomponent.data.AvatarCacheBusterStorage
 import com.gravatar.app.usercomponent.data.DatastoreAuthTokenStorage
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.annotation.Named
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -21,6 +23,7 @@ internal val datastoreModule = module {
             dispatcherProvider = get()
         )
     }
+    singleOf(::AvatarCacheBusterStorage)
 }
 
 private val Context.userPreferencesDataStore by preferencesDataStore(name = "user-preferences")
