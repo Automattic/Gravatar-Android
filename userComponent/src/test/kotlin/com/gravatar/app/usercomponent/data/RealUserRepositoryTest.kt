@@ -56,7 +56,7 @@ class RealUserRepositoryTest {
             val avatars = createTestAvatars()
 
             // Save token
-            tokenStorage.save(testToken)
+            tokenStorage.saveToken(testToken)
 
             // Mock profile service
             val profileResult = Result.success(profile)
@@ -83,7 +83,7 @@ class RealUserRepositoryTest {
     @Test
     fun `getAvatars should return failure when user is not logged in`() = runTest {
         // Given
-        tokenStorage.clear()
+        tokenStorage.clearToken()
 
         // When
         val result = repository.getAvatars()
@@ -146,7 +146,7 @@ class RealUserRepositoryTest {
             val profile = createTestProfile()
 
             // Save token
-            tokenStorage.save(testToken)
+            tokenStorage.saveToken(testToken)
 
             // Mock profile service
             val profileResult = Result.success(profile)
@@ -183,7 +183,7 @@ class RealUserRepositoryTest {
     fun `selectAvatar should return failure when user is not logged in`() = runTest {
         // Given
         val avatarId = "test-avatar-id"
-        tokenStorage.clear()
+        tokenStorage.clearToken()
 
         // When
         val result = repository.selectAvatar(avatarId)
@@ -203,7 +203,7 @@ class RealUserRepositoryTest {
     fun `selectAvatar should return failure when profile service returns null`() = runTest {
         // Given
         val avatarId = "test-avatar-id"
-        tokenStorage.save(testToken)
+        tokenStorage.saveToken(testToken)
 
         val profileResult = Result.failure<Profile>(IllegalStateException("Test exception"))
         coEvery { profileRepository.get() } returns profileResult
@@ -228,7 +228,7 @@ class RealUserRepositoryTest {
         val profile = createTestProfile()
 
         // Save token
-        tokenStorage.save(testToken)
+        tokenStorage.saveToken(testToken)
 
         // Mock profile service
         val profileResult = Result.success(profile)
@@ -309,7 +309,7 @@ class RealUserRepositoryTest {
             val uploadedAvatar = createAvatar(0)
 
             // Save token
-            tokenStorage.save(testToken)
+            tokenStorage.saveToken(testToken)
 
             // Mock profile service
             val profileResult = Result.success(profile)
@@ -346,7 +346,7 @@ class RealUserRepositoryTest {
     fun `uploadAvatar should return failure when user is not logged in`() = runTest {
         // Given
         val testFile = mockk<File>()
-        tokenStorage.clear()
+        tokenStorage.clearToken()
 
         // When
         val result = repository.uploadAvatar(testFile)
@@ -363,7 +363,7 @@ class RealUserRepositoryTest {
     fun `uploadAvatar should return failure when profileRepository returns null`() = runTest {
         // Given
         val testFile = mockk<File>()
-        tokenStorage.save(testToken)
+        tokenStorage.saveToken(testToken)
 
         // Mock profile service to return null
         val profileResult = Result.failure<Profile>(IllegalStateException("Test exception"))
@@ -387,7 +387,7 @@ class RealUserRepositoryTest {
         val profile = createTestProfile()
 
         // Save token
-        tokenStorage.save(testToken)
+        tokenStorage.saveToken(testToken)
 
         // Mock profile service
         val profileResult = Result.success(profile)
@@ -426,7 +426,7 @@ class RealUserRepositoryTest {
         val avatarId = "test-avatar-id"
 
         // Save token
-        tokenStorage.save(testToken)
+        tokenStorage.saveToken(testToken)
 
         // Mock avatar service
         val avatarResult = GravatarResult.Success<Unit, ErrorType>(Unit)
@@ -456,7 +456,7 @@ class RealUserRepositoryTest {
     fun `deleteAvatar should return failure when user is not logged in`() = runTest {
         // Given
         val avatarId = "test-avatar-id"
-        tokenStorage.clear()
+        tokenStorage.clearToken()
 
         // When
         val result = repository.deleteAvatar(avatarId)
@@ -477,7 +477,7 @@ class RealUserRepositoryTest {
         val avatarId = "test-avatar-id"
 
         // Save token
-        tokenStorage.save(testToken)
+        tokenStorage.saveToken(testToken)
 
         // Mock avatar service to return a failure
         val errorType = ErrorType.Server

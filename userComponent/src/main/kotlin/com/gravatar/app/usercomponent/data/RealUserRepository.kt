@@ -18,7 +18,7 @@ internal class RealUserRepository(
 ) : UserRepository {
 
     override suspend fun selectAvatar(avatarId: String): Result<Unit> {
-        val token = tokenStorage.get()
+        val token = tokenStorage.getToken()
         return if (token != null) {
             val result = profileRepository.get()
                 .getOrNull()
@@ -40,7 +40,7 @@ internal class RealUserRepository(
     }
 
     override suspend fun getAvatars(): Result<List<Avatar>> {
-        val token = tokenStorage.get()
+        val token = tokenStorage.getToken()
         return if (token != null) {
             val avatars = profileRepository.get()
                 .getOrNull()
@@ -69,7 +69,7 @@ internal class RealUserRepository(
     }
 
     override suspend fun uploadAvatar(avatarFile: File): GravatarResult<Avatar, ErrorType> {
-        val token = tokenStorage.get()
+        val token = tokenStorage.getToken()
         return if (token != null) {
             profileRepository.get()
                 .getOrNull()
@@ -87,7 +87,7 @@ internal class RealUserRepository(
     }
 
     override suspend fun deleteAvatar(avatarId: String): Result<Unit> {
-        val token = tokenStorage.get()
+        val token = tokenStorage.getToken()
         return if (token != null) {
             when (val result = avatarService.deleteAvatarCatching(avatarId, token)) {
                 is GravatarResult.Success -> {

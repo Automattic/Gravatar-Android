@@ -36,7 +36,7 @@ class GetAvatarUrlUseCaseTest {
 
     @Before
     fun setup() {
-        every { avatarCacheBusterStorage.state } returns cacheBusterFlow
+        every { avatarCacheBusterStorage.getAvatarCacheBuster() } returns cacheBusterFlow
 
         getAvatarUrlUseCase = GetAvatarUrlUseCase(
             profileRepository = profileRepository,

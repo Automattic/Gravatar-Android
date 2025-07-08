@@ -14,7 +14,7 @@ internal class GetAvatarUrlUseCase(
 ) : GetAvatarUrl {
 
     override fun invoke(): Flow<URL?> {
-        return avatarCacheBusterStorage.state
+        return avatarCacheBusterStorage.getAvatarCacheBuster()
             .map { cacheBuster ->
                 val hash: String? = profileRepository.get()
                     .getOrNull()?.hash

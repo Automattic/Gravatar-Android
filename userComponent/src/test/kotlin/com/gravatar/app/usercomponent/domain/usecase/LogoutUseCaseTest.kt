@@ -39,8 +39,8 @@ class LogoutUseCaseTest {
 
         // Set up default behavior for mocks
         coEvery { profileRepository.delete() } returns Unit
-        coEvery { authRepository.logout() } returns Unit
         coEvery { userSessionPersistence.set(any()) } returns Unit
+        coEvery { authRepository.logout() } returns Unit
     }
 
     @Test

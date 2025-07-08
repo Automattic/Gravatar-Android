@@ -11,7 +11,7 @@ internal class SelectAvatarUseCase(
     override suspend fun invoke(avatarId: String): Result<Unit> {
         return userRepository.selectAvatar(avatarId)
             .onSuccess {
-                avatarCacheBusterStorage.set(System.currentTimeMillis().toString())
+                avatarCacheBusterStorage.saveAvatarCacheBuster(System.currentTimeMillis().toString())
             }
     }
 }
