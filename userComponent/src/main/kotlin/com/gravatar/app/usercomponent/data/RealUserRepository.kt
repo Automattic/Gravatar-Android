@@ -86,4 +86,21 @@ internal class RealUserRepository(
             GravatarResult.Failure(ErrorType.Unauthorized)
         }
     }
+
+    override suspend fun deleteAvatar(avatarId: String): Result<Unit> {
+        val token = tokenStorage.get().firstOrNull()
+        return if (token != null) {
+            when (val result = avatarService.deleteAvatarCatching(avatarId, token)) {
+                is GravatarResult.Success -> {
+                    Result.success(Unit)
+                }
+
+                is GravatarResult.Failure -> {
+                    Result.failure(IllegalStateException("Failed to delete avatar: ${result.error}"))
+                }
+            }
+        } else {
+            Result.failure(IllegalStateException("User is not logged in"))
+        }
+    }
 }

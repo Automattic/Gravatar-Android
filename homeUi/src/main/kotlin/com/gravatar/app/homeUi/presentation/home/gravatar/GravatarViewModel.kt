@@ -1,7 +1,6 @@
 package com.gravatar.app.homeUi.presentation.home.gravatar
 
 import android.net.Uri
-import android.util.Log
 import androidx.core.net.toFile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -50,9 +49,7 @@ internal class GravatarViewModel(
             GravatarEvent.OnFailedAvatarDialogDismissed -> dismissFailedUploadDialog()
             is GravatarEvent.OnFailedAvatarDismissed -> removedFailedUpload(event.uri)
             is GravatarEvent.OnFailedAvatarTapped -> showFailedUploadDialog(event.uri)
-            is GravatarEvent.OnDeleteAvatar -> {
-                Log.i("GravatarViewModel", "OnDeleteAvatar: ${event.avatarId}")
-            }
+            is GravatarEvent.OnDeleteAvatar -> deleteAvatar(event.avatarId)
         }
     }
 
@@ -197,4 +194,51 @@ internal class GravatarViewModel(
                 }
         }
     }
+
+    private fun deleteAvatar(avatarId: String) {
+        viewModelScope.launch {
+            val avatarIndex = _uiState.value.avatars.indexOfFirstOrNull { it.imageId == avatarId }
+            val isSelectedAvatar = avatarId == _uiState.value.selectedAvatarId
+            val avatar = avatarIndex?.let { _uiState.value.avatars[avatarIndex] }
+            if (avatar != null) {
+                _uiState.update { currentState ->
+                    val updatedAvatars = currentState.avatars.toMutableList().filter { it.imageId != avatarId }
+                    currentState.copy(
+                        avatars = updatedAvatars,
+                        selectedAvatarId = if (isSelectedAvatar) {
+                            null
+                        } else {
+                            _uiState.value.selectedAvatarId
+                        },
+                    )
+                }
+                userRepository.deleteAvatar(avatarId)
+                    .onSuccess { result ->
+                        // NOTIFY THE UI TO SHOW THE CONFIRMATION
+                    }
+                    .onFailure { error ->
+                        // NOTIFY THE UI TO SHOW AN ERROR
+
+                        _uiState.update { currentState ->
+                            val updatedAvatars = currentState.avatars.toMutableList().apply {
+                                add(avatarIndex, avatar)
+                            }
+                            currentState.copy(
+                                avatars = updatedAvatars,
+                                selectedAvatarId = if (isSelectedAvatar) {
+                                    avatarId
+                                } else {
+                                    _uiState.value.selectedAvatarId
+                                },
+                            )
+                        }
+                    }
+            }
+        }
+    }
+}
+
+private inline fun <T> List<T>.indexOfFirstOrNull(predicate: (T) -> Boolean): Int? {
+    val index = indexOfFirst { predicate(it) }
+    return if (index == -1) null else index
 }

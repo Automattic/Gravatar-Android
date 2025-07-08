@@ -420,6 +420,93 @@ class RealUserRepositoryTest {
         }
     }
 
+    @Test
+    fun `deleteAvatar should return success when user is logged in and service returns success`() = runTest {
+        // Given
+        val avatarId = "test-avatar-id"
+
+        // Save token
+        tokenStorage.save(testToken)
+
+        // Mock avatar service
+        val avatarResult = GravatarResult.Success<Unit, ErrorType>(Unit)
+        coEvery {
+            avatarService.deleteAvatarCatching(
+                avatarId = avatarId,
+                oauthToken = testToken
+            )
+        } returns avatarResult
+
+        // When
+        val result = repository.deleteAvatar(avatarId)
+
+        // Then
+        assertTrue(result.isSuccess)
+
+        // Verify interactions
+        coVerify {
+            avatarService.deleteAvatarCatching(
+                avatarId = avatarId,
+                oauthToken = testToken
+            )
+        }
+    }
+
+    @Test
+    fun `deleteAvatar should return failure when user is not logged in`() = runTest {
+        // Given
+        val avatarId = "test-avatar-id"
+        tokenStorage.clear()
+
+        // When
+        val result = repository.deleteAvatar(avatarId)
+
+        // Then
+        assertTrue(result.isFailure)
+        val exception = result.exceptionOrNull()
+        assertTrue(exception is IllegalStateException)
+        assertEquals("User is not logged in", exception?.message)
+
+        // Verify no interactions with services
+        coVerify(exactly = 0) { avatarService.deleteAvatarCatching(any(), any()) }
+    }
+
+    @Test
+    fun `deleteAvatar should return failure when avatar service returns failure`() = runTest {
+        // Given
+        val avatarId = "test-avatar-id"
+
+        // Save token
+        tokenStorage.save(testToken)
+
+        // Mock avatar service to return a failure
+        val errorType = ErrorType.Server
+        val avatarResult = GravatarResult.Failure<Unit, ErrorType>(errorType)
+        coEvery {
+            avatarService.deleteAvatarCatching(
+                avatarId = avatarId,
+                oauthToken = testToken
+            )
+        } returns avatarResult
+
+        // When
+        val result = repository.deleteAvatar(avatarId)
+
+        // Then
+        assertTrue(result.isFailure)
+        val exception = result.exceptionOrNull()
+        assertTrue(exception is IllegalStateException)
+        assertEquals("Failed to delete avatar: $errorType", exception?.message)
+
+        // Verify interactions
+        coVerify {
+            avatarService.deleteAvatarCatching(
+                avatarId = avatarId,
+                oauthToken = testToken
+            )
+        }
+    }
+
     private fun createTestProfile(): Profile {
         return Profile {
             hash = testHash

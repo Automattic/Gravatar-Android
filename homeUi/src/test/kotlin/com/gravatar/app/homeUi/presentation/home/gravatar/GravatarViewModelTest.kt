@@ -475,6 +475,122 @@ class GravatarViewModelTest {
         }
     }
 
+    @Test
+    fun `onEvent OnDeleteAvatar should delete non-selected avatar successfully`() = runTest {
+        // Given
+        val avatars = createAvatars()
+        coEvery { userRepository.getAvatars() } returns Result.success(avatars)
+        initViewModel()
+        advanceUntilIdle()
+
+        val avatarIdToDelete = "2"
+        coEvery { userRepository.deleteAvatar(avatarIdToDelete) } returns Result.success(Unit)
+
+        // When
+        viewModel.onEvent(GravatarEvent.OnDeleteAvatar(avatarIdToDelete))
+        advanceUntilIdle()
+
+        // Then
+        viewModel.uiState.test {
+            val expectedState = GravatarUiState(
+                isLoading = false,
+                avatars = avatars.filter { it.imageId != avatarIdToDelete }
+            )
+            assertEquals(expectedState, awaitItem())
+        }
+        coVerify { userRepository.deleteAvatar(avatarIdToDelete) }
+    }
+
+    @Test
+    fun `onEvent OnDeleteAvatar should delete selected avatar successfully and update selectedAvatarId`() = runTest {
+        // Given
+        val avatars = createAvatars()
+        coEvery { userRepository.getAvatars() } returns Result.success(avatars)
+        initViewModel()
+        advanceUntilIdle()
+
+        // Select an avatar first
+        val selectedAvatarId = "1"
+        coEvery { userRepository.selectAvatar(selectedAvatarId) } returns Result.success(Unit)
+        viewModel.onEvent(GravatarEvent.OnAvatarSelected(selectedAvatarId))
+        advanceUntilIdle()
+
+        // When
+        coEvery { userRepository.deleteAvatar(selectedAvatarId) } returns Result.success(Unit)
+        viewModel.onEvent(GravatarEvent.OnDeleteAvatar(selectedAvatarId))
+        advanceUntilIdle()
+
+        // Then
+        viewModel.uiState.test {
+            val expectedState = GravatarUiState(
+                isLoading = false,
+                avatars = avatars.filter { it.imageId != selectedAvatarId },
+                selectedAvatarId = null
+            )
+            assertEquals(expectedState, awaitItem())
+        }
+        coVerify { userRepository.deleteAvatar(selectedAvatarId) }
+    }
+
+    @Test
+    fun `onEvent OnDeleteAvatar should handle failure and restore avatar`() = runTest {
+        // Given
+        val avatars = createAvatars()
+        coEvery { userRepository.getAvatars() } returns Result.success(avatars)
+        initViewModel()
+        advanceUntilIdle()
+
+        val avatarIdToDelete = "2"
+        coEvery { userRepository.deleteAvatar(avatarIdToDelete) } returns Result.failure(RuntimeException("Test exception"))
+
+        // When
+        viewModel.onEvent(GravatarEvent.OnDeleteAvatar(avatarIdToDelete))
+        advanceUntilIdle()
+
+        // Then
+        viewModel.uiState.test {
+            // The state should be unchanged since the avatar should be restored after failure
+            val expectedState = GravatarUiState(
+                isLoading = false,
+                avatars = avatars
+            )
+            assertEquals(expectedState, awaitItem())
+        }
+        coVerify { userRepository.deleteAvatar(avatarIdToDelete) }
+    }
+
+    @Test
+    fun `onEvent OnDeleteAvatar should handle failure and restore selected avatar`() = runTest {
+        // Given
+        val avatars = createAvatars()
+        coEvery { userRepository.getAvatars() } returns Result.success(avatars)
+        initViewModel()
+        advanceUntilIdle()
+
+        // Select an avatar first
+        val selectedAvatarId = "1"
+        coEvery { userRepository.selectAvatar(selectedAvatarId) } returns Result.success(Unit)
+        viewModel.onEvent(GravatarEvent.OnAvatarSelected(selectedAvatarId))
+        advanceUntilIdle()
+
+        // When
+        coEvery { userRepository.deleteAvatar(selectedAvatarId) } returns Result.failure(RuntimeException("Test exception"))
+        viewModel.onEvent(GravatarEvent.OnDeleteAvatar(selectedAvatarId))
+        advanceUntilIdle()
+
+        // Then
+        viewModel.uiState.test {
+            // The state should be unchanged since the avatar should be restored after failure
+            val expectedState = GravatarUiState(
+                isLoading = false,
+                avatars = avatars,
+                selectedAvatarId = selectedAvatarId
+            )
+            assertEquals(expectedState, awaitItem())
+        }
+        coVerify { userRepository.deleteAvatar(selectedAvatarId) }
+    }
+
     private fun initViewModel() {
         viewModel = GravatarViewModel(
             userRepository = userRepository,
