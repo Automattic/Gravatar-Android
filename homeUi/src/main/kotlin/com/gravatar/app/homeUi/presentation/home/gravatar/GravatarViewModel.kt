@@ -1,6 +1,7 @@
 package com.gravatar.app.homeUi.presentation.home.gravatar
 
 import android.net.Uri
+import android.util.Log
 import androidx.core.net.toFile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -49,6 +50,9 @@ internal class GravatarViewModel(
             GravatarEvent.OnFailedAvatarDialogDismissed -> dismissFailedUploadDialog()
             is GravatarEvent.OnFailedAvatarDismissed -> removedFailedUpload(event.uri)
             is GravatarEvent.OnFailedAvatarTapped -> showFailedUploadDialog(event.uri)
+            is GravatarEvent.OnDeleteAvatar -> {
+                Log.i("GravatarViewModel", "OnDeleteAvatar: ${event.avatarId}")
+            }
         }
     }
 
