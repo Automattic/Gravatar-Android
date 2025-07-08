@@ -1,24 +1,31 @@
 package com.gravatar.app.homeUi.presentation.home.profile
 
 import app.cash.turbine.test
+import com.gravatar.AvatarUrl
 import com.gravatar.app.homeUi.presentation.home.profile.about.AboutEditorField
 import com.gravatar.app.homeUi.presentation.home.profile.about.AboutInputField
 import com.gravatar.app.testUtils.CoroutineTestRule
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
+import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrl
 import com.gravatar.restapi.models.Profile
 import com.gravatar.restapi.models.ProfileContactInfo
+import com.gravatar.types.Hash
 import io.mockk.coEvery
+import io.mockk.coJustAwait
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.net.URI
+import java.net.URL
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ProfileViewModelTest {
@@ -28,8 +35,16 @@ class ProfileViewModelTest {
     var coroutineTestRule = CoroutineTestRule(testDispatcher)
 
     private val userRepository = mockk<UserRepository>()
+    private val getAvatarUrl = mockk<GetAvatarUrl>()
 
     private lateinit var viewModel: ProfileViewModel
+
+    private val avatarUrlFlow: MutableSharedFlow<URL?> = MutableSharedFlow()
+
+    @Before
+    fun setup() {
+        coEvery { getAvatarUrl() } returns avatarUrlFlow
+    }
 
     @Test
     fun `when viewmodel is initialized and fetch profile finishes successfully then uiState contains profile`() =
@@ -311,6 +326,23 @@ class ProfileViewModelTest {
         coVerify(exactly = (1)) { userRepository.updateProfile(any()) }
     }
 
+    @Test
+    fun `each avatar URL collected should be set as state`() = runTest {
+        // Given
+        coJustAwait { userRepository.getProfile() }
+        viewModel = initViewModel()
+        advanceUntilIdle()
+
+        // When
+        val avatarUrl = AvatarUrl(Hash("Hash")).url()
+        avatarUrlFlow.emit(avatarUrl)
+
+        // Then
+        viewModel.uiState.test {
+            assertEquals(ProfileUiState(isLoading = true, avatarUrl = avatarUrl.toString()), awaitItem())
+        }
+    }
+
     private fun profile(displayName: String = "John Doe") = Profile {
         hash = "mock-hash"
         this.displayName = displayName
@@ -332,5 +364,8 @@ class ProfileViewModelTest {
         }
     }
 
-    private fun initViewModel() = ProfileViewModel(userRepository)
+    private fun initViewModel() = ProfileViewModel(
+        userRepository = userRepository,
+        getAvatarUrl = getAvatarUrl,
+    )
 }

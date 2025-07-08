@@ -13,21 +13,20 @@ internal class GetAvatarUrlUseCase(
     private val avatarCacheBusterStorage: AvatarCacheBusterStorage,
 ) : GetAvatarUrl {
 
-    override fun invoke(): Flow<URL> {
+    override fun invoke(): Flow<URL?> {
         return avatarCacheBusterStorage.state
             .map { cacheBuster ->
                 val hash: String? = profileRepository.get()
-                    .fold(
-                        onSuccess = { it.hash },
-                        onFailure = { null }
-                    )
-                AvatarUrl(
-                    hash = Hash(hash ?: ""),
-                ).url(cacheBuster)
+                    .getOrNull()?.hash
+                hash?.let {
+                    AvatarUrl(
+                        hash = Hash(it),
+                    ).url(cacheBuster)
+                }
             }
     }
 }
 
 interface GetAvatarUrl {
-    operator fun invoke(): Flow<URL>
+    operator fun invoke(): Flow<URL?>
 }

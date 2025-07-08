@@ -3,12 +3,16 @@ package com.gravatar.app.homeUi.presentation.home.gravatar
 import android.net.Uri
 import androidx.core.net.toFile
 import app.cash.turbine.test
+import com.gravatar.AvatarUrl
 import com.gravatar.app.homeUi.presentation.FileUtils
 import com.gravatar.app.testUtils.CoroutineTestRule
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
+import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrl
+import com.gravatar.app.usercomponent.domain.usecase.SelectUserAvatar
 import com.gravatar.restapi.models.Avatar
 import com.gravatar.services.ErrorType
 import com.gravatar.services.GravatarResult
+import com.gravatar.types.Hash
 import io.mockk.coEvery
 import io.mockk.coJustAwait
 import io.mockk.coVerify
@@ -17,14 +21,17 @@ import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.io.File
 import java.net.URI
+import java.net.URL
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GravatarViewModelTest {
@@ -34,8 +41,18 @@ class GravatarViewModelTest {
     var coroutineTestRule = CoroutineTestRule(testDispatcher)
 
     private val userRepository: UserRepository = mockk()
+    private val getAvatarUrl: GetAvatarUrl = mockk()
+    private val selectUserAvatar: SelectUserAvatar = mockk()
     private val fileUtils: FileUtils = mockk()
     private lateinit var viewModel: GravatarViewModel
+
+    private val avatarUrlFlow: MutableSharedFlow<URL?> = MutableSharedFlow()
+
+    @Before
+    fun setup() {
+        // Mock the GetAvatarUrl use case to return a flow of avatar URLs
+        coEvery { getAvatarUrl() } returns avatarUrlFlow
+    }
 
     @Test
     fun `init should fetch avatars`() = runTest {
@@ -107,7 +124,7 @@ class GravatarViewModelTest {
         advanceUntilIdle()
 
         val avatarId = "1"
-        coEvery { userRepository.selectAvatar(avatarId) } returns Result.success(Unit)
+        coEvery { selectUserAvatar(avatarId) } returns Result.success(Unit)
 
         // When
         viewModel.onEvent(GravatarEvent.OnAvatarSelected(avatarId))
@@ -122,7 +139,7 @@ class GravatarViewModelTest {
             )
             assertEquals(expectedState, awaitItem())
         }
-        coVerify { userRepository.selectAvatar(avatarId) }
+        coVerify { selectUserAvatar(avatarId) }
     }
 
     @Test
@@ -134,7 +151,7 @@ class GravatarViewModelTest {
         advanceUntilIdle()
 
         val avatarId = "1"
-        coEvery { userRepository.selectAvatar(avatarId) } returns Result.success(Unit)
+        coEvery { selectUserAvatar(avatarId) } returns Result.success(Unit)
         viewModel.onEvent(GravatarEvent.OnAvatarSelected(avatarId))
         advanceUntilIdle()
 
@@ -147,7 +164,7 @@ class GravatarViewModelTest {
             // Then
             expectNoEvents()
         }
-        coVerify(exactly = 1) { userRepository.selectAvatar(avatarId) }
+        coVerify(exactly = 1) { selectUserAvatar(avatarId) }
     }
 
     @Test
@@ -160,8 +177,8 @@ class GravatarViewModelTest {
 
         val initialAvatarId = "1"
         val otherAvatarId = "2"
-        coEvery { userRepository.selectAvatar(initialAvatarId) } returns Result.success(Unit)
-        coJustAwait { userRepository.selectAvatar(otherAvatarId) }
+        coEvery { selectUserAvatar(initialAvatarId) } returns Result.success(Unit)
+        coJustAwait { selectUserAvatar(otherAvatarId) }
         viewModel.onEvent(GravatarEvent.OnAvatarSelected(initialAvatarId))
         advanceUntilIdle()
 
@@ -190,7 +207,7 @@ class GravatarViewModelTest {
                 awaitItem()
             )
         }
-        coVerify(exactly = 1) { userRepository.selectAvatar(initialAvatarId) }
+        coVerify(exactly = 1) { selectUserAvatar(initialAvatarId) }
     }
 
     @Test
@@ -203,7 +220,7 @@ class GravatarViewModelTest {
 
         val avatarId = "1"
         coEvery {
-            userRepository.selectAvatar(avatarId)
+            selectUserAvatar(avatarId)
         } returns Result.failure(RuntimeException("Test exception"))
 
         // When
@@ -218,7 +235,7 @@ class GravatarViewModelTest {
             )
             assertEquals(expectedState, awaitItem())
         }
-        coVerify { userRepository.selectAvatar(avatarId) }
+        coVerify { selectUserAvatar(avatarId) }
     }
 
     @Test
@@ -511,7 +528,7 @@ class GravatarViewModelTest {
 
         // Select an avatar first
         val selectedAvatarId = "1"
-        coEvery { userRepository.selectAvatar(selectedAvatarId) } returns Result.success(Unit)
+        coEvery { selectUserAvatar(selectedAvatarId) } returns Result.success(Unit)
         viewModel.onEvent(GravatarEvent.OnAvatarSelected(selectedAvatarId))
         advanceUntilIdle()
 
@@ -573,7 +590,7 @@ class GravatarViewModelTest {
 
         // Select an avatar first
         val selectedAvatarId = "1"
-        coEvery { userRepository.selectAvatar(selectedAvatarId) } returns Result.success(Unit)
+        coEvery { selectUserAvatar(selectedAvatarId) } returns Result.success(Unit)
         viewModel.onEvent(GravatarEvent.OnAvatarSelected(selectedAvatarId))
         advanceUntilIdle()
 
@@ -647,8 +664,27 @@ class GravatarViewModelTest {
         }
     }
 
+    @Test
+    fun `each avatar URL collected should be set as state`() = runTest {
+        // Given
+        coJustAwait { userRepository.getAvatars() }
+        initViewModel()
+        advanceUntilIdle()
+
+        // When
+        val avatarUrl = AvatarUrl(Hash("Hash")).url()
+        avatarUrlFlow.emit(avatarUrl)
+
+        // Then
+        viewModel.uiState.test {
+            assertEquals(GravatarUiState(isLoading = true, avatarUrl = avatarUrl.toString()), awaitItem())
+        }
+    }
+
     private fun initViewModel() {
         viewModel = GravatarViewModel(
+            getAvatarUrl = getAvatarUrl,
+            selectUserAvatar = selectUserAvatar,
             userRepository = userRepository,
             fileUtils = fileUtils,
         )

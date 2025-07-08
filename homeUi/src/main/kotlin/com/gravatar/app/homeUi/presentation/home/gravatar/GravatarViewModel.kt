@@ -21,10 +21,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class GravatarViewModel(
-    getAvatarUrl: GetAvatarUrl,
-    val selectUserAvatar: SelectUserAvatar,
-    val userRepository: UserRepository,
-    val fileUtils: FileUtils,
+    private val getAvatarUrl: GetAvatarUrl,
+    private val selectUserAvatar: SelectUserAvatar,
+    private val userRepository: UserRepository,
+    private val fileUtils: FileUtils,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(GravatarUiState())
@@ -44,14 +44,7 @@ internal class GravatarViewModel(
                     selectAvatar(avatarId)
                 }
         }
-
-        getAvatarUrl()
-            .onEach { url ->
-                _uiState.update { currentState ->
-                    currentState.copy(avatarUrl = url.toString())
-                }
-            }
-            .launchIn(viewModelScope)
+        collectUserAvatar()
     }
 
     fun onEvent(event: GravatarEvent) {
@@ -264,6 +257,16 @@ internal class GravatarViewModel(
                     }
             }
         }
+    }
+
+    private fun collectUserAvatar() {
+        getAvatarUrl()
+            .onEach { url ->
+                _uiState.update { currentState ->
+                    currentState.copy(avatarUrl = url.toString())
+                }
+            }
+            .launchIn(viewModelScope)
     }
 }
 

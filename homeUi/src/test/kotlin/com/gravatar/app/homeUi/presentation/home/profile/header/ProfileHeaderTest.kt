@@ -15,6 +15,7 @@ class ProfileHeaderTest : RoborazziTest() {
                 jobTitle = "Software Engineer",
                 company = "Automattic"
             ),
+            avatarUrl = "https://gravatar.com/avatar/test",
             saveState = ProfileHeaderSaveState.SAVED,
             onSaveProfile = {},
         )
@@ -29,6 +30,7 @@ class ProfileHeaderTest : RoborazziTest() {
                 jobTitle = "Software Engineer",
                 company = ""
             ),
+            avatarUrl = "https://gravatar.com/avatar/test",
             saveState = ProfileHeaderSaveState.UNSAVED,
             onSaveProfile = {},
         )
@@ -43,6 +45,7 @@ class ProfileHeaderTest : RoborazziTest() {
                 jobTitle = "",
                 company = "Automattic"
             ),
+            avatarUrl = "https://gravatar.com/avatar/test",
             saveState = ProfileHeaderSaveState.SAVING,
             onSaveProfile = {},
         )
@@ -57,6 +60,7 @@ class ProfileHeaderTest : RoborazziTest() {
                 jobTitle = "",
                 company = ""
             ),
+            avatarUrl = "https://gravatar.com/avatar/test",
             saveState = ProfileHeaderSaveState.SAVED,
             onSaveProfile = {},
         )
@@ -71,6 +75,7 @@ class ProfileHeaderTest : RoborazziTest() {
                 jobTitle = "Senior Software Engineer with a very long title",
                 company = "Automattic Inc. - A very long company name that should also trigger ellipsis"
             ),
+            avatarUrl = "https://gravatar.com/avatar/test",
             saveState = ProfileHeaderSaveState.SAVED,
             onSaveProfile = {},
         )
