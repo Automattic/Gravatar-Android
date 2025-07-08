@@ -208,7 +208,7 @@ internal class GravatarViewModel(
                         selectedAvatarId = if (isSelectedAvatar) {
                             null
                         } else {
-                            _uiState.value.selectedAvatarId
+                            currentState.selectedAvatarId
                         },
                     )
                 }
@@ -228,7 +228,7 @@ internal class GravatarViewModel(
                                 selectedAvatarId = if (isSelectedAvatar) {
                                     avatarId
                                 } else {
-                                    _uiState.value.selectedAvatarId
+                                    currentState.selectedAvatarId
                                 },
                             )
                         }
