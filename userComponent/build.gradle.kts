@@ -16,6 +16,7 @@ android {
 
 dependencies {
     implementation(project(":foundations"))
+    implementation(project(":clock"))
 
     implementation(libs.kotlinx.coroutines)
     implementation(libs.androidx.datastore.prefs)
