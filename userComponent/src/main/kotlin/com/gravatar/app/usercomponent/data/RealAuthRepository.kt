@@ -2,8 +2,6 @@ package com.gravatar.app.usercomponent.data
 
 import com.gravatar.app.usercomponent.domain.model.LoginRequest
 import com.gravatar.app.usercomponent.domain.repository.AuthRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 
 internal class RealAuthRepository(
     private val wordPressClient: WordPressClient,
@@ -24,7 +22,7 @@ internal class RealAuthRepository(
         )
     }
 
-    override fun isUserLoggedIn(): Flow<Boolean> = tokenStorage.get().map { it != null }
+    override suspend fun isUserLoggedIn(): Boolean = tokenStorage.get() != null
 
     override suspend fun logout() {
         tokenStorage.clear()

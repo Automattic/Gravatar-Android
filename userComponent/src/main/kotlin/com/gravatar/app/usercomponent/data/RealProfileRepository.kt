@@ -6,7 +6,6 @@ import com.gravatar.app.usercomponent.domain.repository.ProfileRepository
 import com.gravatar.restapi.models.Profile
 import com.gravatar.restapi.models.UpdateProfileRequest
 import com.gravatar.services.ProfileService
-import kotlinx.coroutines.flow.firstOrNull
 
 internal class RealProfileRepository(
     private val profileService: ProfileService,
@@ -35,7 +34,7 @@ internal class RealProfileRepository(
     }
 
     override suspend fun update(updateRequest: UpdateProfileRequest): Result<Profile> {
-        val token = tokenStorage.get().firstOrNull()
+        val token = tokenStorage.get()
         return if (token != null) {
             val result = profileService.updateProfileCatching(token, updateRequest).valueOrNull()
             if (result != null) {
@@ -54,7 +53,7 @@ internal class RealProfileRepository(
     }
 
     private suspend fun fetchProfile(): Result<Profile> {
-        val token = tokenStorage.get().firstOrNull()
+        val token = tokenStorage.get()
         if (token != null) {
             val fetchedProfile = profileService.retrieveAuthenticatedCatching(withToken = token).valueOrNull()
             return if (fetchedProfile != null) {

@@ -1,7 +1,9 @@
 package com.gravatar.app.usercomponent.di
 
 import com.gravatar.app.foundations.DispatcherProvider
+import com.gravatar.app.usercomponent.data.InMemoryUserSessionPersistence
 import com.gravatar.app.usercomponent.data.WordPressClient
+import kotlinx.coroutines.CoroutineScope
 import org.junit.Test
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.test.KoinTest
@@ -16,7 +18,8 @@ class UserComponentModuleTest : KoinTest {
     fun checkAllModules() {
         userComponentModule.verify(
             injections = injectedParameters(
-                definition<WordPressClient>(DispatcherProvider::class)
+                definition<WordPressClient>(DispatcherProvider::class),
+                definition<InMemoryUserSessionPersistence>(CoroutineScope::class, DispatcherProvider::class)
             )
         )
     }

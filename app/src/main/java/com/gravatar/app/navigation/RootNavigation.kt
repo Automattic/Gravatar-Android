@@ -9,6 +9,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.gravatar.app.homeUi.presentation.home.HomeScreen
 import com.gravatar.app.loginUi.presentation.login.LoginScreen
+import com.gravatar.app.usercomponent.domain.model.UserSession.LOGGED_IN
+import com.gravatar.app.usercomponent.domain.model.UserSession.LOGGED_OUT
 import com.gravatar.app.usercomponent.domain.usecase.IsUserLoggedIn
 import kotlinx.serialization.Serializable
 import org.koin.compose.koinInject
@@ -21,15 +23,14 @@ fun RootNavigation() {
 
     LaunchedEffect(Unit) {
         isUserLoggedIn()
-            .collect { isLoggedIn ->
+            .collect { userSession ->
                 val lastRoute = backStackEntry.value?.destination?.route?.let {
                     RootDestination.fromRoute(it)
                 } ?: RootDestination.Splash
 
-                if (isLoggedIn) {
-                    navController.navigateSavingState(RootDestination.Home, popTo = lastRoute)
-                } else {
-                    navController.navigateSavingState(RootDestination.Login, popTo = lastRoute)
+                when (userSession) {
+                    LOGGED_IN -> navController.navigateSavingState(RootDestination.Home, popTo = lastRoute)
+                    LOGGED_OUT -> navController.navigateSavingState(RootDestination.Login, popTo = lastRoute)
                 }
             }
     }

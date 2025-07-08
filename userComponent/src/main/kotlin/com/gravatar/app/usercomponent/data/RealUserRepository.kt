@@ -9,7 +9,6 @@ import com.gravatar.services.AvatarService
 import com.gravatar.services.ErrorType
 import com.gravatar.services.GravatarResult
 import com.gravatar.types.Hash
-import kotlinx.coroutines.flow.firstOrNull
 import java.io.File
 
 internal class RealUserRepository(
@@ -19,7 +18,7 @@ internal class RealUserRepository(
 ) : UserRepository {
 
     override suspend fun selectAvatar(avatarId: String): Result<Unit> {
-        val token = tokenStorage.get().firstOrNull()
+        val token = tokenStorage.get()
         return if (token != null) {
             val result = profileRepository.get()
                 .getOrNull()
@@ -41,7 +40,7 @@ internal class RealUserRepository(
     }
 
     override suspend fun getAvatars(): Result<List<Avatar>> {
-        val token = tokenStorage.get().firstOrNull()
+        val token = tokenStorage.get()
         return if (token != null) {
             val avatars = profileRepository.get()
                 .getOrNull()
@@ -70,7 +69,7 @@ internal class RealUserRepository(
     }
 
     override suspend fun uploadAvatar(avatarFile: File): GravatarResult<Avatar, ErrorType> {
-        val token = tokenStorage.get().firstOrNull()
+        val token = tokenStorage.get()
         return if (token != null) {
             profileRepository.get()
                 .getOrNull()
