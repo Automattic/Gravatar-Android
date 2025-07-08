@@ -17,11 +17,10 @@ import com.gravatar.services.AvatarService
 import com.gravatar.services.ProfileService
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
-import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 val userComponentModule = module {
-    singleOf(::RealProfileRepository) { bind<ProfileRepository>() }
+    factoryOf(::RealProfileRepository) { bind<ProfileRepository>() }
     factoryOf(::RealAuthRepository) { bind<AuthRepository>() }
     factoryOf(::RealUserRepository) { bind<UserRepository>() }
     factoryOf(::LoginUseCase) { bind<Login>() }
@@ -32,4 +31,5 @@ val userComponentModule = module {
     single { AvatarService() }
     includes(httpClientModule)
     includes(datastoreModule)
+    includes(databaseModule)
 }

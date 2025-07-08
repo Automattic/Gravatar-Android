@@ -2,11 +2,17 @@ plugins {
     alias(libs.plugins.gravatar.android.library)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
 }
 
 android {
     namespace = "com.gravatar.app.usercomponent"
+
+    room {
+        schemaDirectory("$projectDir/schemas")
+    }
 }
+
 
 dependencies {
     implementation(project(":foundations"))
@@ -24,10 +30,17 @@ dependencies {
     implementation(libs.ktor.serialization.json)
     implementation(libs.gravatar.core)
 
+    // Room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+
     testImplementation(libs.junit)
     testImplementation(libs.koin.test.junit4)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk.android)
     testImplementation(libs.turbine)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.robolectric)
     testImplementation(project(":testUtils"))
 }

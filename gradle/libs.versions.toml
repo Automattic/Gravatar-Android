@@ -15,6 +15,7 @@ navigationCompose = "2.9.0"
 mockk = "1.14.2"
 roborazzi = "1.45.1"
 robolectric = "4.14.1"
+room = "2.7.2"
 tracks = "6.0.3"
 turbine = "1.2.1"
 browser = "1.8.0"
@@ -23,6 +24,7 @@ kotlinCoroutines = "1.10.2"
 datastore = "1.1.7"
 ksp = "2.1.21-2.0.2"
 ucrop = "2.2.11"
+androidxTestCore = "1.6.1"
 
 [libraries]
 kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinCoroutines" }
@@ -33,6 +35,7 @@ androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", versi
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidxTestCore" }
 # Tracks - Analytics and Crash Reporting
 automattic-tracks = { module = "com.automattic:Automattic-Tracks-Android", version.ref = "tracks" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
@@ -66,6 +69,9 @@ ktor-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor"
 ktor-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
 ktor-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 ucrop = { group = "com.automattic", name = "ucrop", version.ref = "ucrop" }
 
@@ -85,6 +91,7 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+room = { id = "androidx.room", version.ref = "room" }
 
 # Plugins defined by this project
 gravatar-android-application = { id = "gravatar.android.application" }
