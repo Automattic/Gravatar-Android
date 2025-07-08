@@ -2,11 +2,17 @@ plugins {
     alias(libs.plugins.gravatar.android.library)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
 }
 
 android {
     namespace = "com.gravatar.app.usercomponent"
+
+    room {
+        schemaDirectory("$projectDir/schemas")
+    }
 }
+
 
 dependencies {
     implementation(project(":foundations"))
