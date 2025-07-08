@@ -30,7 +30,7 @@ internal class ProfileViewModel(
         getAvatarUrl()
             .onEach { url ->
                 _uiState.update { currentState ->
-                    currentState.copy(avatarUrl = url.toString())
+                    currentState.copy(avatarUrl = url?.toString())
                 }
             }
             .launchIn(viewModelScope)

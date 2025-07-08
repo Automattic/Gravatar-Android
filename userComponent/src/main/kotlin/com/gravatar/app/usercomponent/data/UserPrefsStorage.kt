@@ -41,7 +41,7 @@ internal class DatastoreUserPrefsStorage(
     private val dispatcherProvider: DispatcherProvider,
 ) : UserStorage {
 
-    companion object Companion {
+    companion object {
         private const val AUTH_TOKEN_KEY = "auth_token"
         private const val AVATAR_CACHE_BUSTER_KEY = "avatar_cache_buster"
     }
