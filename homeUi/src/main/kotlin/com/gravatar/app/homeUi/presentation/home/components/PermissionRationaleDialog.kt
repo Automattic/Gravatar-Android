@@ -40,7 +40,7 @@ internal fun PermissionRationaleDialog(
                         onConfirmation()
                     },
                 ) {
-                    Text(stringResource(R.string.permission_required_rationale_message))
+                    Text(stringResource(R.string.permission_required_open_settings))
                 }
             },
         )
