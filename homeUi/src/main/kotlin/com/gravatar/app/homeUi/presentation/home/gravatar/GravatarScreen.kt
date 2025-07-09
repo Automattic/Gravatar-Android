@@ -159,7 +159,7 @@ internal fun GravatarScreen(
         ) {
             Column {
                 GravatarHeader(
-                    uiState.avatars.firstOrNull { it.imageId == uiState.selectedAvatarId },
+                    uiState.avatarUrl,
                     modifier = Modifier.fillMaxWidth(),
                     onMenuClick = onMenuClick,
                 )

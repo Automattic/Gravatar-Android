@@ -6,6 +6,7 @@ import com.gravatar.services.ErrorType
 
 internal data class GravatarUiState(
     val isLoading: Boolean = false,
+    val avatarUrl: String? = null,
     val isRefreshing: Boolean = false,
     val selectingAvatarId: String? = null,
     val selectedAvatarId: String? = null,

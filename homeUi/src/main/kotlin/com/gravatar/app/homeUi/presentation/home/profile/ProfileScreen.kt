@@ -52,6 +52,7 @@ internal fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> U
                         Row {
                             ProfileHeader(
                                 profile = profile,
+                                avatarUrl = uiState.avatarUrl,
                                 saveState = when {
                                     uiState.isSavingProfile -> ProfileHeaderSaveState.SAVING
                                     uiState.hasUnsavedChanges -> ProfileHeaderSaveState.UNSAVED

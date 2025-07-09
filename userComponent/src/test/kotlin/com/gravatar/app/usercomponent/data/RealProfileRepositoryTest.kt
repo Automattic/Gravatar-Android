@@ -51,7 +51,7 @@ class RealProfileRepositoryTest {
     fun `refreshUserProfile should return success when user is logged in and service returns success`() = runTest {
         // Given
         val profile = createTestProfile()
-        tokenStorage.save(testToken)
+        tokenStorage.saveToken(testToken)
 
         val profileResult = GravatarResult.Success<Profile, ErrorType>(profile)
         coEvery { profileService.retrieveAuthenticatedCatching(testToken) } returns profileResult
@@ -69,7 +69,7 @@ class RealProfileRepositoryTest {
     @Test
     fun `refreshUserProfile should return failure when user is not logged in`() = runTest {
         // Given
-        tokenStorage.clear()
+        tokenStorage.clearToken()
 
         // When
         val result = repository.refreshUserProfile()
@@ -84,7 +84,7 @@ class RealProfileRepositoryTest {
     @Test
     fun `refreshUserProfile should return failure when service returns null`() = runTest {
         // Given
-        tokenStorage.save(testToken)
+        tokenStorage.saveToken(testToken)
 
         val profileResult = GravatarResult.Failure<Profile, ErrorType>(ErrorType.Server)
         coEvery { profileService.retrieveAuthenticatedCatching(testToken) } returns profileResult
@@ -103,7 +103,7 @@ class RealProfileRepositoryTest {
         // Given
         val profile = createTestProfile()
         val profileEntity = ProfileEntity.fromProfile(profile)
-        tokenStorage.save(testToken)
+        tokenStorage.saveToken(testToken)
 
         coEvery { profileDao.getProfile() } returns profileEntity
 
@@ -123,7 +123,7 @@ class RealProfileRepositoryTest {
     fun `get should fetch profile when database is empty`() = runTest {
         // Given
         val profile = createTestProfile()
-        tokenStorage.save(testToken)
+        tokenStorage.saveToken(testToken)
 
         coEvery { profileDao.getProfile() } returns null
         val profileResult = GravatarResult.Success<Profile, ErrorType>(profile)
@@ -145,7 +145,7 @@ class RealProfileRepositoryTest {
     @Test
     fun `get should return failure when user is not logged in and database is empty`() = runTest {
         // Given
-        tokenStorage.clear()
+        tokenStorage.clearToken()
         coEvery { profileDao.getProfile() } returns null
 
         // When
@@ -166,7 +166,7 @@ class RealProfileRepositoryTest {
         val updateRequest = UpdateProfileRequest {
             displayName = "New Name"
         }
-        tokenStorage.save(testToken)
+        tokenStorage.saveToken(testToken)
 
         val profileResult = GravatarResult.Success<Profile, ErrorType>(profile)
         coEvery { profileService.updateProfileCatching(testToken, updateRequest) } returns profileResult
@@ -189,7 +189,7 @@ class RealProfileRepositoryTest {
         val updateRequest = UpdateProfileRequest {
             displayName = "New Name"
         }
-        tokenStorage.clear()
+        tokenStorage.clearToken()
 
         // When
         val result = repository.update(updateRequest)
@@ -207,7 +207,7 @@ class RealProfileRepositoryTest {
         val updateRequest = UpdateProfileRequest {
             displayName = "New Name"
         }
-        tokenStorage.save(testToken)
+        tokenStorage.saveToken(testToken)
 
         val profileResult = GravatarResult.Failure<Profile, ErrorType>(ErrorType.Server)
         coEvery { profileService.updateProfileCatching(testToken, updateRequest) } returns profileResult

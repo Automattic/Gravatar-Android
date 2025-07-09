@@ -6,19 +6,27 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gravatar.app.homeUi.presentation.FileUtils
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
+import com.gravatar.app.usercomponent.domain.usecase.DeleteUserAvatar
+import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrl
+import com.gravatar.app.usercomponent.domain.usecase.SelectUserAvatar
 import com.gravatar.services.GravatarResult
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class GravatarViewModel(
-    val userRepository: UserRepository,
-    val fileUtils: FileUtils,
+    private val getAvatarUrl: GetAvatarUrl,
+    private val selectUserAvatar: SelectUserAvatar,
+    private val deleteUserAvatar: DeleteUserAvatar,
+    private val userRepository: UserRepository,
+    private val fileUtils: FileUtils,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(GravatarUiState())
@@ -38,6 +46,7 @@ internal class GravatarViewModel(
                     selectAvatar(avatarId)
                 }
         }
+        collectUserAvatar()
     }
 
     fun onEvent(event: GravatarEvent) {
@@ -160,7 +169,7 @@ internal class GravatarViewModel(
             _uiState.update { currentState ->
                 currentState.copy(selectingAvatarId = avatarId)
             }
-            userRepository.selectAvatar(avatarId)
+            selectUserAvatar(avatarId)
                 .onSuccess {
                     _uiState.update { currentState ->
                         currentState.copy(
@@ -227,7 +236,7 @@ internal class GravatarViewModel(
                         confirmAvatarDeletionId = null,
                     )
                 }
-                userRepository.deleteAvatar(avatarId)
+                deleteUserAvatar(avatarId, isSelectedAvatar)
                     .onSuccess { result ->
                         // NOTIFY THE UI TO SHOW THE CONFIRMATION
                     }
@@ -250,6 +259,16 @@ internal class GravatarViewModel(
                     }
             }
         }
+    }
+
+    private fun collectUserAvatar() {
+        getAvatarUrl()
+            .onEach { url ->
+                _uiState.update { currentState ->
+                    currentState.copy(avatarUrl = url?.toString())
+                }
+            }
+            .launchIn(viewModelScope)
     }
 }
 

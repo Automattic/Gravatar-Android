@@ -5,21 +5,35 @@ import androidx.lifecycle.viewModelScope
 import com.gravatar.app.homeUi.presentation.home.profile.about.AboutEditorField
 import com.gravatar.app.homeUi.presentation.home.profile.about.AboutInputField
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
+import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrl
 import com.gravatar.restapi.models.Profile
 import com.gravatar.restapi.models.UpdateProfileRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class ProfileViewModel(private val userRepository: UserRepository) : ViewModel() {
+internal class ProfileViewModel(
+    getAvatarUrl: GetAvatarUrl,
+    private val userRepository: UserRepository,
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
     internal val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
     init {
         fetchProfile()
+
+        getAvatarUrl()
+            .onEach { url ->
+                _uiState.update { currentState ->
+                    currentState.copy(avatarUrl = url?.toString())
+                }
+            }
+            .launchIn(viewModelScope)
     }
 
     fun onEvent(profileEvent: ProfileEvent) {

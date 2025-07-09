@@ -4,15 +4,15 @@ class FakeAuthTokenStorage : AuthTokenStorage {
 
     private var authToken: String? = null
 
-    override suspend fun get(): String? {
+    override suspend fun getToken(): String? {
         return authToken
     }
 
-    override suspend fun save(token: String) {
+    override suspend fun saveToken(token: String) {
         authToken = token
     }
 
-    override suspend fun clear() {
+    override suspend fun clearToken() {
         authToken = null
     }
 }

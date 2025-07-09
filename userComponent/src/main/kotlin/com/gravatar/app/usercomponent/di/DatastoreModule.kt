@@ -5,7 +5,9 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.gravatar.app.usercomponent.data.AuthTokenStorage
-import com.gravatar.app.usercomponent.data.DatastoreAuthTokenStorage
+import com.gravatar.app.usercomponent.data.AvatarCacheBusterStorage
+import com.gravatar.app.usercomponent.data.DatastoreUserPrefsStorage
+import com.gravatar.app.usercomponent.data.UserStorage
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.annotation.Named
 import org.koin.core.qualifier.named
@@ -16,7 +18,19 @@ internal val datastoreModule = module {
         androidContext().userPreferencesDataStore
     }
     factory<AuthTokenStorage> {
-        DatastoreAuthTokenStorage(
+        DatastoreUserPrefsStorage(
+            dataStore = get(qualifier = named<UserPrefs>()),
+            dispatcherProvider = get()
+        )
+    }
+    factory<AvatarCacheBusterStorage> {
+        DatastoreUserPrefsStorage(
+            dataStore = get(qualifier = named<UserPrefs>()),
+            dispatcherProvider = get()
+        )
+    }
+    factory<UserStorage> {
+        DatastoreUserPrefsStorage(
             dataStore = get(qualifier = named<UserPrefs>()),
             dispatcherProvider = get()
         )

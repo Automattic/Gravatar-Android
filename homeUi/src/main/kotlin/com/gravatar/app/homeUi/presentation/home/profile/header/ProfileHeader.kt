@@ -38,13 +38,14 @@ import com.gravatar.restapi.models.Profile
 @Composable
 internal fun ProfileHeader(
     profile: Profile,
+    avatarUrl: String?,
     saveState: ProfileHeaderSaveState,
     onSaveProfile: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier.fillMaxWidth()) {
         AsyncImageWithCachePlaceholder(
-            profile.avatarUrl.toString(),
+            avatarUrl.orEmpty(),
             modifier = Modifier
                 .matchParentSize()
                 .blur(radius = 40.dp, edgeTreatment = BlurredEdgeTreatment.Rectangle)
@@ -58,7 +59,7 @@ internal fun ProfileHeader(
                 .systemBarsPadding()
         ) {
             GravatarAvatarWithShadow(
-                url = profile.avatarUrl.toString(),
+                url = avatarUrl.orEmpty(),
                 borderShape = CircleShape,
                 modifier = Modifier.size(44.dp)
             )
@@ -146,6 +147,7 @@ fun ProfileHeaderPreviewBoth() {
             jobTitle = "Software Engineer",
             company = "Automattic"
         ),
+        avatarUrl = "https://gravatar.com/avatar/test",
         saveState = ProfileHeaderSaveState.UNSAVED,
         onSaveProfile = {},
     )
@@ -156,6 +158,7 @@ fun ProfileHeaderPreviewBoth() {
 fun ProfileHeaderPreviewJobOnly() {
     ProfileHeader(
         profile = defaultProfile(hash = "", displayName = "John Doe", jobTitle = "Software Engineer", company = ""),
+        avatarUrl = "https://gravatar.com/avatar/test",
         saveState = ProfileHeaderSaveState.SAVED,
         onSaveProfile = {},
     )
@@ -166,6 +169,7 @@ fun ProfileHeaderPreviewJobOnly() {
 fun ProfileHeaderPreviewCompanyOnly() {
     ProfileHeader(
         profile = defaultProfile(hash = "", displayName = "John Doe", jobTitle = "", company = "Automattic"),
+        avatarUrl = "https://gravatar.com/avatar/test",
         saveState = ProfileHeaderSaveState.SAVED,
         onSaveProfile = {},
     )
@@ -176,6 +180,7 @@ fun ProfileHeaderPreviewCompanyOnly() {
 fun ProfileHeaderPreviewNeither() {
     ProfileHeader(
         profile = defaultProfile(hash = "", displayName = "John Doe", jobTitle = "", company = ""),
+        avatarUrl = "https://gravatar.com/avatar/test",
         saveState = ProfileHeaderSaveState.SAVED,
         onSaveProfile = {},
     )
@@ -191,6 +196,7 @@ fun ProfileHeaderPreviewLongText() {
             jobTitle = "Senior Software Engineer with a very long title",
             company = "Automattic Inc. - A very long company name that should also trigger ellipsis"
         ),
+        avatarUrl = "https://gravatar.com/avatar/test",
         saveState = ProfileHeaderSaveState.SAVED,
         onSaveProfile = {},
     )

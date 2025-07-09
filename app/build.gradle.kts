@@ -13,6 +13,7 @@ dependencies {
     implementation(project(":analytics"))
     implementation(project(":foundations"))
     implementation(project(":userComponent"))
+    implementation(project(":clock"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
