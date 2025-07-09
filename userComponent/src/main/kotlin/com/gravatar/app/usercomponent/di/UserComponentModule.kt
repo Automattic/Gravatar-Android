@@ -9,6 +9,8 @@ import com.gravatar.app.usercomponent.data.WordPressClient
 import com.gravatar.app.usercomponent.domain.repository.AuthRepository
 import com.gravatar.app.usercomponent.domain.repository.ProfileRepository
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
+import com.gravatar.app.usercomponent.domain.usecase.DeleteUserAvatar
+import com.gravatar.app.usercomponent.domain.usecase.DeleteUserAvatarUseCase
 import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrl
 import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrlUseCase
 import com.gravatar.app.usercomponent.domain.usecase.IsUserLoggedIn
@@ -35,6 +37,7 @@ val userComponentModule = module {
     factoryOf(::IsUserLoggedInUseCase) { bind<IsUserLoggedIn>() }
     factoryOf(::GetAvatarUrlUseCase) { bind<GetAvatarUrl>() }
     factoryOf(::SelectAvatarUseCase) { bind<SelectUserAvatar>() }
+    factoryOf(::DeleteUserAvatarUseCase) { bind<DeleteUserAvatar>() }
     factoryOf(::WordPressClient)
     singleOf(::InMemoryUserSessionPersistence) { bind<UserSessionPersistence>() }
     single { ProfileService() }

@@ -4,6 +4,7 @@ import com.gravatar.app.clock.AppClock
 import com.gravatar.app.foundations.DispatcherProvider
 import com.gravatar.app.usercomponent.data.InMemoryUserSessionPersistence
 import com.gravatar.app.usercomponent.data.WordPressClient
+import com.gravatar.app.usercomponent.domain.usecase.DeleteUserAvatarUseCase
 import com.gravatar.app.usercomponent.domain.usecase.SelectAvatarUseCase
 import kotlinx.coroutines.CoroutineScope
 import org.junit.Test
@@ -22,7 +23,8 @@ class UserComponentModuleTest : KoinTest {
             injections = injectedParameters(
                 definition<WordPressClient>(DispatcherProvider::class),
                 definition<InMemoryUserSessionPersistence>(CoroutineScope::class, DispatcherProvider::class),
-                definition<SelectAvatarUseCase>(AppClock::class)
+                definition<SelectAvatarUseCase>(AppClock::class),
+                definition<DeleteUserAvatarUseCase>(AppClock::class)
             )
         )
     }

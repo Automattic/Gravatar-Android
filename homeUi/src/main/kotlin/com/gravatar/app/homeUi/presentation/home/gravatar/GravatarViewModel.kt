@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gravatar.app.homeUi.presentation.FileUtils
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
+import com.gravatar.app.usercomponent.domain.usecase.DeleteUserAvatar
 import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrl
 import com.gravatar.app.usercomponent.domain.usecase.SelectUserAvatar
 import com.gravatar.services.GravatarResult
@@ -23,6 +24,7 @@ import kotlinx.coroutines.launch
 internal class GravatarViewModel(
     private val getAvatarUrl: GetAvatarUrl,
     private val selectUserAvatar: SelectUserAvatar,
+    private val deleteUserAvatar: DeleteUserAvatar,
     private val userRepository: UserRepository,
     private val fileUtils: FileUtils,
 ) : ViewModel() {
@@ -234,7 +236,7 @@ internal class GravatarViewModel(
                         confirmAvatarDeletionId = null,
                     )
                 }
-                userRepository.deleteAvatar(avatarId)
+                deleteUserAvatar(avatarId, isSelectedAvatar)
                     .onSuccess { result ->
                         // NOTIFY THE UI TO SHOW THE CONFIRMATION
                     }

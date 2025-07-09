@@ -7,6 +7,7 @@ import com.gravatar.AvatarUrl
 import com.gravatar.app.homeUi.presentation.FileUtils
 import com.gravatar.app.testUtils.CoroutineTestRule
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
+import com.gravatar.app.usercomponent.domain.usecase.DeleteUserAvatar
 import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrl
 import com.gravatar.app.usercomponent.domain.usecase.SelectUserAvatar
 import com.gravatar.restapi.models.Avatar
@@ -43,6 +44,7 @@ class GravatarViewModelTest {
     private val userRepository: UserRepository = mockk()
     private val getAvatarUrl: GetAvatarUrl = mockk()
     private val selectUserAvatar: SelectUserAvatar = mockk()
+    private val deleteUserAvatar: DeleteUserAvatar = mockk()
     private val fileUtils: FileUtils = mockk()
     private lateinit var viewModel: GravatarViewModel
 
@@ -501,7 +503,7 @@ class GravatarViewModelTest {
         advanceUntilIdle()
 
         val avatarIdToDelete = "2"
-        coEvery { userRepository.deleteAvatar(avatarIdToDelete) } returns Result.success(Unit)
+        coEvery { deleteUserAvatar(avatarIdToDelete, false) } returns Result.success(Unit)
 
         // When
         viewModel.onEvent(GravatarEvent.OnDeleteAvatar(avatarIdToDelete))
@@ -515,7 +517,7 @@ class GravatarViewModelTest {
             )
             assertEquals(expectedState, awaitItem())
         }
-        coVerify { userRepository.deleteAvatar(avatarIdToDelete) }
+        coVerify { deleteUserAvatar(avatarIdToDelete, false) }
     }
 
     @Test
@@ -537,7 +539,7 @@ class GravatarViewModelTest {
         advanceUntilIdle()
 
         // When
-        coEvery { userRepository.deleteAvatar(selectedAvatarId) } returns Result.success(Unit)
+        coEvery { deleteUserAvatar(selectedAvatarId, true) } returns Result.success(Unit)
         viewModel.onEvent(GravatarEvent.OnDeleteAvatar(selectedAvatarId))
         advanceUntilIdle()
 
@@ -550,7 +552,7 @@ class GravatarViewModelTest {
             )
             assertEquals(expectedState, awaitItem())
         }
-        coVerify { userRepository.deleteAvatar(selectedAvatarId) }
+        coVerify { deleteUserAvatar(selectedAvatarId, true) }
     }
 
     @Test
@@ -562,7 +564,7 @@ class GravatarViewModelTest {
         advanceUntilIdle()
 
         val avatarIdToDelete = "2"
-        coEvery { userRepository.deleteAvatar(avatarIdToDelete) } returns Result.failure(RuntimeException("Test exception"))
+        coEvery { deleteUserAvatar(avatarIdToDelete, false) } returns Result.failure(RuntimeException("Test exception"))
 
         // When
         viewModel.onEvent(GravatarEvent.OnDeleteAvatar(avatarIdToDelete))
@@ -577,7 +579,7 @@ class GravatarViewModelTest {
             )
             assertEquals(expectedState, awaitItem())
         }
-        coVerify { userRepository.deleteAvatar(avatarIdToDelete) }
+        coVerify { deleteUserAvatar(avatarIdToDelete, false) }
     }
 
     @Test
@@ -595,7 +597,7 @@ class GravatarViewModelTest {
         advanceUntilIdle()
 
         // When
-        coEvery { userRepository.deleteAvatar(selectedAvatarId) } returns Result.failure(RuntimeException("Test exception"))
+        coEvery { deleteUserAvatar(selectedAvatarId, true) } returns Result.failure(RuntimeException("Test exception"))
         viewModel.onEvent(GravatarEvent.OnDeleteAvatar(selectedAvatarId))
         advanceUntilIdle()
 
@@ -609,7 +611,7 @@ class GravatarViewModelTest {
             )
             assertEquals(expectedState, awaitItem())
         }
-        coVerify { userRepository.deleteAvatar(selectedAvatarId) }
+        coVerify { deleteUserAvatar(selectedAvatarId, true) }
     }
 
     @Test
@@ -687,6 +689,7 @@ class GravatarViewModelTest {
             selectUserAvatar = selectUserAvatar,
             userRepository = userRepository,
             fileUtils = fileUtils,
+            deleteUserAvatar = deleteUserAvatar,
         )
     }
 
