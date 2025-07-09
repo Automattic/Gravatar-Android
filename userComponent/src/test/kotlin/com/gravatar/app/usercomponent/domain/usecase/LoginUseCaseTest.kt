@@ -1,7 +1,9 @@
 package com.gravatar.app.usercomponent.domain.usecase
 
 import com.gravatar.app.testUtils.CoroutineTestRule
+import com.gravatar.app.usercomponent.data.UserSessionPersistence
 import com.gravatar.app.usercomponent.domain.model.LoginRequest
+import com.gravatar.app.usercomponent.domain.model.UserSession
 import com.gravatar.app.usercomponent.domain.repository.AuthRepository
 import com.gravatar.app.usercomponent.domain.repository.ProfileRepository
 import io.mockk.coEvery
@@ -26,6 +28,7 @@ class LoginUseCaseTest {
     private lateinit var loginUseCase: LoginUseCase
     private val authRepository = mockk<AuthRepository>()
     private val profileRepository = mockk<ProfileRepository>()
+    private val userSessionPersistence = mockk<UserSessionPersistence>()
 
     private val testLoginRequest = LoginRequest(
         code = "test-code",
@@ -38,8 +41,10 @@ class LoginUseCaseTest {
     fun setup() {
         loginUseCase = LoginUseCase(
             authRepository = authRepository,
-            profileRepository = profileRepository
+            profileRepository = profileRepository,
+            userSessionPersistence = userSessionPersistence,
         )
+        coEvery { userSessionPersistence.set(any()) } returns Unit
     }
 
     @Test
@@ -56,6 +61,7 @@ class LoginUseCaseTest {
         assertTrue(result.isSuccess)
         coVerify { authRepository.login(testLoginRequest) }
         coVerify { profileRepository.refreshUserProfile() }
+        coVerify { userSessionPersistence.set(UserSession.LOGGED_IN) }
     }
 
     @Test
@@ -71,6 +77,7 @@ class LoginUseCaseTest {
         assertTrue(result.isFailure)
         coVerify { authRepository.login(testLoginRequest) }
         coVerify(exactly = 0) { profileRepository.refreshUserProfile() }
+        coVerify(exactly = 0) { userSessionPersistence.set(UserSession.LOGGED_IN) }
     }
 
     @Test
@@ -89,5 +96,6 @@ class LoginUseCaseTest {
         assertTrue(result.isSuccess)
         coVerify { authRepository.login(testLoginRequest) }
         coVerify { profileRepository.refreshUserProfile() }
+        coVerify { userSessionPersistence.set(UserSession.LOGGED_IN) }
     }
 }
