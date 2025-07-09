@@ -87,7 +87,7 @@ internal class RealUserRepository(
     }
 
     override suspend fun deleteAvatar(avatarId: String): Result<Unit> {
-        val token = tokenStorage.get().firstOrNull()
+        val token = tokenStorage.get()
         return if (token != null) {
             when (val result = avatarService.deleteAvatarCatching(avatarId, token)) {
                 is GravatarResult.Success -> {
