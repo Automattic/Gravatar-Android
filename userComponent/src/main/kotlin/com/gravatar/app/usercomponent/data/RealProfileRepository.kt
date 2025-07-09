@@ -6,6 +6,8 @@ import com.gravatar.app.usercomponent.domain.repository.ProfileRepository
 import com.gravatar.restapi.models.Profile
 import com.gravatar.restapi.models.UpdateProfileRequest
 import com.gravatar.services.ProfileService
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 internal class RealProfileRepository(
     private val profileService: ProfileService,
@@ -24,22 +26,18 @@ internal class RealProfileRepository(
         )
     }
 
-    override suspend fun get(): Result<Profile> {
-        val profileEntity = profileDao.getProfile()
-        return if (profileEntity != null) {
-            Result.success(profileEntity.toProfile())
-        } else {
-            fetchProfile()
-        }
+    override fun get(): Flow<Profile?> {
+        return profileDao.getProfile()
+            .map { entity -> entity?.toProfile() }
     }
 
-    override suspend fun update(updateRequest: UpdateProfileRequest): Result<Profile> {
+    override suspend fun update(updateRequest: UpdateProfileRequest): Result<Unit> {
         val token = tokenStorage.getToken()
         return if (token != null) {
             val result = profileService.updateProfileCatching(token, updateRequest).valueOrNull()
             if (result != null) {
                 profileDao.insertProfile(ProfileEntity.fromProfile(result))
-                Result.success(result)
+                Result.success(Unit)
             } else {
                 Result.failure(IllegalStateException("Failed to update profile"))
             }

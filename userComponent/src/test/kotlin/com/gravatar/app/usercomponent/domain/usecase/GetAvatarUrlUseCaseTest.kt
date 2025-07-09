@@ -11,6 +11,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -52,7 +53,7 @@ class GetAvatarUrlUseCaseTest {
         // Given
         val hash = "test-hash"
         val profile = createProfile(hash)
-        coEvery { profileRepository.get() } returns Result.success(profile)
+        coEvery { profileRepository.get() } returns flow { emit(profile) }
 
         // When & Then
         getAvatarUrlUseCase().test {
@@ -65,7 +66,7 @@ class GetAvatarUrlUseCaseTest {
     @Test
     fun `invoke should return null when profile repository returns null`() = runTest {
         // Given
-        coEvery { profileRepository.get() } returns Result.failure(RuntimeException("Test exception"))
+        coEvery { profileRepository.get() } returns flow { emit(null) }
 
         // When & Then
         getAvatarUrlUseCase().test {
@@ -79,7 +80,7 @@ class GetAvatarUrlUseCaseTest {
         // Given
         val hash = "test-hash"
         val profile = createProfile(hash)
-        coEvery { profileRepository.get() } returns Result.success(profile)
+        coEvery { profileRepository.get() } returns flow { emit(profile) }
 
         // When & Then
         getAvatarUrlUseCase().test {

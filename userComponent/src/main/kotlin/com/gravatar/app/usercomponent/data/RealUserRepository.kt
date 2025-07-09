@@ -9,6 +9,8 @@ import com.gravatar.services.AvatarService
 import com.gravatar.services.ErrorType
 import com.gravatar.services.GravatarResult
 import com.gravatar.types.Hash
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import java.io.File
 
 internal class RealUserRepository(
@@ -17,11 +19,14 @@ internal class RealUserRepository(
     private val profileRepository: ProfileRepository
 ) : UserRepository {
 
+    override suspend fun refreshProfile(): Result<Unit> {
+        return profileRepository.refreshUserProfile()
+    }
+
     override suspend fun selectAvatar(avatarId: String): Result<Unit> {
         val token = tokenStorage.getToken()
         return if (token != null) {
-            val result = profileRepository.get()
-                .getOrNull()
+            val result = getOrFetchProfile()
                 ?.let { profile ->
                     avatarService.setAvatarCatching(
                         oauthToken = token,
@@ -42,8 +47,7 @@ internal class RealUserRepository(
     override suspend fun getAvatars(): Result<List<Avatar>> {
         val token = tokenStorage.getToken()
         return if (token != null) {
-            val avatars = profileRepository.get()
-                .getOrNull()
+            val avatars = getOrFetchProfile()
                 ?.let { profile ->
                     avatarService.retrieveCatching(
                         oauthToken = token,
@@ -60,19 +64,18 @@ internal class RealUserRepository(
         }
     }
 
-    override suspend fun getProfile(): Result<Profile> {
+    override fun getProfile(): Flow<Profile?> {
         return profileRepository.get()
     }
 
-    override suspend fun updateProfile(updateRequest: UpdateProfileRequest): Result<Profile> {
+    override suspend fun updateProfile(updateRequest: UpdateProfileRequest): Result<Unit> {
         return profileRepository.update(updateRequest)
     }
 
     override suspend fun uploadAvatar(avatarFile: File): GravatarResult<Avatar, ErrorType> {
         val token = tokenStorage.getToken()
         return if (token != null) {
-            profileRepository.get()
-                .getOrNull()
+            getOrFetchProfile()
                 ?.let { profile ->
                     avatarService.uploadCatching(
                         file = avatarFile,
@@ -101,5 +104,16 @@ internal class RealUserRepository(
         } else {
             Result.failure(IllegalStateException("User is not logged in"))
         }
+    }
+
+    // Retrieves the profile, either from local storage or by refreshing it if not available
+    private suspend fun getOrFetchProfile(): Profile? {
+        val localProfile = profileRepository.get().firstOrNull()
+        return localProfile
+            ?: profileRepository.refreshUserProfile()
+                .fold(
+                    onSuccess = { profileRepository.get().firstOrNull() },
+                    onFailure = { null }
+                )
     }
 }
