@@ -7,9 +7,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.gravatar.app.homeUi.R
 import com.gravatar.app.homeUi.presentation.home.components.PickerPopup
 import com.gravatar.app.homeUi.presentation.home.components.PickerPopupItem
 import com.gravatar.app.homeUi.presentation.home.components.PickerPopupMenu
@@ -29,18 +31,25 @@ internal fun AvatarMoreOptionsPickerPopup(
         popupMenu = PickerPopupMenu(
             items = listOf(
                 PickerPopupItem(
-                    text = "Select",
-                    iconRes = null,
-                    contentDescription = "Select avatar",
+                    text = stringResource(R.string.gravatar_tab_more_options_make_current),
+                    iconRes = R.drawable.check_circle,
+                    contentDescription = stringResource(
+                        R.string.gravatar_tab_more_options_make_current_content_description
+                    ),
                     onClick = {
                         onAvatarOptionClicked(AvatarOption.Select)
                     },
                 ),
                 PickerPopupItem(
-                    text = "Option 2",
-                    iconRes = null,
-                    contentDescription = "Option 2",
-                    onClick = { },
+                    text = stringResource(R.string.gravatar_tab_more_options_delete_avatar),
+                    iconRes = R.drawable.delete_icon,
+                    contentDescription = stringResource(
+                        R.string.gravatar_tab_more_options_delete_avatar_content_description
+                    ),
+                    contentColor = MaterialTheme.colorScheme.error,
+                    onClick = {
+                        onAvatarOptionClicked(AvatarOption.Delete)
+                    },
                 ),
             ),
         ),
@@ -49,6 +58,7 @@ internal fun AvatarMoreOptionsPickerPopup(
 
 internal sealed class AvatarOption {
     data object Select : AvatarOption()
+    data object Delete : AvatarOption()
 }
 
 @Preview

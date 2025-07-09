@@ -40,6 +40,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.gravatar.app.homeUi.GravatarFileProvider
+import com.gravatar.app.homeUi.presentation.home.gravatar.components.AvatarDeletionConfirmationDialog
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.AvatarOption
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.FailedAvatarUploadAlertDialog
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.GravatarHeader
@@ -198,6 +199,10 @@ internal fun GravatarScreen(
                                     AvatarOption.Select -> {
                                         onEvent(GravatarEvent.OnAvatarSelected(avatar.imageId))
                                     }
+
+                                    AvatarOption.Delete -> {
+                                        onEvent(GravatarEvent.OnShowDeleteConfirmation(avatar.imageId))
+                                    }
                                 }
                             },
                             onFailedAvatarClicked = { uri ->
@@ -213,6 +218,12 @@ internal fun GravatarScreen(
                 onRetryClicked = { onEvent(GravatarEvent.OnImageCropped(it)) },
                 onDismiss = { onEvent(GravatarEvent.OnFailedAvatarDialogDismissed) },
             )
+            uiState.confirmAvatarDeletionId?.let {
+                AvatarDeletionConfirmationDialog(
+                    onConfirm = { onEvent(GravatarEvent.OnDeleteAvatar(it)) },
+                    onDismiss = { onEvent(GravatarEvent.OnDismissDeleteConfirmation) },
+                )
+            }
         }
     }
 }

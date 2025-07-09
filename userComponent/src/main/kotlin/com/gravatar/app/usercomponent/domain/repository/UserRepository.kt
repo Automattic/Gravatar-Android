@@ -18,4 +18,6 @@ interface UserRepository {
     suspend fun updateProfile(updateRequest: UpdateProfileRequest): Result<Profile>
 
     suspend fun uploadAvatar(avatarFile: File): GravatarResult<Avatar, ErrorType>
+
+    suspend fun deleteAvatar(avatarId: String): Result<Unit>
 }
