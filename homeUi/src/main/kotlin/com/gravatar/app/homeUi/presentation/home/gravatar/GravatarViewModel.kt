@@ -59,6 +59,7 @@ internal class GravatarViewModel(
             is GravatarEvent.OnFailedAvatarDismissed -> removedFailedUpload(event.uri)
             is GravatarEvent.OnFailedAvatarTapped -> showFailedUploadDialog(event.uri)
             is GravatarEvent.OnDeleteAvatar -> deleteAvatar(event.avatarId)
+            is GravatarEvent.OnDownloadAvatar -> { /* No implementation yet */ }
             is GravatarEvent.OnShowDeleteConfirmation -> showDeleteConfirmation(event.avatarId)
             GravatarEvent.OnDismissDeleteConfirmation -> dismissDeleteConfirmation()
         }

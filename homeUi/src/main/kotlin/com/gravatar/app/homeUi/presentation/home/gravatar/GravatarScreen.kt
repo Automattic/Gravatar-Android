@@ -203,6 +203,10 @@ internal fun GravatarScreen(
                                     AvatarOption.Delete -> {
                                         onEvent(GravatarEvent.OnShowDeleteConfirmation(avatar.imageId))
                                     }
+
+                                    AvatarOption.Download -> {
+                                        onEvent(GravatarEvent.OnDownloadAvatar(avatar.imageId))
+                                    }
                                 }
                             },
                             onFailedAvatarClicked = { uri ->

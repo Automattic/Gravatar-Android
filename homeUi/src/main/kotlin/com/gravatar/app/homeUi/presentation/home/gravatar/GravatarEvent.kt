@@ -11,6 +11,7 @@ sealed class GravatarEvent {
     data object OnFailedAvatarDialogDismissed : GravatarEvent()
     data class OnFailedAvatarTapped(val uri: Uri) : GravatarEvent()
     data class OnDeleteAvatar(val avatarId: String) : GravatarEvent()
+    data class OnDownloadAvatar(val avatarId: String) : GravatarEvent()
     data class OnShowDeleteConfirmation(val avatarId: String) : GravatarEvent()
     data object OnDismissDeleteConfirmation : GravatarEvent()
 }

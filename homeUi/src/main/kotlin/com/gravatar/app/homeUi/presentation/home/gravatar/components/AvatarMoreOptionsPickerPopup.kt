@@ -41,6 +41,16 @@ internal fun AvatarMoreOptionsPickerPopup(
                     },
                 ),
                 PickerPopupItem(
+                    text = stringResource(R.string.gravatar_tab_more_options_download_avatar),
+                    iconRes = R.drawable.gravatar_more_options_download,
+                    contentDescription = stringResource(
+                        R.string.gravatar_tab_more_options_download_avatar_content_description
+                    ),
+                    onClick = {
+                        onAvatarOptionClicked(AvatarOption.Download)
+                    },
+                ),
+                PickerPopupItem(
                     text = stringResource(R.string.gravatar_tab_more_options_delete_avatar),
                     iconRes = R.drawable.delete_icon,
                     contentDescription = stringResource(
@@ -59,6 +69,7 @@ internal fun AvatarMoreOptionsPickerPopup(
 internal sealed class AvatarOption {
     data object Select : AvatarOption()
     data object Delete : AvatarOption()
+    data object Download : AvatarOption()
 }
 
 @Preview
