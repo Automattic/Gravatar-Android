@@ -146,8 +146,6 @@ internal fun GravatarScreen(
     onPickMediaClicked: () -> Unit,
     onEvent: (GravatarEvent) -> Unit = {},
 ) {
-    var confirmAvatarDeletion by rememberSaveable { mutableStateOf<String?>(null) }
-
     Surface(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -201,8 +199,9 @@ internal fun GravatarScreen(
                                     AvatarOption.Select -> {
                                         onEvent(GravatarEvent.OnAvatarSelected(avatar.imageId))
                                     }
+
                                     AvatarOption.Delete -> {
-                                        confirmAvatarDeletion = avatar.imageId
+                                        onEvent(GravatarEvent.OnShowDeleteConfirmation(avatar.imageId))
                                     }
                                 }
                             },
@@ -219,13 +218,10 @@ internal fun GravatarScreen(
                 onRetryClicked = { onEvent(GravatarEvent.OnImageCropped(it)) },
                 onDismiss = { onEvent(GravatarEvent.OnFailedAvatarDialogDismissed) },
             )
-            confirmAvatarDeletion?.let {
+            uiState.confirmAvatarDeletionId?.let {
                 AvatarDeletionConfirmationDialog(
-                    onConfirm = {
-                        onEvent(GravatarEvent.OnDeleteAvatar(it))
-                        confirmAvatarDeletion = null
-                    },
-                    onDismiss = { confirmAvatarDeletion = null },
+                    onConfirm = { onEvent(GravatarEvent.OnDeleteAvatar(it)) },
+                    onDismiss = { onEvent(GravatarEvent.OnDismissDeleteConfirmation) },
                 )
             }
         }

@@ -515,6 +515,10 @@ class GravatarViewModelTest {
         viewModel.onEvent(GravatarEvent.OnAvatarSelected(selectedAvatarId))
         advanceUntilIdle()
 
+        // Show delete confirmation
+        viewModel.onEvent(GravatarEvent.OnShowDeleteConfirmation(selectedAvatarId))
+        advanceUntilIdle()
+
         // When
         coEvery { userRepository.deleteAvatar(selectedAvatarId) } returns Result.success(Unit)
         viewModel.onEvent(GravatarEvent.OnDeleteAvatar(selectedAvatarId))
@@ -589,6 +593,58 @@ class GravatarViewModelTest {
             assertEquals(expectedState, awaitItem())
         }
         coVerify { userRepository.deleteAvatar(selectedAvatarId) }
+    }
+
+    @Test
+    fun `onEvent OnShowDeleteConfirmation should update confirmAvatarDeletionId`() = runTest {
+        // Given
+        val avatars = createAvatars()
+        coEvery { userRepository.getAvatars() } returns Result.success(avatars)
+        initViewModel()
+        advanceUntilIdle()
+
+        val avatarIdToDelete = "2"
+
+        // When
+        viewModel.onEvent(GravatarEvent.OnShowDeleteConfirmation(avatarIdToDelete))
+        advanceUntilIdle()
+
+        // Then
+        viewModel.uiState.test {
+            val expectedState = GravatarUiState(
+                isLoading = false,
+                avatars = avatars,
+                confirmAvatarDeletionId = avatarIdToDelete
+            )
+            assertEquals(expectedState, awaitItem())
+        }
+    }
+
+    @Test
+    fun `onEvent OnDismissDeleteConfirmation should clear confirmAvatarDeletionId`() = runTest {
+        // Given
+        val avatars = createAvatars()
+        coEvery { userRepository.getAvatars() } returns Result.success(avatars)
+        initViewModel()
+        advanceUntilIdle()
+
+        val avatarIdToDelete = "2"
+        viewModel.onEvent(GravatarEvent.OnShowDeleteConfirmation(avatarIdToDelete))
+        advanceUntilIdle()
+
+        // When
+        viewModel.onEvent(GravatarEvent.OnDismissDeleteConfirmation)
+        advanceUntilIdle()
+
+        // Then
+        viewModel.uiState.test {
+            val expectedState = GravatarUiState(
+                isLoading = false,
+                avatars = avatars,
+                confirmAvatarDeletionId = null
+            )
+            assertEquals(expectedState, awaitItem())
+        }
     }
 
     private fun initViewModel() {

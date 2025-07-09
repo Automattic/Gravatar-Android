@@ -50,6 +50,8 @@ internal class GravatarViewModel(
             is GravatarEvent.OnFailedAvatarDismissed -> removedFailedUpload(event.uri)
             is GravatarEvent.OnFailedAvatarTapped -> showFailedUploadDialog(event.uri)
             is GravatarEvent.OnDeleteAvatar -> deleteAvatar(event.avatarId)
+            is GravatarEvent.OnShowDeleteConfirmation -> showDeleteConfirmation(event.avatarId)
+            GravatarEvent.OnDismissDeleteConfirmation -> dismissDeleteConfirmation()
         }
     }
 
@@ -71,6 +73,18 @@ internal class GravatarViewModel(
     private fun dismissFailedUploadDialog() {
         _uiState.update { currentState ->
             currentState.copy(failedUploadDialog = null)
+        }
+    }
+
+    private fun showDeleteConfirmation(avatarId: String) {
+        _uiState.update { currentState ->
+            currentState.copy(confirmAvatarDeletionId = avatarId)
+        }
+    }
+
+    private fun dismissDeleteConfirmation() {
+        _uiState.update { currentState ->
+            currentState.copy(confirmAvatarDeletionId = null)
         }
     }
 
@@ -210,6 +224,7 @@ internal class GravatarViewModel(
                         } else {
                             currentState.selectedAvatarId
                         },
+                        confirmAvatarDeletionId = null,
                     )
                 }
                 userRepository.deleteAvatar(avatarId)
