@@ -1,5 +1,6 @@
 package com.gravatar.app.homeUi.navigation
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -12,10 +13,11 @@ import kotlinx.serialization.Serializable
 @Composable
 internal fun HomeNavigation(
     navController: NavHostController,
+    snackbarHostState: SnackbarHostState,
 ) {
     NavHost(navController = navController, startDestination = HomeDestination.Gravatar) {
         composable<HomeDestination.Gravatar> {
-            GravatarScreen()
+            GravatarScreen(snackbarHostState = snackbarHostState)
         }
 
         composable<HomeDestination.Profile> {

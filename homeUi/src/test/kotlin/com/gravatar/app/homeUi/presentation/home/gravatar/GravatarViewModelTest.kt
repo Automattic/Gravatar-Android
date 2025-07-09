@@ -190,6 +190,9 @@ class GravatarViewModelTest {
             assertEquals(expectedState, awaitItem())
         }
         coVerify { selectUserAvatar(avatarId) }
+        viewModel.actions.test {
+            assertEquals(GravatarAction.AvatarSelected, awaitItem())
+        }
     }
 
     @Test
@@ -215,6 +218,10 @@ class GravatarViewModelTest {
             expectNoEvents()
         }
         coVerify(exactly = 1) { selectUserAvatar(avatarId) }
+        viewModel.actions.test {
+            assertEquals(GravatarAction.AvatarSelected, awaitItem())
+            expectNoEvents()
+        }
     }
 
     @Test
@@ -286,6 +293,9 @@ class GravatarViewModelTest {
             assertEquals(expectedState, awaitItem())
         }
         coVerify { selectUserAvatar(avatarId) }
+        viewModel.actions.test {
+            assertEquals(GravatarAction.AvatarSelectionFailed, awaitItem())
+        }
     }
 
     @Test

@@ -182,6 +182,7 @@ internal class GravatarViewModel(
                             selectedAvatarId = avatarId,
                         )
                     }
+                    _actions.send(GravatarAction.AvatarSelected)
                 }
                 .onFailure {
                     _uiState.update { currentState ->
@@ -189,6 +190,7 @@ internal class GravatarViewModel(
                             selectingAvatarId = null,
                         )
                     }
+                    _actions.send(GravatarAction.AvatarSelectionFailed)
                 }
         }
     }

@@ -10,7 +10,7 @@ class HomeScreenTest : RoborazziTest() {
     @Test
     fun homeScreen() {
         screenshotTest {
-            HomeScreen {
+            HomeScreen { navController, snackbarHostState ->
                 ProfileScreen(
                     uiState = ProfileUiState(),
                     onEvent = {},
