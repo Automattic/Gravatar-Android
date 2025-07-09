@@ -27,7 +27,6 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.io.File
@@ -41,20 +40,16 @@ class GravatarViewModelTest {
     @get:Rule
     var coroutineTestRule = CoroutineTestRule(testDispatcher)
 
+    private val getAvatarUrl: GetAvatarUrl = object : GetAvatarUrl {
+        override fun invoke() = avatarUrlFlow
+    }
     private val userRepository: UserRepository = mockk()
-    private val getAvatarUrl: GetAvatarUrl = mockk()
     private val selectUserAvatar: SelectUserAvatar = mockk()
     private val deleteUserAvatar: DeleteUserAvatar = mockk()
     private val fileUtils: FileUtils = mockk()
     private lateinit var viewModel: GravatarViewModel
 
     private val avatarUrlFlow: MutableSharedFlow<URL?> = MutableSharedFlow()
-
-    @Before
-    fun setup() {
-        // Mock the GetAvatarUrl use case to return a flow of avatar URLs
-        coEvery { getAvatarUrl() } returns avatarUrlFlow
-    }
 
     @Test
     fun `init should fetch avatars`() = runTest {

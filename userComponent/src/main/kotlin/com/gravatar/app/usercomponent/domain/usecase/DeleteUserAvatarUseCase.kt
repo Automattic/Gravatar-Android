@@ -18,7 +18,6 @@ internal class DeleteUserAvatarUseCase(
                 }
             }
     }
-
 }
 
 interface DeleteUserAvatar {

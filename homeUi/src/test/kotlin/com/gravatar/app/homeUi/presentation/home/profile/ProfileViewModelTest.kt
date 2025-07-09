@@ -21,7 +21,6 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.net.URI
@@ -34,17 +33,14 @@ class ProfileViewModelTest {
     @get:Rule
     var coroutineTestRule = CoroutineTestRule(testDispatcher)
 
+    private val getAvatarUrl: GetAvatarUrl = object : GetAvatarUrl {
+        override fun invoke() = avatarUrlFlow
+    }
     private val userRepository = mockk<UserRepository>()
-    private val getAvatarUrl = mockk<GetAvatarUrl>()
 
     private lateinit var viewModel: ProfileViewModel
 
     private val avatarUrlFlow: MutableSharedFlow<URL?> = MutableSharedFlow()
-
-    @Before
-    fun setup() {
-        coEvery { getAvatarUrl() } returns avatarUrlFlow
-    }
 
     @Test
     fun `when viewmodel is initialized and fetch profile finishes successfully then uiState contains profile`() =

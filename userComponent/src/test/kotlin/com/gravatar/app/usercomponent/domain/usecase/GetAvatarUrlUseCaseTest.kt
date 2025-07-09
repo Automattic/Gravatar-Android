@@ -8,7 +8,6 @@ import com.gravatar.app.usercomponent.domain.repository.ProfileRepository
 import com.gravatar.restapi.models.Profile
 import com.gravatar.types.Hash
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,13 +30,17 @@ class GetAvatarUrlUseCaseTest {
 
     private lateinit var getAvatarUrlUseCase: GetAvatarUrlUseCase
     private val profileRepository = mockk<ProfileRepository>()
-    private val avatarCacheBusterStorage = mockk<AvatarCacheBusterStorage>()
     private val cacheBusterFlow = MutableStateFlow<String?>(null)
+    private val avatarCacheBusterStorage = object : AvatarCacheBusterStorage {
+        override fun getAvatarCacheBuster() = cacheBusterFlow
+
+        override suspend fun saveAvatarCacheBuster(value: String) {
+            cacheBusterFlow.emit(value)
+        }
+    }
 
     @Before
     fun setup() {
-        every { avatarCacheBusterStorage.getAvatarCacheBuster() } returns cacheBusterFlow
-
         getAvatarUrlUseCase = GetAvatarUrlUseCase(
             profileRepository = profileRepository,
             avatarCacheBusterStorage = avatarCacheBusterStorage
