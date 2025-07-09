@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.core.net.toFile
 import app.cash.turbine.test
 import com.gravatar.AvatarUrl
+import com.gravatar.app.homeUi.ImageDownloader
 import com.gravatar.app.homeUi.presentation.FileUtils
 import com.gravatar.app.testUtils.CoroutineTestRule
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
@@ -47,6 +48,7 @@ class GravatarViewModelTest {
     private val selectUserAvatar: SelectUserAvatar = mockk()
     private val deleteUserAvatar: DeleteUserAvatar = mockk()
     private val fileUtils: FileUtils = mockk()
+    private val imageDownloader: ImageDownloader = mockk()
     private lateinit var viewModel: GravatarViewModel
 
     private val avatarUrlFlow: MutableSharedFlow<URL?> = MutableSharedFlow()
@@ -678,6 +680,70 @@ class GravatarViewModelTest {
         }
     }
 
+    @Test
+    fun `onEvent OnDownloadAvatar should download avatar image`() = runTest {
+        // Given
+        val avatars = createAvatars()
+        coEvery { userRepository.getAvatars() } returns Result.success(avatars)
+        initViewModel()
+        advanceUntilIdle()
+
+        val avatarId = "1"
+        val avatarUrl = avatars.first { it.imageId == avatarId }.imageUrl
+        coEvery { imageDownloader.downloadImage(avatarUrl) } returns GravatarResult.Success(Unit)
+
+        // When
+        viewModel.onEvent(GravatarEvent.OnDownloadAvatar(avatarId))
+        advanceUntilIdle()
+
+        // Then
+        coVerify { imageDownloader.downloadImage(avatarUrl) }
+    }
+
+    @Test
+    fun `onEvent OnDownloadAvatar should handle download manager not available`() = runTest {
+        // Given
+        val avatars = createAvatars()
+        coEvery { userRepository.getAvatars() } returns Result.success(avatars)
+        initViewModel()
+        advanceUntilIdle()
+
+        val avatarId = "1"
+        val avatarUrl = avatars.first { it.imageId == avatarId }.imageUrl
+        coEvery {
+            imageDownloader.downloadImage(avatarUrl)
+        } returns GravatarResult.Failure(com.gravatar.app.homeUi.DownloadManagerError.DOWNLOAD_MANAGER_NOT_AVAILABLE)
+
+        // When
+        viewModel.onEvent(GravatarEvent.OnDownloadAvatar(avatarId))
+        advanceUntilIdle()
+
+        // Then
+        coVerify { imageDownloader.downloadImage(avatarUrl) }
+    }
+
+    @Test
+    fun `onEvent OnDownloadAvatar should handle download manager disabled`() = runTest {
+        // Given
+        val avatars = createAvatars()
+        coEvery { userRepository.getAvatars() } returns Result.success(avatars)
+        initViewModel()
+        advanceUntilIdle()
+
+        val avatarId = "1"
+        val avatarUrl = avatars.first { it.imageId == avatarId }.imageUrl
+        coEvery {
+            imageDownloader.downloadImage(avatarUrl)
+        } returns GravatarResult.Failure(com.gravatar.app.homeUi.DownloadManagerError.DOWNLOAD_MANAGER_DISABLED)
+
+        // When
+        viewModel.onEvent(GravatarEvent.OnDownloadAvatar(avatarId))
+        advanceUntilIdle()
+
+        // Then
+        coVerify { imageDownloader.downloadImage(avatarUrl) }
+    }
+
     private fun initViewModel() {
         viewModel = GravatarViewModel(
             getAvatarUrl = getAvatarUrl,
@@ -685,6 +751,7 @@ class GravatarViewModelTest {
             userRepository = userRepository,
             fileUtils = fileUtils,
             deleteUserAvatar = deleteUserAvatar,
+            imageDownloader = imageDownloader,
         )
     }
 

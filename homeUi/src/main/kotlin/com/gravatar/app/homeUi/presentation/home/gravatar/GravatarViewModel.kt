@@ -4,6 +4,8 @@ import android.net.Uri
 import androidx.core.net.toFile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gravatar.app.homeUi.DownloadManagerError
+import com.gravatar.app.homeUi.ImageDownloader
 import com.gravatar.app.homeUi.presentation.FileUtils
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import com.gravatar.app.usercomponent.domain.usecase.DeleteUserAvatar
@@ -27,6 +29,7 @@ internal class GravatarViewModel(
     private val deleteUserAvatar: DeleteUserAvatar,
     private val userRepository: UserRepository,
     private val fileUtils: FileUtils,
+    private val imageDownloader: ImageDownloader,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(GravatarUiState())
@@ -59,6 +62,7 @@ internal class GravatarViewModel(
             is GravatarEvent.OnFailedAvatarDismissed -> removedFailedUpload(event.uri)
             is GravatarEvent.OnFailedAvatarTapped -> showFailedUploadDialog(event.uri)
             is GravatarEvent.OnDeleteAvatar -> deleteAvatar(event.avatarId)
+            is GravatarEvent.OnDownloadAvatar -> downloadAvatar(event.avatarId)
             is GravatarEvent.OnShowDeleteConfirmation -> showDeleteConfirmation(event.avatarId)
             GravatarEvent.OnDismissDeleteConfirmation -> dismissDeleteConfirmation()
         }
@@ -269,6 +273,30 @@ internal class GravatarViewModel(
                 }
             }
             .launchIn(viewModelScope)
+    }
+
+    private fun downloadAvatar(avatarId: String) {
+        viewModelScope.launch {
+            _uiState.value.avatars.firstOrNull { it.imageId == avatarId }?.imageUrl?.let { url ->
+                when (val result = imageDownloader.downloadImage(url)) {
+                    is GravatarResult.Failure -> {
+                        when (result.error) {
+                            DownloadManagerError.DOWNLOAD_MANAGER_NOT_AVAILABLE -> {
+                                // Notify the UI that the download manager is not available - We should update tests to handle this case
+                            }
+
+                            DownloadManagerError.DOWNLOAD_MANAGER_DISABLED -> {
+                                // Notify the UI that the download manager is disabled - We should update tests to handle this case
+                            }
+                        }
+                    }
+
+                    is GravatarResult.Success -> {
+                        // Notify the UI in order to show a confirmation - We should update tests to handle this case
+                    }
+                }
+            }
+        }
     }
 }
 

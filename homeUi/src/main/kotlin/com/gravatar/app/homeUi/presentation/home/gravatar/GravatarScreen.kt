@@ -1,5 +1,6 @@
 package com.gravatar.app.homeUi.presentation.home.gravatar
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -28,18 +29,22 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.gravatar.app.homeUi.GravatarFileProvider
+import com.gravatar.app.homeUi.R
+import com.gravatar.app.homeUi.presentation.home.components.PermissionRationaleDialog
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.AvatarDeletionConfirmationDialog
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.AvatarOption
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.FailedAvatarUploadAlertDialog
@@ -47,6 +52,8 @@ import com.gravatar.app.homeUi.presentation.home.gravatar.components.GravatarHea
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.UploadNewAvatarSection
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.avatarSize
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.avatarsGridSection
+import com.gravatar.app.homeUi.presentation.openAppPermissionSettings
+import com.gravatar.app.homeUi.presentation.withPermission
 import com.gravatar.app.usercomponent.domain.usecase.Logout
 import com.gravatar.restapi.models.Avatar
 import com.yalantis.ucrop.UCrop
@@ -146,6 +153,39 @@ internal fun GravatarScreen(
     onPickMediaClicked: () -> Unit,
     onEvent: (GravatarEvent) -> Unit = {},
 ) {
+    val context = LocalContext.current
+    var storagePermissionRationaleDialogVisible by rememberSaveable { mutableStateOf(false) }
+    var avatarToDownload: Avatar? by remember { mutableStateOf(null) }
+
+    val writeExternalStoragePermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            avatarToDownload?.let { onEvent(GravatarEvent.OnDownloadAvatar(it.imageId)) }
+        } else {
+            storagePermissionRationaleDialogVisible = true
+        }
+        avatarToDownload = null
+    }
+
+    val permissionAwareDownloadImageCallback: (Avatar) -> Unit = { avatar ->
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q) {
+            context.withPermission(
+                permission = Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                onRequestPermission = {
+                    avatarToDownload = avatar
+                    writeExternalStoragePermissionLauncher.launch(it)
+                },
+                onShowRationale = { storagePermissionRationaleDialogVisible = true },
+                grantedCallback = {
+                    onEvent(GravatarEvent.OnDownloadAvatar(avatar.imageId))
+                },
+            )
+        } else {
+            onEvent(GravatarEvent.OnDownloadAvatar(avatar.imageId))
+        }
+    }
+
     Surface(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -203,6 +243,10 @@ internal fun GravatarScreen(
                                     AvatarOption.Delete -> {
                                         onEvent(GravatarEvent.OnShowDeleteConfirmation(avatar.imageId))
                                     }
+
+                                    AvatarOption.Download -> {
+                                        permissionAwareDownloadImageCallback(avatar)
+                                    }
                                 }
                             },
                             onFailedAvatarClicked = { uri ->
@@ -217,6 +261,15 @@ internal fun GravatarScreen(
                 onRemoveUploadClicked = { onEvent(GravatarEvent.OnFailedAvatarDismissed(it)) },
                 onRetryClicked = { onEvent(GravatarEvent.OnImageCropped(it)) },
                 onDismiss = { onEvent(GravatarEvent.OnFailedAvatarDialogDismissed) },
+            )
+            PermissionRationaleDialog(
+                isVisible = storagePermissionRationaleDialogVisible,
+                message = stringResource(R.string.permission_required_write_external_storage_rationale_message),
+                onConfirmation = {
+                    storagePermissionRationaleDialogVisible = false
+                    context.openAppPermissionSettings()
+                },
+                onDismiss = { storagePermissionRationaleDialogVisible = false },
             )
             uiState.confirmAvatarDeletionId?.let {
                 AvatarDeletionConfirmationDialog(
