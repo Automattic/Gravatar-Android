@@ -63,6 +63,7 @@ import com.gravatar.app.usercomponent.domain.usecase.Logout
 import com.gravatar.restapi.models.Avatar
 import com.yalantis.ucrop.UCrop
 import com.yalantis.ucrop.UCropActivity
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -120,30 +121,12 @@ internal fun GravatarScreen(
         withContext(Dispatchers.Main.immediate) {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.actions.collect { action ->
-                    when (action) {
-                        is GravatarAction.LaunchImageCropper -> {
-                            uCropLauncher.launchUCrop(
-                                context = context,
-                                targetImageUri = action.imageUri,
-                                currentImageFile = action.tempFile
-                            )
-                        }
-
-                        GravatarAction.AvatarSelected -> {
-                            snackbarHostState.showGravatarSnackbar(
-                                message = context.getString(R.string.gravatar_tab_avatar_updated_successfully),
-                                withDismissAction = true,
-                            )
-                        }
-
-                        GravatarAction.AvatarSelectionFailed -> {
-                            snackbarHostState.showGravatarSnackbar(
-                                message = context.getString(R.string.gravatar_tab_avatar_selection_failed),
-                                withDismissAction = true,
-                                snackbarType = SnackbarType.Error,
-                            )
-                        }
-                    }
+                    action.handle(
+                        context = context,
+                        uCropLauncher = uCropLauncher,
+                        snackbarHostState = snackbarHostState,
+                        scope = scope,
+                    )
                 }
             }
         }
@@ -315,6 +298,42 @@ internal fun GravatarScreen(
                 AvatarDeletionConfirmationDialog(
                     onConfirm = { onEvent(GravatarEvent.OnDeleteAvatar(it)) },
                     onDismiss = { onEvent(GravatarEvent.OnDismissDeleteConfirmation) },
+                )
+            }
+        }
+    }
+}
+
+private fun GravatarAction.handle(
+    context: Context,
+    uCropLauncher: ActivityResultLauncher<Intent>,
+    snackbarHostState: SnackbarHostState,
+    scope: CoroutineScope,
+) {
+    when (this) {
+        is GravatarAction.LaunchImageCropper -> {
+            uCropLauncher.launchUCrop(
+                context = context,
+                targetImageUri = this.imageUri,
+                currentImageFile = this.tempFile
+            )
+        }
+
+        GravatarAction.AvatarSelected -> {
+            scope.launch {
+                snackbarHostState.showGravatarSnackbar(
+                    message = context.getString(R.string.gravatar_tab_avatar_updated_successfully),
+                    withDismissAction = true,
+                )
+            }
+        }
+
+        GravatarAction.AvatarSelectionFailed -> {
+            scope.launch {
+                snackbarHostState.showGravatarSnackbar(
+                    message = context.getString(R.string.gravatar_tab_avatar_selection_failed),
+                    withDismissAction = true,
+                    snackbarType = SnackbarType.Error,
                 )
             }
         }
