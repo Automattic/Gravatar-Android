@@ -23,4 +23,30 @@ class ProfileScreenTest : RoborazziTest() {
             )
         }
     }
+
+    @Test
+    fun profileScreenWithNullProfile() {
+        screenshotTest {
+            ProfileScreen(
+                uiState = ProfileUiState(
+                    isLoading = false,
+                    profile = null,
+                ),
+                onEvent = { },
+            )
+        }
+    }
+
+    @Test
+    fun profileScreenWithNullProfileAndLoading() {
+        screenshotTest {
+            ProfileScreen(
+                uiState = ProfileUiState(
+                    isLoading = true,
+                    profile = null,
+                ),
+                onEvent = { },
+            )
+        }
+    }
 }

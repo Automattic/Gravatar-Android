@@ -47,4 +47,7 @@
     <string name="permission_required_open_settings">Open settings</string>
     <string name="permission_required_dismiss">Dismiss</string>
     <string name="permission_required_write_external_storage_rationale_message">To save the image in a public folder, you need to grant permission. You can grant it in the app settings.</string>
+    <string name="profile_tab_unable_to_load_profile">Unable to load profile</string>
+    <string name="profile_tab_unable_to_load_profile_message">There was an issue loading your profile. Please try again in a few minutes.</string>
+    <string name="retry_cta">Retry</string>
 </resources>

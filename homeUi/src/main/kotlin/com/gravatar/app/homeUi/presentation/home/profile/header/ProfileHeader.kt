@@ -37,13 +37,16 @@ import com.gravatar.restapi.models.Profile
 
 @Composable
 internal fun ProfileHeader(
-    profile: Profile,
+    profile: Profile?,
     avatarUrl: String?,
     saveState: ProfileHeaderSaveState,
     onSaveProfile: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier.fillMaxWidth()) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
         AsyncImageWithCachePlaceholder(
             avatarUrl.orEmpty(),
             modifier = Modifier
@@ -68,7 +71,7 @@ internal fun ProfileHeader(
 
             Column(modifier = Modifier.weight(4f)) {
                 BasicText(
-                    text = profile.displayName,
+                    text = profile?.displayName.orEmpty(),
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface,
@@ -80,7 +83,7 @@ internal fun ProfileHeader(
                     )
                 )
 
-                profile.jobInfo().takeIf { it.isNotBlank() }?.let { jobInfo ->
+                profile?.jobInfo()?.takeIf { it.isNotBlank() }?.let { jobInfo ->
                     BasicText(
                         text = jobInfo,
                         style = MaterialTheme.typography.bodyMedium.copy(
@@ -95,7 +98,10 @@ internal fun ProfileHeader(
                 }
             }
 
-            Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.End) {
+            Column(
+                horizontalAlignment = Alignment.End,
+                modifier = Modifier.weight(1f),
+            ) {
                 when (saveState) {
                     ProfileHeaderSaveState.SAVING -> {
                         CircularProgressIndicator(
@@ -196,6 +202,17 @@ fun ProfileHeaderPreviewLongText() {
             jobTitle = "Senior Software Engineer with a very long title",
             company = "Automattic Inc. - A very long company name that should also trigger ellipsis"
         ),
+        avatarUrl = "https://gravatar.com/avatar/test",
+        saveState = ProfileHeaderSaveState.SAVED,
+        onSaveProfile = {},
+    )
+}
+
+@Preview(showBackground = true, name = "Null profile")
+@Composable
+fun ProfileHeaderPreviewNullProfile() {
+    ProfileHeader(
+        profile = null,
         avatarUrl = "https://gravatar.com/avatar/test",
         saveState = ProfileHeaderSaveState.SAVED,
         onSaveProfile = {},
