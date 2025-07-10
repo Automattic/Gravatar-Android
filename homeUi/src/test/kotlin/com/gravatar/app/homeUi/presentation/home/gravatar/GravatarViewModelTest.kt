@@ -72,7 +72,7 @@ class GravatarViewModelTest {
     }
 
     @Test
-    fun `onEvent Refresh should fetch avatars with isRefreshing true`() = runTest {
+    fun `onEvent Refresh with pullToRefresh true should fetch avatars with isRefreshing true`() = runTest {
         // Given
         val avatars = createAvatars()
         coEvery { userRepository.getAvatars() } returns Result.success(avatars)
@@ -83,7 +83,7 @@ class GravatarViewModelTest {
         // When
         val refreshedAvatars = createAvatars(4)
         coEvery { userRepository.getAvatars() } returns Result.success(refreshedAvatars)
-        viewModel.onEvent(GravatarEvent.Refresh)
+        viewModel.onEvent(GravatarEvent.Refresh(true))
 
         // Then
         viewModel.uiState.test {
@@ -91,6 +91,57 @@ class GravatarViewModelTest {
             assertEquals(GravatarUiState(isRefreshing = true, avatars = avatars), awaitItem())
             assertEquals(
                 GravatarUiState(isRefreshing = false, avatars = refreshedAvatars),
+                awaitItem()
+            )
+        }
+        coVerify(exactly = 2) { userRepository.getAvatars() }
+    }
+
+    @Test
+    fun `onEvent Refresh with pullToRefresh false should fetch avatars with isLoading true`() = runTest {
+        // Given
+        val avatars = createAvatars()
+        coEvery { userRepository.getAvatars() } returns Result.success(avatars)
+        initViewModel()
+
+        advanceUntilIdle()
+
+        // When
+        val refreshedAvatars = createAvatars(4)
+        coEvery { userRepository.getAvatars() } returns Result.success(refreshedAvatars)
+        viewModel.onEvent(GravatarEvent.Refresh(false))
+
+        // Then
+        viewModel.uiState.test {
+            expectMostRecentItem()
+            assertEquals(GravatarUiState(isLoading = true, avatars = avatars), awaitItem())
+            assertEquals(
+                GravatarUiState(isLoading = false, avatars = refreshedAvatars),
+                awaitItem()
+            )
+        }
+        coVerify(exactly = 2) { userRepository.getAvatars() }
+    }
+
+    @Test
+    fun `onEvent Refresh with pullToRefresh true and null avatars should fetch avatars with isLoading true`() = runTest {
+        // Given
+        coEvery { userRepository.getAvatars() } returns Result.failure(IllegalStateException(""))
+        initViewModel()
+
+        advanceUntilIdle()
+
+        // When
+        val refreshedAvatars = createAvatars(4)
+        coEvery { userRepository.getAvatars() } returns Result.success(refreshedAvatars)
+        viewModel.onEvent(GravatarEvent.Refresh(true))
+
+        // Then
+        viewModel.uiState.test {
+            expectMostRecentItem()
+            assertEquals(GravatarUiState(isLoading = true, isRefreshing = true, avatars = null), awaitItem())
+            assertEquals(
+                GravatarUiState(isLoading = false, isRefreshing = false, avatars = refreshedAvatars),
                 awaitItem()
             )
         }

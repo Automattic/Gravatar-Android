@@ -47,4 +47,7 @@
     <string name="permission_required_open_settings">Open settings</string>
     <string name="permission_required_dismiss">Dismiss</string>
     <string name="permission_required_write_external_storage_rationale_message">To save the image in a public folder, you need to grant permission. You can grant it in the app settings.</string>
+    <string name="retry_cta">Retry</string>
+    <string name="gravatar_tab_unable_to_load_avatars">Unable to load avatars</string>
+    <string name="gravatar_tab_unable_to_load_avatars_message">There was an issue loading your avatars. Please try again in a few minutes.</string>
 </resources>
