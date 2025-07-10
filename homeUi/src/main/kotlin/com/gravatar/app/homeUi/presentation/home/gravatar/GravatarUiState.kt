@@ -10,37 +10,39 @@ internal data class GravatarUiState(
     val isRefreshing: Boolean = false,
     val selectingAvatarId: String? = null,
     val selectedAvatarId: String? = null,
-    val avatars: List<Avatar> = emptyList(),
+    val avatars: List<Avatar>? = null,
     val uploadingAvatar: Uri? = null,
     val failedUploads: List<AvatarUploadFailure> = emptyList(),
     val failedUploadDialog: AvatarUploadFailure? = null,
     val confirmAvatarDeletionId: String? = null,
 ) {
-    val avatarsUi: List<AvatarUi> = buildList {
-        addAll(
-            failedUploads.reversed().map { localAvatar ->
-                AvatarUi.Local(
-                    uri = localAvatar.uri,
-                    isLoading = false,
-                )
-            },
-        )
-        uploadingAvatar?.let {
-            add(
-                AvatarUi.Local(
-                    uri = uploadingAvatar,
-                    isLoading = true,
-                ),
+    val avatarsUi: List<AvatarUi>? = avatars?.let {
+        buildList {
+            addAll(
+                failedUploads.reversed().map { localAvatar ->
+                    AvatarUi.Local(
+                        uri = localAvatar.uri,
+                        isLoading = false,
+                    )
+                },
             )
-        }
-        avatars.forEach { avatar ->
-            add(
-                AvatarUi.Uploaded(
-                    avatar = avatar,
-                    isSelected = avatar.imageId == selectedAvatarId,
-                    isLoading = avatar.imageId == selectingAvatarId,
+            uploadingAvatar?.let {
+                add(
+                    AvatarUi.Local(
+                        uri = uploadingAvatar,
+                        isLoading = true,
+                    ),
                 )
-            )
+            }
+            avatars.forEach { avatar ->
+                add(
+                    AvatarUi.Uploaded(
+                        avatar = avatar,
+                        isSelected = avatar.imageId == selectedAvatarId,
+                        isLoading = avatar.imageId == selectingAvatarId,
+                    )
+                )
+            }
         }
     }
 }

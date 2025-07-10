@@ -31,4 +31,20 @@ class GravatarScreenTest : RoborazziTest() {
             )
         }
     }
+
+    @Test
+    fun gravatarScreenWithNullAvatars() {
+        screenshotTest {
+            GravatarScreen(
+                uiState = GravatarUiState(
+                    isLoading = false,
+                    avatars = null,
+                    selectedAvatarId = "0"
+                ),
+                onEvent = { },
+                onTakePictureClicked = { },
+                onPickMediaClicked = { },
+            )
+        }
+    }
 }

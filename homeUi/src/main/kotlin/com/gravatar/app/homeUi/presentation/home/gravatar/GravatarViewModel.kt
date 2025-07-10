@@ -54,7 +54,7 @@ internal class GravatarViewModel(
 
     fun onEvent(event: GravatarEvent) {
         when (event) {
-            GravatarEvent.Refresh -> fetchAvatars(isRefreshing = true)
+            is GravatarEvent.Refresh -> fetchAvatars(isRefreshing = event.pullToRefresh)
             is GravatarEvent.OnAvatarSelected -> addAvatarSelectionTOQueue(event.avatarId)
             is GravatarEvent.OnLocalImageSelected -> localImageSelected(event.uri)
             is GravatarEvent.OnImageCropped -> uploadAvatar(event.uri)
@@ -130,6 +130,7 @@ internal class GravatarViewModel(
                                 add(avatar)
                                 addAll(
                                     currentState.avatars
+                                        .orEmpty()
                                         .filter { it.imageId != avatar.imageId }
                                 )
                             },
@@ -197,7 +198,7 @@ internal class GravatarViewModel(
             _uiState.update { currentState ->
                 currentState.copy(
                     isRefreshing = isRefreshing,
-                    isLoading = !isRefreshing
+                    isLoading = !isRefreshing || currentState.avatars == null,
                 )
             }
             userRepository.getAvatars()
@@ -224,12 +225,12 @@ internal class GravatarViewModel(
 
     private fun deleteAvatar(avatarId: String) {
         viewModelScope.launch {
-            val avatarIndex = _uiState.value.avatars.indexOfFirstOrNull { it.imageId == avatarId }
+            val avatarIndex = _uiState.value.avatars?.indexOfFirstOrNull { it.imageId == avatarId }
             val isSelectedAvatar = avatarId == _uiState.value.selectedAvatarId
-            val avatar = avatarIndex?.let { _uiState.value.avatars[avatarIndex] }
+            val avatar = avatarIndex?.let { _uiState.value.avatars?.get(avatarIndex) }
             if (avatar != null) {
                 _uiState.update { currentState ->
-                    val updatedAvatars = currentState.avatars.toMutableList().filter { it.imageId != avatarId }
+                    val updatedAvatars = currentState.avatars.orEmpty().filter { it.imageId != avatarId }
                     currentState.copy(
                         avatars = updatedAvatars,
                         selectedAvatarId = if (isSelectedAvatar) {
@@ -248,7 +249,7 @@ internal class GravatarViewModel(
                         // NOTIFY THE UI TO SHOW AN ERROR
 
                         _uiState.update { currentState ->
-                            val updatedAvatars = currentState.avatars.toMutableList().apply {
+                            val updatedAvatars = currentState.avatars.orEmpty().toMutableList().apply {
                                 add(avatarIndex, avatar)
                             }
                             currentState.copy(
@@ -277,7 +278,7 @@ internal class GravatarViewModel(
 
     private fun downloadAvatar(avatarId: String) {
         viewModelScope.launch {
-            _uiState.value.avatars.firstOrNull { it.imageId == avatarId }?.imageUrl?.let { url ->
+            _uiState.value.avatars.orEmpty().firstOrNull { it.imageId == avatarId }?.imageUrl?.let { url ->
                 when (val result = imageDownloader.downloadImage(url)) {
                     is GravatarResult.Failure -> {
                         when (result.error) {

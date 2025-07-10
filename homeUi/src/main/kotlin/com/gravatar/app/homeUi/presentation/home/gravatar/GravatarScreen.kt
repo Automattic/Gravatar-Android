@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -44,6 +45,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.gravatar.app.homeUi.GravatarFileProvider
 import com.gravatar.app.homeUi.R
+import com.gravatar.app.homeUi.presentation.home.components.ErrorViewWithRetry
 import com.gravatar.app.homeUi.presentation.home.components.PermissionRationaleDialog
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.AvatarDeletionConfirmationDialog
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.AvatarOption
@@ -194,7 +196,7 @@ internal fun GravatarScreen(
         val itemSpacing = 2.dp
 
         PullToRefreshBox(
-            onRefresh = { onEvent(GravatarEvent.Refresh) },
+            onRefresh = { onEvent(GravatarEvent.Refresh()) },
             isRefreshing = uiState.isRefreshing,
         ) {
             Column {
@@ -218,41 +220,60 @@ internal fun GravatarScreen(
                             onChooseFromGalleryClicked = onPickMediaClicked,
                         )
                     }
-                    if (uiState.isLoading) {
-                        item(
-                            span = { GridItemSpan((maxLineSpan)) },
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .height(200.dp)
-                                    .fillMaxWidth(),
-                                contentAlignment = Alignment.Center
+                    when {
+                        uiState.isLoading -> {
+                            item(
+                                span = { GridItemSpan((maxLineSpan)) },
                             ) {
-                                CircularProgressIndicator()
+                                Box(
+                                    modifier = Modifier
+                                        .height(200.dp)
+                                        .fillMaxWidth(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator()
+                                }
                             }
                         }
-                    } else {
-                        avatarsGridSection(
-                            avatars = uiState.avatarsUi,
-                            onAvatarOptionClicked = { avatar, option ->
-                                when (option) {
-                                    AvatarOption.Select -> {
-                                        onEvent(GravatarEvent.OnAvatarSelected(avatar.imageId))
-                                    }
 
-                                    AvatarOption.Delete -> {
-                                        onEvent(GravatarEvent.OnShowDeleteConfirmation(avatar.imageId))
-                                    }
-
-                                    AvatarOption.Download -> {
-                                        permissionAwareDownloadImageCallback(avatar)
-                                    }
-                                }
-                            },
-                            onFailedAvatarClicked = { uri ->
-                                onEvent(GravatarEvent.OnFailedAvatarTapped(uri))
+                        uiState.avatars == null -> {
+                            item(
+                                span = { GridItemSpan((maxLineSpan)) }
+                            ) {
+                                ErrorViewWithRetry(
+                                    errorTitle = stringResource(R.string.gravatar_tab_unable_to_load_avatars),
+                                    errorMessage = stringResource(R.string.gravatar_tab_unable_to_load_avatars_message),
+                                    onRetryClicked = { onEvent(GravatarEvent.Refresh(false)) },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(32.dp)
+                                )
                             }
-                        )
+                        }
+
+                        else -> {
+                            avatarsGridSection(
+                                avatars = uiState.avatarsUi.orEmpty(),
+                                onAvatarOptionClicked = { avatar, option ->
+                                    when (option) {
+                                        AvatarOption.Select -> {
+                                            onEvent(GravatarEvent.OnAvatarSelected(avatar.imageId))
+                                        }
+
+                                        AvatarOption.Delete -> {
+                                            onEvent(GravatarEvent.OnShowDeleteConfirmation(avatar.imageId))
+                                        }
+
+                                        AvatarOption.Download -> {
+                                            permissionAwareDownloadImageCallback(avatar)
+                                        }
+                                    }
+                                },
+                                onFailedAvatarClicked = { uri ->
+                                    onEvent(GravatarEvent.OnFailedAvatarTapped(uri))
+                                }
+                            )
+                        }
                     }
                 }
             }
