@@ -6,8 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.gravatar.analytics.Tracker
 import com.gravatar.app.analytics.AppEvent
+import com.gravatar.app.design.theme.GravatarAppTheme
 import com.gravatar.app.navigation.RootNavigation
-import com.gravatar.app.ui.theme.GravatarTheme
 import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            GravatarTheme {
+            GravatarAppTheme {
                 RootNavigation()
             }
         }
