@@ -2,14 +2,15 @@ package com.gravatar.app.usercomponent.domain.repository
 
 import com.gravatar.restapi.models.Profile
 import com.gravatar.restapi.models.UpdateProfileRequest
+import kotlinx.coroutines.flow.Flow
 
 internal interface ProfileRepository {
 
     suspend fun refreshUserProfile(): Result<Unit>
 
-    suspend fun get(): Result<Profile>
+    fun get(): Flow<Profile?>
 
-    suspend fun update(updateRequest: UpdateProfileRequest): Result<Profile>
+    suspend fun update(updateRequest: UpdateProfileRequest): Result<Unit>
 
     suspend fun delete()
 }

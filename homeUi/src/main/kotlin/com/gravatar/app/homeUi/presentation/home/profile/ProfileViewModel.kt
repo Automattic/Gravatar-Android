@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class ProfileViewModel(
-    getAvatarUrl: GetAvatarUrl,
+    private val getAvatarUrl: GetAvatarUrl,
     private val userRepository: UserRepository,
 ) : ViewModel() {
 
@@ -25,40 +25,31 @@ internal class ProfileViewModel(
     internal val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
     init {
-        fetchProfile()
-
-        getAvatarUrl()
-            .onEach { url ->
-                _uiState.update { currentState ->
-                    currentState.copy(avatarUrl = url?.toString())
-                }
-            }
-            .launchIn(viewModelScope)
+        refreshProfile()
+        collectProfile()
+        collectAvatarUrl()
     }
 
     fun onEvent(profileEvent: ProfileEvent) {
         when (profileEvent) {
             is ProfileEvent.OnProfileFieldUpdated -> updateProfileField(profileEvent.aboutField)
             ProfileEvent.OnSaveClicked -> saveChanges()
+            ProfileEvent.OnRefreshProfile -> refreshProfile()
         }
     }
 
-    private fun fetchProfile() {
+    private fun refreshProfile() {
         viewModelScope.launch {
             _uiState.update { currentState -> currentState.copy(isLoading = true) }
-            userRepository.getProfile()
-                .onSuccess { profile ->
+            userRepository.refreshProfile()
+                .onSuccess {
                     _uiState.update { currentState ->
-                        currentState.copy(
-                            isLoading = false,
-                            profile = profile,
-                            editedAboutFields = emptyMap()
-                        )
+                        currentState.copy(isLoading = false)
                     }
                 }
                 .onFailure {
                     _uiState.update { currentState ->
-                        currentState.copy(isLoading = false, profile = null)
+                        currentState.copy(isLoading = false)
                     }
                 }
         }
@@ -96,7 +87,6 @@ internal class ProfileViewModel(
                     _uiState.update { currentState ->
                         currentState.copy(
                             isSavingProfile = false,
-                            profile = updatedProfile,
                             editedAboutFields = emptyMap()
                         )
                     }
@@ -107,6 +97,28 @@ internal class ProfileViewModel(
                     }
                 }
         }
+    }
+
+    private fun collectAvatarUrl() {
+        getAvatarUrl()
+            .onEach { url ->
+                _uiState.update { currentState ->
+                    currentState.copy(avatarUrl = url?.toString())
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun collectProfile() {
+        userRepository.getProfile()
+            .onEach { profile ->
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        profile = profile,
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
     }
 }
 

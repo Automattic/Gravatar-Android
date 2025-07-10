@@ -1,5 +1,6 @@
 package com.gravatar.app.usercomponent.data
 
+import app.cash.turbine.test
 import com.gravatar.app.testUtils.CoroutineTestRule
 import com.gravatar.app.usercomponent.domain.repository.ProfileRepository
 import com.gravatar.restapi.models.Avatar
@@ -11,8 +12,11 @@ import com.gravatar.services.GravatarResult
 import com.gravatar.types.Hash
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -58,9 +62,8 @@ class RealUserRepositoryTest {
             // Save token
             tokenStorage.saveToken(testToken)
 
-            // Mock profile service
-            val profileResult = Result.success(profile)
-            coEvery { profileRepository.get() } returns profileResult
+            // Mock profile repository
+            every { profileRepository.get() } returns flow { emit(profile) }
 
             // Mock avatar service
             val avatarResult = GravatarResult.Success<List<Avatar>, ErrorType>(avatars)
@@ -76,7 +79,7 @@ class RealUserRepositoryTest {
             assertEquals(avatars, result.getOrNull())
 
             // Verify interactions
-            coVerify { profileRepository.get() }
+            verify { profileRepository.get() }
             coVerify { avatarService.retrieveCatching(testToken, any<Hash>()) }
         }
 
@@ -95,7 +98,7 @@ class RealUserRepositoryTest {
         assertEquals("User is not logged in", exception?.message)
 
         // Verify no interactions with services
-        coVerify(exactly = 0) { profileRepository.get() }
+        verify(exactly = 0) { profileRepository.get() }
         coVerify(exactly = 0) {
             avatarService.retrieveCatching(
                 any(),
@@ -105,37 +108,19 @@ class RealUserRepositoryTest {
     }
 
     @Test
-    fun `getProfile should return success when user is logged in and service returns success`() =
+    fun `getProfile should return profile from profile repository`() =
         runTest {
             // Given
             val profile = createTestProfile()
-            val profileResult = Result.success(profile)
-            coEvery { profileRepository.get() } returns profileResult
+            every { profileRepository.get() } returns flow { emit(profile) }
 
             // When
-            val result = repository.getProfile()
-
-            // Then
-            assertTrue(result.isSuccess)
-            assertEquals(profile, result.getOrNull())
-            coVerify { profileRepository.get() }
-        }
-
-    @Test
-    fun `getProfile should return failure when retrieveAuthenticatedCatching returns null profile`() =
-        runTest {
-            // Given
-            val profileResult = Result.failure<Profile>(IllegalStateException("Test exception"))
-            coEvery { profileRepository.get() } returns profileResult
-
-            // When
-            val result = repository.getProfile()
-
-            // Then
-            assertTrue(result.isFailure)
-            val exception = result.exceptionOrNull()
-            assertTrue(exception is IllegalStateException)
-            coVerify { profileRepository.get() }
+            repository.getProfile().test {
+                // Then
+                assertEquals(profile, awaitItem())
+                awaitComplete()
+                verify { profileRepository.get() }
+            }
         }
 
     @Test
@@ -149,8 +134,7 @@ class RealUserRepositoryTest {
             tokenStorage.saveToken(testToken)
 
             // Mock profile service
-            val profileResult = Result.success(profile)
-            coEvery { profileRepository.get() } returns profileResult
+            coEvery { profileRepository.get() } returns flow { emit(profile) }
 
             // Mock avatar service
             val avatarResult = GravatarResult.Success<Unit, ErrorType>(Unit)
@@ -195,7 +179,7 @@ class RealUserRepositoryTest {
         assertEquals("User is not logged in", exception?.message)
 
         // Verify no interactions with services
-        coVerify(exactly = 0) { profileRepository.get() }
+        verify(exactly = 0) { profileRepository.get() }
         coVerify(exactly = 0) { avatarService.setAvatarCatching(any(), any(), any()) }
     }
 
@@ -205,8 +189,8 @@ class RealUserRepositoryTest {
         val avatarId = "test-avatar-id"
         tokenStorage.saveToken(testToken)
 
-        val profileResult = Result.failure<Profile>(IllegalStateException("Test exception"))
-        coEvery { profileRepository.get() } returns profileResult
+        coEvery { profileRepository.refreshUserProfile() } returns Result.failure(IllegalStateException("Test exception"))
+        every { profileRepository.get() } returns flow { null }
 
         // When
         val result = repository.selectAvatar(avatarId)
@@ -217,7 +201,7 @@ class RealUserRepositoryTest {
         assertTrue(exception is IllegalStateException)
 
         // Verify interactions
-        coVerify { profileRepository.get() }
+        verify { profileRepository.get() }
         coVerify(exactly = 0) { avatarService.setAvatarCatching(any(), any(), any()) }
     }
 
@@ -231,12 +215,9 @@ class RealUserRepositoryTest {
         tokenStorage.saveToken(testToken)
 
         // Mock profile service
-        val profileResult = Result.success(profile)
-        coEvery { profileRepository.get() } returns profileResult
+        coEvery { profileRepository.get() } returns flow { emit(profile) }
 
-        // Mock avatar service to return a result that is not a Success
-        val avatarResult = mockk<GravatarResult<Unit, ErrorType>>()
-        coEvery { avatarResult.valueOrNull() } returns null
+        val avatarResult = GravatarResult.Failure<Unit, ErrorType>(ErrorType.Server)
         coEvery {
             avatarService.setAvatarCatching(
                 hash = testHash,
@@ -255,7 +236,7 @@ class RealUserRepositoryTest {
         assertEquals("Failed to select avatar", exception?.message)
 
         // Verify interactions
-        coVerify { profileRepository.get() }
+        verify { profileRepository.get() }
         coVerify {
             avatarService.setAvatarCatching(
                 hash = testHash,
@@ -270,16 +251,14 @@ class RealUserRepositoryTest {
         runTest {
             // Given
             val updateRequest = UpdateProfileRequest { }
-            val updatedProfile = createTestProfile()
-            val profileResult = Result.success(updatedProfile)
-            coEvery { profileRepository.update(updateRequest) } returns profileResult
+            val updateResult = Result.success(Unit)
+            coEvery { profileRepository.update(updateRequest) } returns updateResult
 
             // When
             val result = repository.updateProfile(updateRequest)
 
             // Then
             assertTrue(result.isSuccess)
-            assertEquals(updatedProfile, result.getOrNull())
             coVerify { profileRepository.update(updateRequest) }
         }
 
@@ -311,9 +290,8 @@ class RealUserRepositoryTest {
             // Save token
             tokenStorage.saveToken(testToken)
 
-            // Mock profile service
-            val profileResult = Result.success(profile)
-            coEvery { profileRepository.get() } returns profileResult
+            // Mock profile repository
+            coEvery { profileRepository.get() } returns flow { emit(profile) }
 
             // Mock avatar service
             val avatarResult = GravatarResult.Success<Avatar, ErrorType>(uploadedAvatar)
@@ -355,7 +333,7 @@ class RealUserRepositoryTest {
         assertTrue(result is GravatarResult.Failure)
 
         // Verify no interactions with services
-        coVerify(exactly = 0) { profileRepository.get() }
+        verify(exactly = 0) { profileRepository.get() }
         coVerify(exactly = 0) { avatarService.uploadCatching(any(), any(), any()) }
     }
 
@@ -366,8 +344,8 @@ class RealUserRepositoryTest {
         tokenStorage.saveToken(testToken)
 
         // Mock profile service to return null
-        val profileResult = Result.failure<Profile>(IllegalStateException("Test exception"))
-        coEvery { profileRepository.get() } returns profileResult
+        coEvery { profileRepository.get() } returns flow { emit(null) }
+        coEvery { profileRepository.refreshUserProfile() } returns Result.failure(IllegalStateException("Test exception"))
 
         // When
         val result = repository.uploadAvatar(testFile)
@@ -376,7 +354,7 @@ class RealUserRepositoryTest {
         assertTrue(result is GravatarResult.Failure)
 
         // Verify interactions
-        coVerify { profileRepository.get() }
+        verify { profileRepository.get() }
         coVerify(exactly = 0) { avatarService.uploadCatching(any(), any(), any()) }
     }
 
@@ -390,8 +368,7 @@ class RealUserRepositoryTest {
         tokenStorage.saveToken(testToken)
 
         // Mock profile service
-        val profileResult = Result.success(profile)
-        coEvery { profileRepository.get() } returns profileResult
+        coEvery { profileRepository.get() } returns flow { emit(profile) }
 
         // Mock avatar service to return a result that is not a Success
         val avatarResult = GravatarResult.Failure<Avatar, ErrorType>(ErrorType.Server)
@@ -410,7 +387,7 @@ class RealUserRepositoryTest {
         assertTrue(result is GravatarResult.Failure)
 
         // Verify interactions
-        coVerify { profileRepository.get() }
+        verify { profileRepository.get() }
         coVerify {
             avatarService.uploadCatching(
                 file = testFile,

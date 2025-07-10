@@ -1,5 +1,6 @@
 package com.gravatar.app.usercomponent.data
 
+import app.cash.turbine.test
 import com.gravatar.app.testUtils.CoroutineTestRule
 import com.gravatar.app.usercomponent.data.database.ProfileDao
 import com.gravatar.app.usercomponent.data.database.model.ProfileEntity
@@ -12,8 +13,11 @@ import com.gravatar.services.ProfileService
 import io.mockk.coEvery
 import io.mockk.coJustRun
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -105,58 +109,17 @@ class RealProfileRepositoryTest {
         val profileEntity = ProfileEntity.fromProfile(profile)
         tokenStorage.saveToken(testToken)
 
-        coEvery { profileDao.getProfile() } returns profileEntity
+        every { profileDao.getProfile() } returns flow { emit(profileEntity) }
 
         // When
-        val result = repository.get()
-
-        // Then
-        assertTrue(result.isSuccess)
-        assertEquals(profile, result.getOrNull())
-
-        // Verify DAO was called and service was not called
-        coVerify { profileDao.getProfile() }
-        coVerify(exactly = 0) { profileService.retrieveAuthenticatedCatching(any()) }
-    }
-
-    @Test
-    fun `get should fetch profile when database is empty`() = runTest {
-        // Given
-        val profile = createTestProfile()
-        tokenStorage.saveToken(testToken)
-
-        coEvery { profileDao.getProfile() } returns null
-        val profileResult = GravatarResult.Success<Profile, ErrorType>(profile)
-        coEvery { profileService.retrieveAuthenticatedCatching(testToken) } returns profileResult
-        coJustRun { profileDao.insertProfile(any()) }
-
-        // When
-        val result = repository.get()
-
-        // Then
-        assertTrue(result.isSuccess)
-        assertEquals(profile, result.getOrNull())
-
-        coVerify { profileDao.getProfile() }
-        coVerify { profileService.retrieveAuthenticatedCatching(testToken) }
-        coVerify { profileDao.insertProfile(any()) }
-    }
-
-    @Test
-    fun `get should return failure when user is not logged in and database is empty`() = runTest {
-        // Given
-        tokenStorage.clearToken()
-        coEvery { profileDao.getProfile() } returns null
-
-        // When
-        val result = repository.get()
-
-        // Then
-        assertTrue(result.isFailure)
-
-        // Verify interactions
-        coVerify { profileDao.getProfile() }
-        coVerify(exactly = 0) { profileService.retrieveAuthenticatedCatching(any()) }
+        repository.get().test {
+            // Then
+            assertEquals(profile, awaitItem())
+            awaitComplete()
+            // Verify DAO was called and service was not called
+            verify { profileDao.getProfile() }
+            coVerify(exactly = 0) { profileService.retrieveAuthenticatedCatching(any()) }
+        }
     }
 
     @Test
@@ -177,7 +140,6 @@ class RealProfileRepositoryTest {
 
         // Then
         assertTrue(result.isSuccess)
-        assertEquals(profile, result.getOrNull())
 
         coVerify { profileService.updateProfileCatching(testToken, updateRequest) }
         coVerify { profileDao.insertProfile(any()) }

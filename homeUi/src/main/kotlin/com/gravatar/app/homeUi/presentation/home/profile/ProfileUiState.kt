@@ -14,6 +14,8 @@ internal data class ProfileUiState(
 
     val originalAboutFields: Set<AboutEditorField> = profile?.aboutFields() ?: emptySet()
 
+    val showLoading = isLoading && profile == null
+
     val aboutFields: Set<AboutEditorField> = originalAboutFields.map { field ->
         val editedValue = editedAboutFields[field.type]
         if (editedValue != null) {

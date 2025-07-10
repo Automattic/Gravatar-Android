@@ -43,7 +43,7 @@ internal fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> U
             .fillMaxSize()
             .imePadding(),
     ) {
-        if (uiState.isLoading) {
+        if (uiState.showLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         } else {
             uiState.profile.let { profile ->

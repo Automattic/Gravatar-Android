@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.gravatar.app.usercomponent.data.database.model.ProfileEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ProfileDao {
@@ -13,7 +14,7 @@ interface ProfileDao {
     suspend fun insertProfile(profile: ProfileEntity)
 
     @Query("SELECT * FROM user_profiles LIMIT 1")
-    suspend fun getProfile(): ProfileEntity?
+    fun getProfile(): Flow<ProfileEntity?>
 
     @Query("DELETE FROM user_profiles")
     suspend fun delete()

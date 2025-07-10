@@ -11,8 +11,8 @@ import com.gravatar.restapi.models.Profile
 import com.gravatar.restapi.models.ProfileContactInfo
 import com.gravatar.types.Hash
 import io.mockk.coEvery
-import io.mockk.coJustAwait
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,6 +21,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.net.URI
@@ -41,25 +42,26 @@ class ProfileViewModelTest {
     private lateinit var viewModel: ProfileViewModel
 
     private val avatarUrlFlow: MutableSharedFlow<URL?> = MutableSharedFlow()
+    private val profileFlow: MutableSharedFlow<Profile?> = MutableSharedFlow()
+
+    @Before
+    fun setup() {
+        coEvery { userRepository.refreshProfile() } returns Result.success(Unit)
+
+        every { userRepository.getProfile() } returns profileFlow
+    }
 
     @Test
-    fun `when viewmodel is initialized and fetch profile finishes successfully then uiState contains profile`() =
+    fun `when viewmodel is initialized and refresh profile finishes successfully then uiState contains profile`() =
         runTest {
-            val profile = profile()
-
-            coEvery {
-                userRepository.getProfile()
-            } returns Result.success(profile)
+            coEvery { userRepository.refreshProfile() } returns Result.success(Unit)
 
             viewModel = initViewModel()
 
             viewModel.uiState.test {
-                assertEquals(ProfileUiState(isLoading = false), awaitItem())
+                assertEquals(ProfileUiState(), awaitItem())
                 assertEquals(ProfileUiState(isLoading = true), awaitItem())
-                assertEquals(
-                    ProfileUiState(isLoading = false, profile = profile),
-                    awaitItem()
-                )
+                assertEquals(ProfileUiState(isLoading = false), awaitItem())
             }
         }
 
@@ -68,9 +70,7 @@ class ProfileViewModelTest {
         runTest {
             val exception = IllegalStateException("Failed to retrieve profile")
 
-            coEvery {
-                userRepository.getProfile()
-            } returns Result.failure(exception)
+            coEvery { userRepository.refreshProfile() } returns Result.failure(exception)
 
             viewModel = initViewModel()
 
@@ -135,9 +135,7 @@ class ProfileViewModelTest {
         runTest {
             // Given
             val profile = profile()
-            coEvery {
-                userRepository.getProfile()
-            } returns Result.success(profile)
+            profileFlow.emit(profile)
             viewModel = initViewModel()
 
             advanceUntilIdle()
@@ -163,12 +161,10 @@ class ProfileViewModelTest {
         runTest {
             // Given
             val profile = profile()
-            coEvery {
-                userRepository.getProfile()
-            } returns Result.success(profile)
             viewModel = initViewModel()
-
             advanceUntilIdle()
+
+            profileFlow.emit(profile)
 
             val modifiedField = AboutEditorField(
                 type = AboutInputField.DISPLAY_NAME,
@@ -231,14 +227,10 @@ class ProfileViewModelTest {
     fun `when saveChanges succeeds then profile is updated and editedAboutFields are cleared`() = runTest {
         // Given
         val originalProfile = profile()
-        val updatedProfile = profile(displayName = "Updated Name")
-
-        coEvery {
-            userRepository.getProfile()
-        } returns Result.success(originalProfile)
 
         viewModel = initViewModel()
         advanceUntilIdle()
+        profileFlow.emit(originalProfile)
 
         val modifiedField = AboutEditorField(
             type = AboutInputField.DISPLAY_NAME,
@@ -248,7 +240,7 @@ class ProfileViewModelTest {
 
         coEvery {
             userRepository.updateProfile(any())
-        } returns Result.success(updatedProfile)
+        } returns Result.success(Unit)
 
         // When
         viewModel.onEvent(ProfileEvent.OnSaveClicked)
@@ -267,7 +259,7 @@ class ProfileViewModelTest {
 
             expectedUiState = expectedUiState.copy(
                 isSavingProfile = false,
-                profile = updatedProfile,
+                profile = originalProfile,
                 editedAboutFields = emptyMap(),
             )
             assertEquals(expectedUiState, awaitItem())
@@ -281,12 +273,10 @@ class ProfileViewModelTest {
         val originalProfile = profile()
         val exception = IllegalStateException("Update failed")
 
-        coEvery {
-            userRepository.getProfile()
-        } returns Result.success(originalProfile)
-
         viewModel = initViewModel()
         advanceUntilIdle()
+
+        profileFlow.emit(originalProfile)
 
         val modifiedField = AboutEditorField(
             type = AboutInputField.DISPLAY_NAME,
@@ -325,7 +315,6 @@ class ProfileViewModelTest {
     @Test
     fun `each avatar URL collected should be set as state`() = runTest {
         // Given
-        coJustAwait { userRepository.getProfile() }
         viewModel = initViewModel()
         advanceUntilIdle()
 
@@ -335,7 +324,7 @@ class ProfileViewModelTest {
 
         // Then
         viewModel.uiState.test {
-            assertEquals(ProfileUiState(isLoading = true, avatarUrl = avatarUrl.toString()), awaitItem())
+            assertEquals(ProfileUiState(avatarUrl = avatarUrl.toString()), awaitItem())
         }
     }
 

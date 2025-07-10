@@ -3,6 +3,7 @@ package com.gravatar.app.usercomponent.data.database
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.gravatar.app.usercomponent.data.database.model.ProfileEntity
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -43,7 +44,7 @@ class ProfileDaoTest {
 
         // When
         profileDao.insertProfile(profileEntity)
-        val retrievedProfile = profileDao.getProfile()
+        val retrievedProfile = profileDao.getProfile().firstOrNull()
 
         // Then
         assertEquals(profileEntity, retrievedProfile)
@@ -52,7 +53,7 @@ class ProfileDaoTest {
     @Test
     fun getProfileWhenEmpty() = runTest {
         // When
-        val retrievedProfile = profileDao.getProfile()
+        val retrievedProfile = profileDao.getProfile().firstOrNull()
 
         // Then
         assertNull(retrievedProfile)
@@ -67,7 +68,7 @@ class ProfileDaoTest {
         // When
         profileDao.insertProfile(profileEntity1)
         profileDao.insertProfile(profileEntity2)
-        val retrievedProfile = profileDao.getProfile()
+        val retrievedProfile = profileDao.getProfile().firstOrNull()
 
         // Then
         assertEquals(profileEntity2, retrievedProfile)
@@ -80,14 +81,14 @@ class ProfileDaoTest {
         profileDao.insertProfile(profileEntity)
 
         // Verify profile was inserted
-        val profileBeforeDelete = profileDao.getProfile()
+        val profileBeforeDelete = profileDao.getProfile().firstOrNull()
         assertEquals(profileEntity, profileBeforeDelete)
 
         // When
         profileDao.delete()
 
         // Then
-        val profileAfterDelete = profileDao.getProfile()
+        val profileAfterDelete = profileDao.getProfile().firstOrNull()
         assertNull(profileAfterDelete)
     }
 
