@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -47,6 +48,8 @@ import com.gravatar.app.homeUi.GravatarFileProvider
 import com.gravatar.app.homeUi.R
 import com.gravatar.app.homeUi.presentation.home.components.ErrorViewWithRetry
 import com.gravatar.app.homeUi.presentation.home.components.PermissionRationaleDialog
+import com.gravatar.app.homeUi.presentation.home.components.SnackbarType
+import com.gravatar.app.homeUi.presentation.home.components.showGravatarSnackbar
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.AvatarDeletionConfirmationDialog
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.AvatarOption
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.FailedAvatarUploadAlertDialog
@@ -60,6 +63,7 @@ import com.gravatar.app.usercomponent.domain.usecase.Logout
 import com.gravatar.restapi.models.Avatar
 import com.yalantis.ucrop.UCrop
 import com.yalantis.ucrop.UCropActivity
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -70,7 +74,8 @@ import java.net.URI
 
 @Composable
 internal fun GravatarScreen(
-    viewModel: GravatarViewModel = koinViewModel()
+    viewModel: GravatarViewModel = koinViewModel(),
+    snackbarHostState: SnackbarHostState,
 ) {
     val logout = koinInject<Logout>()
     val scope = rememberCoroutineScope()
@@ -116,15 +121,12 @@ internal fun GravatarScreen(
         withContext(Dispatchers.Main.immediate) {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.actions.collect { action ->
-                    when (action) {
-                        is GravatarAction.LaunchImageCropper -> {
-                            uCropLauncher.launchUCrop(
-                                context = context,
-                                targetImageUri = action.imageUri,
-                                currentImageFile = action.tempFile
-                            )
-                        }
-                    }
+                    action.handle(
+                        context = context,
+                        uCropLauncher = uCropLauncher,
+                        snackbarHostState = snackbarHostState,
+                        scope = scope,
+                    )
                 }
             }
         }
@@ -296,6 +298,42 @@ internal fun GravatarScreen(
                 AvatarDeletionConfirmationDialog(
                     onConfirm = { onEvent(GravatarEvent.OnDeleteAvatar(it)) },
                     onDismiss = { onEvent(GravatarEvent.OnDismissDeleteConfirmation) },
+                )
+            }
+        }
+    }
+}
+
+private fun GravatarAction.handle(
+    context: Context,
+    uCropLauncher: ActivityResultLauncher<Intent>,
+    snackbarHostState: SnackbarHostState,
+    scope: CoroutineScope,
+) {
+    when (this) {
+        is GravatarAction.LaunchImageCropper -> {
+            uCropLauncher.launchUCrop(
+                context = context,
+                targetImageUri = this.imageUri,
+                currentImageFile = this.tempFile
+            )
+        }
+
+        GravatarAction.AvatarSelected -> {
+            scope.launch {
+                snackbarHostState.showGravatarSnackbar(
+                    message = context.getString(R.string.gravatar_tab_avatar_updated_successfully),
+                    withDismissAction = true,
+                )
+            }
+        }
+
+        GravatarAction.AvatarSelectionFailed -> {
+            scope.launch {
+                snackbarHostState.showGravatarSnackbar(
+                    message = context.getString(R.string.gravatar_tab_avatar_selection_failed),
+                    withDismissAction = true,
+                    snackbarType = SnackbarType.Error,
                 )
             }
         }
