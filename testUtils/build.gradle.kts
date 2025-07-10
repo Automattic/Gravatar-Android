@@ -9,8 +9,7 @@ android {
 }
 
 dependencies {
-
-    implementation(libs.robolectric)
+    api(libs.robolectric)
     implementation(libs.androidx.ui.junit)
     implementation(libs.coil.compose)
     implementation(libs.coil.test)
