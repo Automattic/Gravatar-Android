@@ -28,6 +28,10 @@ fun RootNavigation() {
                     RootDestination.fromRoute(it)
                 } ?: RootDestination.Splash
 
+                val currentRoute = navController.currentDestination?.route?.let {
+                    RootDestination.fromRoute(it)
+                }
+
                 when (userSession) {
                     LOGGED_IN -> navController.navigateToRootDestination(
                         destination = RootDestination.Home,
@@ -61,13 +65,19 @@ private fun NavHostController.navigateToRootDestination(
     popTo: RootDestination,
     shouldSaveState: Boolean = true
 ) {
-    navigate(destination) {
-        popUpTo(popTo) {
-            inclusive = true
-            saveState = shouldSaveState
+    val currentRoute = currentDestination?.route?.let {
+        RootDestination.fromRoute(it)
+    }
+
+    if (currentRoute != destination) {
+        navigate(destination) {
+            popUpTo(popTo) {
+                inclusive = true
+                saveState = shouldSaveState
+            }
+            launchSingleTop = true
+            restoreState = shouldSaveState
         }
-        launchSingleTop = true
-        restoreState = shouldSaveState
     }
 }
 
@@ -82,7 +92,7 @@ internal sealed class RootDestination {
     data object Home : RootDestination()
 
     companion object {
-        fun fromRoute(route: String): RootDestination? {
+        fun fromRoute(route: String?): RootDestination? {
             return when (route) {
                 Splash::class.qualifiedName -> Splash
                 Login::class.qualifiedName -> Login
