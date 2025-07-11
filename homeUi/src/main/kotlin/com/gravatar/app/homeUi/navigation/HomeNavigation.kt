@@ -21,7 +21,7 @@ internal fun HomeNavigation(
         }
 
         composable<HomeDestination.Profile> {
-            ProfileScreen()
+            ProfileScreen(snackbarHostState = snackbarHostState)
         }
 
         composable<HomeDestination.Share> {

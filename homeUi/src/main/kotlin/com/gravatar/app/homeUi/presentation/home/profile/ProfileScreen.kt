@@ -9,24 +9,55 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
+import com.gravatar.app.homeUi.R
+import com.gravatar.app.homeUi.presentation.home.components.SnackbarType
+import com.gravatar.app.homeUi.presentation.home.components.showGravatarSnackbar
 import com.gravatar.app.homeUi.presentation.home.profile.about.AboutInputField
 import com.gravatar.app.homeUi.presentation.home.profile.about.AboutSection
 import com.gravatar.app.homeUi.presentation.home.profile.header.ProfileHeader
 import com.gravatar.app.homeUi.presentation.home.profile.header.ProfileHeaderSaveState
 import com.gravatar.extensions.defaultProfile
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-internal fun ProfileScreen(viewModel: ProfileViewModel = koinViewModel()) {
+internal fun ProfileScreen(viewModel: ProfileViewModel = koinViewModel(), snackbarHostState: SnackbarHostState) {
+    val scope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsState()
+    val lifecycle = LocalLifecycleOwner.current
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.Main.immediate) {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.actions.collect { action ->
+                    action.handle(
+                        context = context,
+                        snackbarHostState = snackbarHostState,
+                        scope = scope,
+                    )
+                }
+            }
+        }
+    }
 
     ProfileScreen(
         uiState = uiState,
@@ -79,6 +110,34 @@ internal fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> U
                 } else {
                     Text("There was an error retrieving the profile.")
                 }
+            }
+        }
+    }
+}
+
+private fun ProfileAction.handle(
+    context: android.content.Context,
+    snackbarHostState: SnackbarHostState,
+    scope: CoroutineScope,
+) {
+    when (this) {
+        is ProfileAction.ProfileSaved -> {
+            scope.launch {
+                snackbarHostState.showGravatarSnackbar(
+                    message = context.getString(R.string.profile_screen_saved_successfully),
+                    withDismissAction = true,
+                    snackbarType = SnackbarType.Info,
+                )
+            }
+        }
+
+        is ProfileAction.ProfileSaveFailed -> {
+            scope.launch {
+                snackbarHostState.showGravatarSnackbar(
+                    message = context.getString(R.string.profile_screen_save_fail_try_again),
+                    withDismissAction = true,
+                    snackbarType = SnackbarType.Error,
+                )
             }
         }
     }
