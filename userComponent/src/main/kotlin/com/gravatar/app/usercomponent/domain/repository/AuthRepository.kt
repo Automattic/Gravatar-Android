@@ -1,12 +1,8 @@
 package com.gravatar.app.usercomponent.domain.repository
 
-import com.gravatar.app.usercomponent.domain.model.LoginRequest
+import com.gravatar.app.usercomponent.domain.model.OAuthRequest
 
 internal interface AuthRepository {
 
-    suspend fun login(loginRequest: LoginRequest): Result<Unit>
-
-    suspend fun isUserLoggedIn(): Boolean
-
-    suspend fun logout()
+    suspend fun fetchToken(oAuthRequest: OAuthRequest): Result<String>
 }
