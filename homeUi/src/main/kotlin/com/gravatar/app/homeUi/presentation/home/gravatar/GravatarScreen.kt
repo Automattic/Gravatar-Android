@@ -304,6 +304,7 @@ internal fun GravatarScreen(
     }
 }
 
+@Suppress("LongMethod")
 private fun GravatarAction.handle(
     context: Context,
     uCropLauncher: ActivityResultLauncher<Intent>,
@@ -334,6 +335,44 @@ private fun GravatarAction.handle(
                     message = context.getString(R.string.gravatar_tab_avatar_selection_failed),
                     withDismissAction = true,
                     snackbarType = SnackbarType.Error,
+                )
+            }
+        }
+
+        GravatarAction.AvatarDeleted -> {
+            scope.launch {
+                snackbarHostState.showGravatarSnackbar(
+                    message = context.getString(R.string.gravatar_tab_avatar_deleted_successfully),
+                    withDismissAction = true,
+                )
+            }
+        }
+
+        GravatarAction.AvatarDeletionFailed -> {
+            scope.launch {
+                snackbarHostState.showGravatarSnackbar(
+                    message = context.getString(R.string.gravatar_tab_avatar_deletion_failed),
+                    withDismissAction = true,
+                    snackbarType = SnackbarType.Error,
+                )
+            }
+        }
+
+        GravatarAction.DownloadManagerNotAvailable -> {
+            scope.launch {
+                snackbarHostState.showGravatarSnackbar(
+                    message = context.getString(R.string.gravatar_tab_download_manager_not_available),
+                    withDismissAction = true,
+                    snackbarType = SnackbarType.Error,
+                )
+            }
+        }
+
+        GravatarAction.AvatarDownloadStarted -> {
+            scope.launch {
+                snackbarHostState.showGravatarSnackbar(
+                    message = context.getString(R.string.gravatar_tab_avatar_download_started),
+                    withDismissAction = true,
                 )
             }
         }

@@ -252,10 +252,10 @@ internal class GravatarViewModel(
                 }
                 deleteUserAvatar(avatarId, isSelectedAvatar)
                     .onSuccess { result ->
-                        // NOTIFY THE UI TO SHOW THE CONFIRMATION
+                        _actions.send(GravatarAction.AvatarDeleted)
                     }
                     .onFailure { error ->
-                        // NOTIFY THE UI TO SHOW AN ERROR
+                        _actions.send(GravatarAction.AvatarDeletionFailed)
 
                         _uiState.update { currentState ->
                             val updatedAvatars = currentState.avatars.orEmpty().toMutableList().apply {
@@ -292,7 +292,7 @@ internal class GravatarViewModel(
                     is GravatarResult.Failure -> {
                         when (result.error) {
                             DownloadManagerError.DOWNLOAD_MANAGER_NOT_AVAILABLE -> {
-                                // Notify the UI that the download manager is not available - We should update tests to handle this case
+                                _actions.send(GravatarAction.DownloadManagerNotAvailable)
                             }
 
                             DownloadManagerError.DOWNLOAD_MANAGER_DISABLED -> {
@@ -302,7 +302,7 @@ internal class GravatarViewModel(
                     }
 
                     is GravatarResult.Success -> {
-                        // Notify the UI in order to show a confirmation - We should update tests to handle this case
+                        _actions.send(GravatarAction.AvatarDownloadStarted)
                     }
                 }
             }

@@ -264,6 +264,12 @@ class ProfileViewModelTest {
             )
             assertEquals(expectedUiState, awaitItem())
         }
+
+        // Verify that the ProfileSaved action is emitted
+        viewModel.actions.test {
+            assertEquals(ProfileAction.ProfileSaved, awaitItem())
+        }
+
         coVerify(exactly = (1)) { userRepository.updateProfile(any()) }
     }
 
@@ -309,6 +315,12 @@ class ProfileViewModelTest {
             )
             assertEquals(expectedUiState, awaitItem())
         }
+
+        // Verify that the ProfileSaveFailed action is emitted
+        viewModel.actions.test {
+            assertEquals(ProfileAction.ProfileSaveFailed, awaitItem())
+        }
+
         coVerify(exactly = (1)) { userRepository.updateProfile(any()) }
     }
 

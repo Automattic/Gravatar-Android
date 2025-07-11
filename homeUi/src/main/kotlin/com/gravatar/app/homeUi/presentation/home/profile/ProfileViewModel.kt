@@ -8,11 +8,13 @@ import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrl
 import com.gravatar.restapi.models.Profile
 import com.gravatar.restapi.models.UpdateProfileRequest
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -23,6 +25,9 @@ internal class ProfileViewModel(
 
     private val _uiState = MutableStateFlow(ProfileUiState())
     internal val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
+
+    private val _actions = Channel<ProfileAction>(Channel.BUFFERED)
+    val actions = _actions.receiveAsFlow()
 
     init {
         refreshProfile()
@@ -90,11 +95,13 @@ internal class ProfileViewModel(
                             editedAboutFields = emptyMap()
                         )
                     }
+                    _actions.send(ProfileAction.ProfileSaved)
                 }
                 .onFailure {
                     _uiState.update { currentState ->
                         currentState.copy(isSavingProfile = false)
                     }
+                    _actions.send(ProfileAction.ProfileSaveFailed)
                 }
         }
     }

@@ -622,6 +622,9 @@ class GravatarViewModelTest {
             )
             assertEquals(expectedState, awaitItem())
         }
+        viewModel.actions.test {
+            assertEquals(GravatarAction.AvatarDeleted, awaitItem())
+        }
         coVerify { deleteUserAvatar(avatarIdToDelete, false) }
     }
 
@@ -657,6 +660,9 @@ class GravatarViewModelTest {
             )
             assertEquals(expectedState, awaitItem())
         }
+        viewModel.actions.test {
+            assertEquals(GravatarAction.AvatarDeleted, expectMostRecentItem())
+        }
         coVerify { deleteUserAvatar(selectedAvatarId, true) }
     }
 
@@ -683,6 +689,9 @@ class GravatarViewModelTest {
                 avatars = avatars
             )
             assertEquals(expectedState, awaitItem())
+        }
+        viewModel.actions.test {
+            assertEquals(GravatarAction.AvatarDeletionFailed, awaitItem())
         }
         coVerify { deleteUserAvatar(avatarIdToDelete, false) }
     }
@@ -715,6 +724,9 @@ class GravatarViewModelTest {
                 selectedAvatarId = selectedAvatarId
             )
             assertEquals(expectedState, awaitItem())
+        }
+        viewModel.actions.test {
+            assertEquals(GravatarAction.AvatarDeletionFailed, expectMostRecentItem())
         }
         coVerify { deleteUserAvatar(selectedAvatarId, true) }
     }
@@ -806,6 +818,9 @@ class GravatarViewModelTest {
 
         // Then
         coVerify { imageDownloader.downloadImage(avatarUrl) }
+        viewModel.actions.test {
+            assertEquals(GravatarAction.AvatarDownloadStarted, awaitItem())
+        }
     }
 
     @Test
@@ -828,6 +843,9 @@ class GravatarViewModelTest {
 
         // Then
         coVerify { imageDownloader.downloadImage(avatarUrl) }
+        viewModel.actions.test {
+            assertEquals(GravatarAction.DownloadManagerNotAvailable, awaitItem())
+        }
     }
 
     @Test
@@ -850,6 +868,10 @@ class GravatarViewModelTest {
 
         // Then
         coVerify { imageDownloader.downloadImage(avatarUrl) }
+        // No action should be emitted
+        viewModel.actions.test {
+            expectNoEvents()
+        }
     }
 
     private fun initViewModel() {
