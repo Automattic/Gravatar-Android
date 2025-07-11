@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.gravatar.app.loginUi.presentation.oauth.OAuthConfig
 import com.gravatar.app.loginUi.presentation.oauth.OAuthResult
 import com.gravatar.app.usercomponent.domain.model.LoginRequest
+import com.gravatar.app.usercomponent.domain.model.LoginResult
+import com.gravatar.app.usercomponent.domain.model.OAuthRequest
 import com.gravatar.app.usercomponent.domain.usecase.Login
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -29,36 +31,81 @@ internal class LoginViewModel(
     fun onEvent(event: LoginEvent) {
         when (event) {
             is LoginEvent.OAuthResultReceived -> handleOAuthResult(event.result)
+            LoginEvent.OnTryAnotherAccountClicked -> restartLogin()
+            LoginEvent.OnLoadProfileClicked -> loginUser()
+            LoginEvent.OnLoginClicked -> sendAction(LoginAction.StartOAuth)
+        }
+    }
+
+    private fun restartLogin() {
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(
+                    error = null
+                )
+            }
+            sendAction(LoginAction.StartOAuth)
         }
     }
 
     private fun handleOAuthResult(result: OAuthResult) {
         when (result) {
             OAuthResult.Dismissed -> Unit
-            is OAuthResult.Token -> login(result.token)
-            OAuthResult.Error -> sendAction(LoginAction.ShowError)
+            OAuthResult.Error -> _uiState.update { currentState ->
+                currentState.copy(error = LoginError.AuthorizationDenied)
+            }
+
+            is OAuthResult.Token -> loginUser(result.code)
         }
     }
 
-    private fun login(token: String) {
+    private fun loginUser(code: String? = null) {
         viewModelScope.launch {
             _uiState.update {
                 it.copy(isLoading = true)
             }
 
-            val loginRequest = LoginRequest(
-                code = token,
-                clientSecret = oAuthConfig.clientSecret,
-                redirectUri = oAuthConfig.redirectUri,
-                clientId = oAuthConfig.clientId
-            )
+            val loginRequest = code?.let {
+                LoginRequest.FullLogin(
+                    request = OAuthRequest(
+                        code = code,
+                        clientSecret = oAuthConfig.clientSecret,
+                        redirectUri = oAuthConfig.redirectUri,
+                        clientId = oAuthConfig.clientId
+                    )
+                )
+            } ?: LoginRequest.LoadProfile
 
-            login(loginRequest)
-                .onFailure { error ->
-                    sendAction(LoginAction.ShowError)
+            when (login(loginRequest)) {
+                LoginResult.AuthenticationFailure -> {
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            isLoading = false,
+                            error = null,
+                        )
+                    }
+                    sendAction(LoginAction.ShowLoginError)
                 }
-            _uiState.update {
-                it.copy(isLoading = false)
+
+                LoginResult.ProfileLoadFailure -> {
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            error = LoginError.ProfileLoadFailure(
+                                reason = LoginError.ProfileLoadFailure.Reason.GENERIC_ERROR,
+                            ),
+                            isLoading = false
+                        )
+                    }
+                }
+
+                LoginResult.Success -> {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = null,
+                        )
+                    }
+                }
             }
         }
     }
@@ -68,16 +115,4 @@ internal class LoginViewModel(
             _actions.send(action)
         }
     }
-}
-
-internal data class LoginUiState(
-    val isLoading: Boolean = false,
-)
-
-internal sealed class LoginEvent {
-    data class OAuthResultReceived(val result: OAuthResult) : LoginEvent()
-}
-
-internal sealed class LoginAction {
-    data object ShowError : LoginAction()
 }
