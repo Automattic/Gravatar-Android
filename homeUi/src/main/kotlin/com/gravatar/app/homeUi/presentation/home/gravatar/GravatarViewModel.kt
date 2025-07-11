@@ -11,6 +11,7 @@ import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import com.gravatar.app.usercomponent.domain.usecase.DeleteUserAvatar
 import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrl
 import com.gravatar.app.usercomponent.domain.usecase.SelectUserAvatar
+import com.gravatar.app.usercomponent.domain.usecase.UploadUserAvatar
 import com.gravatar.services.GravatarResult
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,10 +24,12 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+@Suppress("LongParameterList")
 internal class GravatarViewModel(
     private val getAvatarUrl: GetAvatarUrl,
     private val selectUserAvatar: SelectUserAvatar,
     private val deleteUserAvatar: DeleteUserAvatar,
+    private val uploadUserAvatar: UploadUserAvatar,
     private val userRepository: UserRepository,
     private val fileUtils: FileUtils,
     private val imageDownloader: ImageDownloader,
@@ -120,7 +123,7 @@ internal class GravatarViewModel(
                     failedUploadDialog = null,
                 )
             }
-            when (val result = userRepository.uploadAvatar(uri.toFile())) {
+            when (val result = uploadUserAvatar(uri.toFile())) {
                 is GravatarResult.Success -> {
                     val avatar = result.value
                     fileUtils.deleteFile(uri)
@@ -135,7 +138,11 @@ internal class GravatarViewModel(
                                 )
                             },
                             uploadingAvatar = null,
+                            selectedAvatarId = if (avatar.selected == true) avatar.imageId else currentState.selectedAvatarId
                         )
+                    }
+                    if (avatar.selected == true) {
+                        _actions.send(GravatarAction.AvatarSelected)
                     }
                 }
 
