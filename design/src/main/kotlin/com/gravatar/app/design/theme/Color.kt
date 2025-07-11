@@ -9,3 +9,4 @@ internal val Pink80 = Color(0xFFEFB8C8)
 
 internal val PurpleGrey40 = Color(0xFF625b71)
 internal val Pink40 = Color(0xFF7D5260)
+internal val White = Color(0xFFFFFFFF)

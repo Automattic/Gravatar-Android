@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 private val DarkColorScheme =
     darkColorScheme(
         primary = GravatarBlueLight,
+        onPrimary = White,
         secondary = PurpleGrey80,
         tertiary = Pink80,
     )

@@ -134,7 +134,8 @@ internal fun LoginScreen(
                                         text = stringResource(R.string.log_in),
                                         modifier = Modifier
                                             .padding(12.dp),
-                                        style = MaterialTheme.typography.bodyLarge
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = MaterialTheme.colorScheme.onPrimary,
                                     )
                                 }
                             }
@@ -237,6 +238,17 @@ private fun LoginScreenLoadingPreview() {
         LoginScreen(
             onEvent = { },
             uiState = LoginUiState(isLoading = true)
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun LoginScreenDarkPreview() {
+    GravatarAppTheme(darkTheme = true) {
+        LoginScreen(
+            onEvent = { },
+            uiState = LoginUiState(isLoading = false)
         )
     }
 }
