@@ -136,7 +136,6 @@ internal fun LoginScreen(
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(bottom = 60.dp),
                         ) {
                             if (uiState.error is LoginError.AuthorizationDenied) {
                                 ErrorTitle(
