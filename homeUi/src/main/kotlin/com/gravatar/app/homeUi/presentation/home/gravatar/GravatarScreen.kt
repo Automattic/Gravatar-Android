@@ -337,6 +337,25 @@ private fun GravatarAction.handle(
                 )
             }
         }
+
+        GravatarAction.AvatarDeleted -> {
+            scope.launch {
+                snackbarHostState.showGravatarSnackbar(
+                    message = context.getString(R.string.gravatar_tab_avatar_deleted_successfully),
+                    withDismissAction = true,
+                )
+            }
+        }
+
+        GravatarAction.AvatarDeletionFailed -> {
+            scope.launch {
+                snackbarHostState.showGravatarSnackbar(
+                    message = context.getString(R.string.gravatar_tab_avatar_deletion_failed),
+                    withDismissAction = true,
+                    snackbarType = SnackbarType.Error,
+                )
+            }
+        }
     }
 }
 

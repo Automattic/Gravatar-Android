@@ -622,6 +622,9 @@ class GravatarViewModelTest {
             )
             assertEquals(expectedState, awaitItem())
         }
+        viewModel.actions.test {
+            assertEquals(GravatarAction.AvatarDeleted, awaitItem())
+        }
         coVerify { deleteUserAvatar(avatarIdToDelete, false) }
     }
 
@@ -657,6 +660,9 @@ class GravatarViewModelTest {
             )
             assertEquals(expectedState, awaitItem())
         }
+        viewModel.actions.test {
+            assertEquals(GravatarAction.AvatarDeleted, expectMostRecentItem())
+        }
         coVerify { deleteUserAvatar(selectedAvatarId, true) }
     }
 
@@ -683,6 +689,9 @@ class GravatarViewModelTest {
                 avatars = avatars
             )
             assertEquals(expectedState, awaitItem())
+        }
+        viewModel.actions.test {
+            assertEquals(GravatarAction.AvatarDeletionFailed, awaitItem())
         }
         coVerify { deleteUserAvatar(avatarIdToDelete, false) }
     }
@@ -715,6 +724,9 @@ class GravatarViewModelTest {
                 selectedAvatarId = selectedAvatarId
             )
             assertEquals(expectedState, awaitItem())
+        }
+        viewModel.actions.test {
+            assertEquals(GravatarAction.AvatarDeletionFailed, expectMostRecentItem())
         }
         coVerify { deleteUserAvatar(selectedAvatarId, true) }
     }

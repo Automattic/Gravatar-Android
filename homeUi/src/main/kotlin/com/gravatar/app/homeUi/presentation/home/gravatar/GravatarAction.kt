@@ -7,4 +7,6 @@ sealed class GravatarAction {
     data class LaunchImageCropper(val imageUri: Uri, val tempFile: File) : GravatarAction()
     data object AvatarSelected : GravatarAction()
     data object AvatarSelectionFailed : GravatarAction()
+    data object AvatarDeleted : GravatarAction()
+    data object AvatarDeletionFailed : GravatarAction()
 }

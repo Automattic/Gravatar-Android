@@ -252,10 +252,10 @@ internal class GravatarViewModel(
                 }
                 deleteUserAvatar(avatarId, isSelectedAvatar)
                     .onSuccess { result ->
-                        // NOTIFY THE UI TO SHOW THE CONFIRMATION
+                        _actions.send(GravatarAction.AvatarDeleted)
                     }
                     .onFailure { error ->
-                        // NOTIFY THE UI TO SHOW AN ERROR
+                        _actions.send(GravatarAction.AvatarDeletionFailed)
 
                         _uiState.update { currentState ->
                             val updatedAvatars = currentState.avatars.orEmpty().toMutableList().apply {
