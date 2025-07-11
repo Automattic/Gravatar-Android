@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gravatar" translatable="false">Gravatar</string>
+    <string name="your_globally_recognized_avatar">Your globally recognized avatar.</string>
+    <string name="log_in">Log In</string>
+</resources>
