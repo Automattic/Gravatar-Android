@@ -6,6 +6,7 @@ import com.gravatar.app.usercomponent.data.InMemoryUserSessionPersistence
 import com.gravatar.app.usercomponent.data.WordPressClient
 import com.gravatar.app.usercomponent.domain.usecase.DeleteUserAvatarUseCase
 import com.gravatar.app.usercomponent.domain.usecase.SelectAvatarUseCase
+import com.gravatar.app.usercomponent.domain.usecase.UploadAvatarUseCase
 import kotlinx.coroutines.CoroutineScope
 import org.junit.Test
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -24,7 +25,8 @@ class UserComponentModuleTest : KoinTest {
                 definition<WordPressClient>(DispatcherProvider::class),
                 definition<InMemoryUserSessionPersistence>(CoroutineScope::class, DispatcherProvider::class),
                 definition<SelectAvatarUseCase>(AppClock::class),
-                definition<DeleteUserAvatarUseCase>(AppClock::class)
+                definition<DeleteUserAvatarUseCase>(AppClock::class),
+                definition<UploadAvatarUseCase>(AppClock::class),
             )
         )
     }

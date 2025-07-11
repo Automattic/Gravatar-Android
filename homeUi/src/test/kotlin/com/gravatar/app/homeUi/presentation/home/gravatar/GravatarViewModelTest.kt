@@ -11,6 +11,7 @@ import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import com.gravatar.app.usercomponent.domain.usecase.DeleteUserAvatar
 import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrl
 import com.gravatar.app.usercomponent.domain.usecase.SelectUserAvatar
+import com.gravatar.app.usercomponent.domain.usecase.UploadUserAvatar
 import com.gravatar.restapi.models.Avatar
 import com.gravatar.services.ErrorType
 import com.gravatar.services.GravatarResult
@@ -34,6 +35,7 @@ import java.io.File
 import java.net.URI
 import java.net.URL
 
+@Suppress("LargeClass")
 @OptIn(ExperimentalCoroutinesApi::class)
 class GravatarViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
@@ -47,6 +49,7 @@ class GravatarViewModelTest {
     private val userRepository: UserRepository = mockk()
     private val selectUserAvatar: SelectUserAvatar = mockk()
     private val deleteUserAvatar: DeleteUserAvatar = mockk()
+    private val uploadUserAvatar: UploadUserAvatar = mockk()
     private val fileUtils: FileUtils = mockk()
     private val imageDownloader: ImageDownloader = mockk()
     private lateinit var viewModel: GravatarViewModel
@@ -337,7 +340,7 @@ class GravatarViewModelTest {
         every { fileUtils.deleteFile(mockUri) } returns Unit
 
         val newAvatar = createAvatar(4)
-        coEvery { userRepository.uploadAvatar(file) } returns GravatarResult.Success(newAvatar)
+        coEvery { uploadUserAvatar(file) } returns GravatarResult.Success(newAvatar)
 
         // When
         viewModel.onEvent(GravatarEvent.OnImageCropped(mockUri))
@@ -361,9 +364,53 @@ class GravatarViewModelTest {
             )
         }
 
-        coVerify { userRepository.uploadAvatar(any()) }
+        coVerify { uploadUserAvatar(any()) }
         verify { fileUtils.deleteFile(mockUri) }
     }
+
+    @Test
+    fun `onEvent OnImageCropped should update selectedAvatarId and send AvatarSelected action when uploaded avatar is selected`() =
+        runTest {
+            // Given
+            val avatars = createAvatars()
+            coEvery { userRepository.getAvatars() } returns Result.success(avatars)
+            initViewModel()
+            advanceUntilIdle()
+
+            mockkStatic("androidx.core.net.UriKt")
+            val file = mockk<File>()
+            val mockUri = mockk<Uri> {
+                every { toFile() } returns file
+            }
+            every { fileUtils.deleteFile(mockUri) } returns Unit
+
+            // Create a selected avatar
+            val selectedAvatar = createAvatar(4, isSelected = true)
+            coEvery { uploadUserAvatar(file) } returns GravatarResult.Success(selectedAvatar)
+
+            // When
+            viewModel.onEvent(GravatarEvent.OnImageCropped(mockUri))
+            advanceUntilIdle()
+
+            // Then
+            // Verify the uiState is updated with the selectedAvatarId
+            viewModel.uiState.test {
+                val expectedState = GravatarUiState(
+                    avatars = listOf(selectedAvatar) + avatars.filter { it.imageId != selectedAvatar.imageId },
+                    uploadingAvatar = null,
+                    selectedAvatarId = selectedAvatar.imageId
+                )
+                assertEquals(expectedState, awaitItem())
+            }
+
+            // Verify the AvatarSelected action is sent
+            viewModel.actions.test {
+                assertEquals(GravatarAction.AvatarSelected, awaitItem())
+            }
+
+            coVerify { uploadUserAvatar(any()) }
+            verify { fileUtils.deleteFile(mockUri) }
+        }
 
     @Test
     fun `onEvent OnImageCropped should handle failure`() = runTest {
@@ -381,7 +428,7 @@ class GravatarViewModelTest {
         every { fileUtils.deleteFile(mockUri) } returns Unit
 
         coEvery {
-            userRepository.uploadAvatar(any())
+            uploadUserAvatar(any())
         } returns GravatarResult.Failure(ErrorType.Server)
 
         // When
@@ -412,7 +459,7 @@ class GravatarViewModelTest {
             )
         }
 
-        coVerify { userRepository.uploadAvatar(any()) }
+        coVerify { uploadUserAvatar(any()) }
     }
 
     @Test
@@ -430,7 +477,7 @@ class GravatarViewModelTest {
             every { toFile() } returns file
         }
         coEvery {
-            userRepository.uploadAvatar(any())
+            uploadUserAvatar(any())
         } returns GravatarResult.Failure(ErrorType.Server)
 
         // Trigger a failed upload
@@ -478,7 +525,7 @@ class GravatarViewModelTest {
         }
         every { fileUtils.deleteFile(mockUri) } returns Unit
         coEvery {
-            userRepository.uploadAvatar(any())
+            uploadUserAvatar(any())
         } returns GravatarResult.Failure(ErrorType.Server)
 
         // Trigger a failed upload
@@ -521,7 +568,7 @@ class GravatarViewModelTest {
             every { toFile() } returns file
         }
         coEvery {
-            userRepository.uploadAvatar(any())
+            uploadUserAvatar(any())
         } returns GravatarResult.Failure(ErrorType.Server)
 
         // Trigger a failed upload
@@ -809,9 +856,10 @@ class GravatarViewModelTest {
         viewModel = GravatarViewModel(
             getAvatarUrl = getAvatarUrl,
             selectUserAvatar = selectUserAvatar,
+            deleteUserAvatar = deleteUserAvatar,
+            uploadUserAvatar = uploadUserAvatar,
             userRepository = userRepository,
             fileUtils = fileUtils,
-            deleteUserAvatar = deleteUserAvatar,
             imageDownloader = imageDownloader,
         )
     }
@@ -822,11 +870,12 @@ class GravatarViewModelTest {
         }
     }
 
-    private fun createAvatar(id: Int): Avatar = Avatar {
+    private fun createAvatar(id: Int, isSelected: Boolean = false): Avatar = Avatar {
         imageUrl = URI.create("https://gravatar.com/avatar/test$id")
         imageId = id.toString()
         rating = Avatar.Rating.G
         altText = "alt$id"
         updatedDate = ""
+        selected = isSelected
     }
 }
