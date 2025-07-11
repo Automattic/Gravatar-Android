@@ -9,4 +9,6 @@ sealed class GravatarAction {
     data object AvatarSelectionFailed : GravatarAction()
     data object AvatarDeleted : GravatarAction()
     data object AvatarDeletionFailed : GravatarAction()
+    data object DownloadManagerNotAvailable : GravatarAction()
+    data object AvatarDownloadStarted : GravatarAction()
 }
