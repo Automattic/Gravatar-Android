@@ -2,6 +2,7 @@ package com.gravatar.app.homeUi.presentation.home.profile.about
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,7 +23,7 @@ internal fun AboutFieldsSection(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         label?.let {
             Column {
@@ -39,17 +40,22 @@ internal fun AboutFieldsSection(
                 }
             }
         }
-        fields.forEach { editorField ->
-            AboutEditField(
-                label = stringResource(editorField.labelRes),
-                value = editorField.value,
-                enabled = formEnabled,
-                maxLines = editorField.maxLines,
-                description = editorField.descriptionRes?.let { stringResource(it) },
-                onValueChange = {
-                    onValueChange(editorField.copy(value = it))
-                },
-            )
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+        ) {
+            fields.forEach { editorField ->
+                AboutEditField(
+                    label = stringResource(editorField.labelRes),
+                    value = editorField.value,
+                    enabled = formEnabled,
+                    maxLines = editorField.maxLines,
+                    description = editorField.descriptionRes?.let { stringResource(it) },
+                    onValueChange = {
+                        onValueChange(editorField.copy(value = it))
+                    },
+                )
+            }
         }
     }
 }

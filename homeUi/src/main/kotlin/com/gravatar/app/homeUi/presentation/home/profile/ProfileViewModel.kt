@@ -142,8 +142,6 @@ internal fun Map<AboutInputField, String>.updateProfileRequest() =
                 AboutInputField.COMPANY -> company = value
                 AboutInputField.FIRST_NAME -> firstName = value
                 AboutInputField.LAST_NAME -> lastName = value
-                AboutInputField.CELL_PHONE -> cellPhone = value
-                AboutInputField.CONTACT_EMAIL -> contactEmail = value
             }
         }
     }
@@ -163,8 +161,6 @@ internal fun Profile.aboutFields(): Set<AboutEditorField> {
                     AboutInputField.COMPANY -> company
                     AboutInputField.FIRST_NAME -> firstName.orEmpty()
                     AboutInputField.LAST_NAME -> lastName.orEmpty()
-                    AboutInputField.CELL_PHONE -> contactInfo?.cellPhone.orEmpty()
-                    AboutInputField.CONTACT_EMAIL -> contactInfo?.email.orEmpty()
                 },
                 maxLines = when (it) {
                     AboutInputField.ABOUT_ME -> 4

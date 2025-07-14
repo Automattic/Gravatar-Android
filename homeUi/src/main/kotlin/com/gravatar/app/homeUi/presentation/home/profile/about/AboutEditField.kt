@@ -1,6 +1,6 @@
 package com.gravatar.app.homeUi.presentation.home.profile.about
 
-import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -33,12 +33,12 @@ internal fun AboutEditField(
     ) {
         Text(
             text = label,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyLarge,
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
         BasicTextField(
             value = value,
-            textStyle = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface),
+            textStyle = MaterialTheme.typography.bodyLarge,
             cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
             maxLines = maxLines,
             minLines = maxLines,
@@ -49,12 +49,8 @@ internal fun AboutEditField(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .border(
-                            width = 1.dp,
-                            color = MaterialTheme.colorScheme.surfaceContainerHighest,
-                            shape = RoundedCornerShape(2.dp),
-                        )
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                        .background(MaterialTheme.colorScheme.surfaceContainerHigh, RoundedCornerShape(8.dp))
+                        .padding(horizontal = 12.dp, vertical = 12.dp),
                 ) {
                     innerTextField()
                 }
@@ -65,7 +61,7 @@ internal fun AboutEditField(
                 text = description,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(vertical = 8.dp),
+                modifier = Modifier.padding(vertical = 4.dp),
             )
         }
     }

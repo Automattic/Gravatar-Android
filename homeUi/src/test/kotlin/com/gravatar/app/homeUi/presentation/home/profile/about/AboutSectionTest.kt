@@ -86,27 +86,6 @@ class AboutSectionTest : RoborazziTest() {
     }
 
     @Test
-    fun aboutSection_contactSection_formEnabledFalse() = screenshotTest {
-        MaterialTheme {
-            AboutSection(
-                aboutFields = setOf(
-                    AboutEditorField(
-                        type = AboutInputField.CELL_PHONE,
-                        value = "123-456-7890",
-                    ),
-                    AboutEditorField(
-                        type = AboutInputField.CONTACT_EMAIL,
-                        value = "gravatar@automattic.com",
-                    ),
-                ),
-                formEnabled = false,
-                onValueChange = { },
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
-    }
-
-    @Test
     fun aboutSection_mixSections_formEnabledFalse() = screenshotTest {
         MaterialTheme {
             AboutSection(
@@ -122,10 +101,6 @@ class AboutSectionTest : RoborazziTest() {
                     AboutEditorField(
                         type = AboutInputField.LOCATION,
                         value = "San Francisco, CA",
-                    ),
-                    AboutEditorField(
-                        type = AboutInputField.CONTACT_EMAIL,
-                        value = "gravatar@automattic.com",
                     ),
                 ),
                 formEnabled = false,
