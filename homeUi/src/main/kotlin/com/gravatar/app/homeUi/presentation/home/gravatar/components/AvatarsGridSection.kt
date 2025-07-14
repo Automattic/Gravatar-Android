@@ -42,7 +42,13 @@ internal fun LazyGridScope.avatarsGridSection(
         span = { GridItemSpan(maxLineSpan) },
     ) {
         Text(
-            text = stringResource(R.string.gravatar_tab_tap_for_options),
+            text = stringResource(
+                if (avatars.isEmpty()) {
+                    R.string.gravatar_tab_empty_avatars
+                } else {
+                    R.string.gravatar_tab_tap_for_options
+                }
+            ),
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(bottom = 10.dp)
         )
