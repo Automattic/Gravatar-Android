@@ -39,22 +39,24 @@ internal class ProfileViewModel(
         when (profileEvent) {
             is ProfileEvent.OnProfileFieldUpdated -> updateProfileField(profileEvent.aboutField)
             ProfileEvent.OnSaveClicked -> saveChanges()
-            ProfileEvent.OnRefreshProfile -> refreshProfile()
+            ProfileEvent.OnRefreshProfile -> refreshProfile(pullToRefresh = true)
         }
     }
 
-    private fun refreshProfile() {
+    private fun refreshProfile(pullToRefresh: Boolean = false) {
         viewModelScope.launch {
-            _uiState.update { currentState -> currentState.copy(isLoading = true) }
+            _uiState.update { currentState ->
+                currentState.copy(isLoading = true, isRefreshing = pullToRefresh)
+            }
             userRepository.refreshProfile()
                 .onSuccess {
                     _uiState.update { currentState ->
-                        currentState.copy(isLoading = false)
+                        currentState.copy(isRefreshing = false, isLoading = false)
                     }
                 }
                 .onFailure {
                     _uiState.update { currentState ->
-                        currentState.copy(isLoading = false)
+                        currentState.copy(isRefreshing = false, isLoading = false)
                     }
                 }
         }

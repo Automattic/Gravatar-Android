@@ -1,16 +1,22 @@
 package com.gravatar.app.homeUi.presentation.home.profile
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.pullToRefresh
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -67,9 +73,13 @@ internal fun ProfileScreen(viewModel: ProfileViewModel = koinViewModel(), snackb
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
-    Box(
+    PullToRefreshBox(
+        enabled = uiState.pullToRefreshEnabled,
+        onRefresh = { onEvent(ProfileEvent.OnRefreshProfile) },
+        isRefreshing = uiState.isRefreshing,
         modifier = Modifier
             .fillMaxSize()
             .imePadding(),
@@ -112,6 +122,36 @@ internal fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> U
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun PullToRefreshBox(
+    enabled: Boolean,
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable BoxScope.() -> Unit
+) {
+    val state = rememberPullToRefreshState()
+    Box(
+        modifier = modifier
+            .pullToRefresh(
+                isRefreshing = isRefreshing,
+                onRefresh = onRefresh,
+                enabled = enabled,
+                state = state
+            )
+    ) {
+        content()
+        PullToRefreshDefaults.Indicator(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .displayCutoutPadding(),
+            isRefreshing = isRefreshing,
+            state = state,
+        )
     }
 }
 
