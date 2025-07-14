@@ -34,6 +34,7 @@ fun RootNavigation() {
                         popTo = lastRoute,
                         shouldSaveState = true
                     )
+
                     LOGGED_OUT -> navController.navigateToRootDestination(
                         destination = RootDestination.Login,
                         popTo = lastRoute,
@@ -55,7 +56,11 @@ fun RootNavigation() {
     }
 }
 
-private fun NavHostController.navigateToRootDestination(destination: Any, popTo: Any, shouldSaveState: Boolean = true) {
+private fun NavHostController.navigateToRootDestination(
+    destination: RootDestination,
+    popTo: RootDestination,
+    shouldSaveState: Boolean = true
+) {
     navigate(destination) {
         popUpTo(popTo) {
             inclusive = true
