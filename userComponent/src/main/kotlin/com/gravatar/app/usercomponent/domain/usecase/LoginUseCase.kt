@@ -1,6 +1,5 @@
 package com.gravatar.app.usercomponent.domain.usecase
 
-import com.gravatar.app.usercomponent.data.AuthTokenStorage
 import com.gravatar.app.usercomponent.data.UserSessionPersistence
 import com.gravatar.app.usercomponent.domain.model.LoginRequest
 import com.gravatar.app.usercomponent.domain.model.LoginResult
@@ -15,7 +14,6 @@ interface Login {
 internal class LoginUseCase(
     private val authRepository: AuthRepository,
     private val profileRepository: ProfileRepository,
-    private val tokenStorage: AuthTokenStorage,
     private val userSessionPersistence: UserSessionPersistence,
 ) : Login {
 
@@ -23,7 +21,6 @@ internal class LoginUseCase(
         return getToken(loginRequest)
             .fold(
                 onSuccess = { token ->
-                    tokenStorage.saveToken(token)
                     profileRepository.refreshUserProfile()
                         .fold(
                             onSuccess = {
@@ -45,7 +42,7 @@ internal class LoginUseCase(
         return when (loginRequest) {
             is LoginRequest.FullLogin -> authRepository.fetchToken(loginRequest.request)
             LoginRequest.LoadProfile -> {
-                tokenStorage.getToken()
+                authRepository.getToken()
                     ?.let {
                         Result.success(it)
                     }

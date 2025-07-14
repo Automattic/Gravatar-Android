@@ -1,7 +1,6 @@
 package com.gravatar.app.usercomponent.domain.usecase
 
 import com.gravatar.app.testUtils.CoroutineTestRule
-import com.gravatar.app.usercomponent.data.AuthTokenStorage
 import com.gravatar.app.usercomponent.data.UserSessionPersistence
 import com.gravatar.app.usercomponent.domain.model.LoginRequest
 import com.gravatar.app.usercomponent.domain.model.LoginResult
@@ -10,7 +9,6 @@ import com.gravatar.app.usercomponent.domain.model.UserSession
 import com.gravatar.app.usercomponent.domain.repository.AuthRepository
 import com.gravatar.app.usercomponent.domain.repository.ProfileRepository
 import io.mockk.coEvery
-import io.mockk.coJustRun
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -31,7 +29,6 @@ class LoginUseCaseTest {
 
     private lateinit var loginUseCase: LoginUseCase
     private val authRepository = mockk<AuthRepository>()
-    private val tokenStorage = mockk<AuthTokenStorage>()
     private val profileRepository = mockk<ProfileRepository>()
     private val userSessionPersistence = mockk<UserSessionPersistence>()
 
@@ -52,7 +49,6 @@ class LoginUseCaseTest {
             authRepository = authRepository,
             profileRepository = profileRepository,
             userSessionPersistence = userSessionPersistence,
-            tokenStorage = tokenStorage,
         )
         coEvery { userSessionPersistence.set(any()) } returns Unit
     }
@@ -62,7 +58,6 @@ class LoginUseCaseTest {
         // Given
         val loginResult = Result.success(testToken)
         coEvery { authRepository.fetchToken(testLoginRequest.request) } returns loginResult
-        coJustRun { tokenStorage.saveToken(testToken) }
         coEvery { profileRepository.refreshUserProfile() } returns Result.success(Unit)
 
         // When
@@ -96,7 +91,6 @@ class LoginUseCaseTest {
         // Given
         val loginResult = Result.success(testToken)
         coEvery { authRepository.fetchToken(testLoginRequest.request) } returns loginResult
-        coJustRun { tokenStorage.saveToken(testToken) }
         coEvery {
             profileRepository.refreshUserProfile()
         } returns Result.failure(IllegalStateException("Profile refresh failed"))

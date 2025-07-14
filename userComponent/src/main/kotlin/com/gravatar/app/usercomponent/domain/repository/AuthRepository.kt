@@ -5,4 +5,6 @@ import com.gravatar.app.usercomponent.domain.model.OAuthRequest
 internal interface AuthRepository {
 
     suspend fun fetchToken(oAuthRequest: OAuthRequest): Result<String>
+
+    suspend fun getToken(): String?
 }
