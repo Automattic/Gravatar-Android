@@ -9,4 +9,7 @@ android {
 
 dependencies {
     implementation(libs.androidx.material3)
+
+    testImplementation(libs.junit)
+    testImplementation(project(":testUtils"))
 }

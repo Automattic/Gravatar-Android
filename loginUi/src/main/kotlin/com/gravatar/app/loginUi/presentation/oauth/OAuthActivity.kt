@@ -128,7 +128,7 @@ internal class OAuthResultContract :
 }
 
 internal sealed class OAuthResult {
-    data class Token(val token: String) : OAuthResult()
+    data class Token(val code: String) : OAuthResult()
 
     data object Dismissed : OAuthResult()
 

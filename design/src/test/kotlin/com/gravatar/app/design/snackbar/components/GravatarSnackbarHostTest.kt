@@ -1,8 +1,11 @@
-package com.gravatar.app.homeUi.presentation.home.components
+package com.gravatar.app.design.snackbar.components
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import com.gravatar.app.design.components.snackbar.GravatarSnackbarHost
+import com.gravatar.app.design.components.snackbar.SnackbarType
+import com.gravatar.app.design.components.snackbar.showGravatarSnackbar
 import com.gravatar.app.testUtils.roborazzi.RoborazziTest
 import org.junit.Test
 

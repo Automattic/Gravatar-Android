@@ -4,16 +4,17 @@ import app.cash.turbine.test
 import com.gravatar.app.foundations.DispatcherProvider
 import com.gravatar.app.testUtils.CoroutineTestRule
 import com.gravatar.app.usercomponent.domain.model.UserSession
-import com.gravatar.app.usercomponent.domain.repository.AuthRepository
+import com.gravatar.app.usercomponent.domain.repository.ProfileRepository
+import com.gravatar.extensions.defaultProfile
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -26,7 +27,7 @@ class InMemoryUserSessionPersistenceTest {
     var coroutineTestRule = CoroutineTestRule(testDispatcher)
 
     private lateinit var userSessionPersistence: InMemoryUserSessionPersistence
-    private val authRepository = mockk<AuthRepository>()
+    private val profileRepository = mockk<ProfileRepository>()
     private val applicationScope = CoroutineScope(testDispatcher)
     private val testDispatcherProvider = object : DispatcherProvider {
         override val main: CoroutineDispatcher = testDispatcher
@@ -34,20 +35,18 @@ class InMemoryUserSessionPersistenceTest {
         override val default: CoroutineDispatcher = testDispatcher
     }
 
-    @Before
-    fun setup() {
-        // Default setup, will be overridden in specific tests
-        coEvery { authRepository.isUserLoggedIn() } returns false
-    }
+    private val profile = defaultProfile(
+        hash = "hash",
+    )
 
     @Test
     fun `initial state should be LOGGED_IN when user is logged in`() = runTest {
         // Given
-        coEvery { authRepository.isUserLoggedIn() } returns true
+        coEvery { profileRepository.get() } returns flow { emit(profile) }
 
         // When
         userSessionPersistence = InMemoryUserSessionPersistence(
-            authRepository = authRepository,
+            profileRepository = profileRepository,
             applicationScope = applicationScope,
             dispatcherProvider = testDispatcherProvider
         )
@@ -62,11 +61,11 @@ class InMemoryUserSessionPersistenceTest {
     @Test
     fun `initial state should be LOGGED_OUT when user is not logged in`() = runTest {
         // Given
-        coEvery { authRepository.isUserLoggedIn() } returns false
+        coEvery { profileRepository.get() } returns flow { emit(null) }
 
         // When
         userSessionPersistence = InMemoryUserSessionPersistence(
-            authRepository = authRepository,
+            profileRepository = profileRepository,
             applicationScope = applicationScope,
             dispatcherProvider = testDispatcherProvider
         )
@@ -81,9 +80,10 @@ class InMemoryUserSessionPersistenceTest {
     @Test
     fun `set should update the state`() = runTest {
         // Given
-        coEvery { authRepository.isUserLoggedIn() } returns false
+        coEvery { profileRepository.get() } returns flow { emit(null) }
+
         userSessionPersistence = InMemoryUserSessionPersistence(
-            authRepository = authRepository,
+            profileRepository = profileRepository,
             applicationScope = applicationScope,
             dispatcherProvider = testDispatcherProvider
         )

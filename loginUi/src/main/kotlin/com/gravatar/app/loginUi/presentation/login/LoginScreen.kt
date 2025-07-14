@@ -1,7 +1,7 @@
 package com.gravatar.app.loginUi.presentation.login
 
+import android.content.Context
 import android.content.res.Configuration
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,19 +12,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -37,10 +38,17 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
+import com.gravatar.app.design.components.snackbar.GravatarSnackbarHost
+import com.gravatar.app.design.components.snackbar.SnackbarType
+import com.gravatar.app.design.components.snackbar.showGravatarSnackbar
 import com.gravatar.app.design.theme.GravatarAppTheme
 import com.gravatar.app.loginUi.R
+import com.gravatar.app.loginUi.presentation.login.components.ErrorMessage
+import com.gravatar.app.loginUi.presentation.login.components.ErrorTitle
+import com.gravatar.app.loginUi.presentation.login.components.LoginButton
 import com.gravatar.app.loginUi.presentation.oauth.OAuthResultContract
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.koinViewModel
 
@@ -55,89 +63,133 @@ fun LoginScreen() {
 internal fun LoginScreen(
     viewModel: LoginViewModel,
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val scope = rememberCoroutineScope()
+
+    val oAuthLauncher = rememberLauncherForActivityResult(OAuthResultContract()) { result ->
+        viewModel.onEvent(LoginEvent.OAuthResultReceived(result))
+    }
 
     LaunchedEffect(Unit) {
         withContext(Dispatchers.Main.immediate) {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.actions.collect { action ->
                     when (action) {
-                        LoginAction.ShowError -> {
-                            Toast.makeText(context, "Login error", Toast.LENGTH_SHORT)
-                                .show()
+                        is LoginAction.ShowLoginError -> {
+                            scope.launch {
+                                snackbarHostState.showLoginErrorSnack(context)
+                            }
                         }
+
+                        LoginAction.StartOAuth -> oAuthLauncher.launch(Unit)
                     }
                 }
             }
         }
     }
 
-    LoginScreen(
-        uiState = uiState,
-        onEvent = viewModel::onEvent
-    )
+    Scaffold(
+        snackbarHost = {
+            GravatarSnackbarHost(hostState = snackbarHostState)
+        }
+    ) { innerPadding ->
+        LoginScreen(
+            uiState = uiState,
+            onEvent = viewModel::onEvent,
+            modifier = Modifier.padding(innerPadding)
+        )
+    }
 }
 
 @Composable
 internal fun LoginScreen(
     uiState: LoginUiState,
     onEvent: (LoginEvent) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    val oAuthLauncher = rememberLauncherForActivityResult(OAuthResultContract()) { result ->
-        onEvent(LoginEvent.OAuthResultReceived(result))
-    }
-
-    Scaffold(
-        modifier = Modifier.fillMaxSize()
-    ) { innerPadding ->
-        Surface(
+    Surface(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
         ) {
-            Column(
+            GravatarLogo(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
+                    .weight(1f),
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 32.dp),
+                contentAlignment = Alignment.Center,
             ) {
-                GravatarLogo(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                )
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp, bottom = 32.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    when {
-                        else -> {
-                            Button(
+                when (uiState.error) {
+                    LoginError.AuthorizationDenied,
+                    null -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
+                            if (uiState.error is LoginError.AuthorizationDenied) {
+                                ErrorTitle(
+                                    title = stringResource(R.string.login_authorization_denied_title),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(bottom = 8.dp),
+                                )
+                            }
+                            LoginButton(
+                                text = stringResource(R.string.log_in),
+                                isLoading = uiState.isLoading,
+                                onClick = {
+                                    onEvent(LoginEvent.OnLoginClicked)
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            )
+                        }
+                    }
+
+                    is LoginError.ProfileLoadFailure -> {
+                        Column {
+                            ErrorTitle(
+                                title = stringResource(R.string.login_profile_load_failure_title),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            )
+                            ErrorMessage(
+                                message = stringResource(R.string.login_profile_load_failure_generic_message),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 8.dp),
+                            )
+                            LoginButton(
+                                text = stringResource(R.string.login_profile_load_failure_cta),
+                                isLoading = uiState.isLoading,
+                                onClick = { onEvent(LoginEvent.OnLoadProfileClicked) },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            )
+                            TextButton(
                                 modifier = Modifier
                                     .fillMaxWidth(),
-                                shape = RoundedCornerShape(12.dp),
-                                enabled = !uiState.isLoading,
                                 onClick = {
-                                    oAuthLauncher.launch(Unit)
+                                    onEvent(LoginEvent.OnTryAnotherAccountClicked)
                                 }
                             ) {
-                                if (uiState.isLoading) {
-                                    CircularProgressIndicator(
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        strokeWidth = 4.dp,
-                                    )
-                                } else {
-                                    Text(
-                                        text = stringResource(R.string.log_in),
-                                        modifier = Modifier
-                                            .padding(12.dp),
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        color = MaterialTheme.colorScheme.onPrimary,
-                                    )
-                                }
+                                Text(
+                                    text = stringResource(R.string.login_profile_load_failure_alternative_cta),
+                                    modifier = Modifier
+                                        .padding(12.dp),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                )
                             }
                         }
                     }
@@ -179,6 +231,15 @@ private fun GravatarLogo(
     }
 }
 
+private suspend fun SnackbarHostState.showLoginErrorSnack(
+    context: Context,
+) {
+    showGravatarSnackbar(
+        message = context.getString(R.string.login_retrieving_token_failure_message),
+        snackbarType = SnackbarType.Error,
+    )
+}
+
 @Composable
 private fun GravatarIcon(
     modifier: Modifier = Modifier,
@@ -216,6 +277,36 @@ private fun LoginScreenPreview() {
         LoginScreen(
             onEvent = { },
             uiState = LoginUiState(isLoading = false)
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun LoginScreenAuthDenied() {
+    GravatarAppTheme {
+        LoginScreen(
+            onEvent = { },
+            uiState = LoginUiState(
+                isLoading = false,
+                error = LoginError.AuthorizationDenied,
+            )
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun LoginScreenProfileLoadFailure() {
+    GravatarAppTheme {
+        LoginScreen(
+            onEvent = { },
+            uiState = LoginUiState(
+                isLoading = false,
+                error = LoginError.ProfileLoadFailure(
+                    reason = LoginError.ProfileLoadFailure.Reason.GENERIC_ERROR
+                ),
+            )
         )
     }
 }

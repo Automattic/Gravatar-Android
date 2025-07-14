@@ -18,6 +18,34 @@ class LoginScreenTest : RoborazziTest() {
     }
 
     @Test
+    fun loginScreenAuthorizationDenied() = screenshotTest {
+        GravatarAppTheme {
+            LoginScreen(
+                uiState = LoginUiState(
+                    isLoading = false,
+                    error = LoginError.AuthorizationDenied,
+                ),
+                onEvent = { }
+            )
+        }
+    }
+
+    @Test
+    fun loginScreenProfileLoadFailed() = screenshotTest {
+        GravatarAppTheme {
+            LoginScreen(
+                uiState = LoginUiState(
+                    isLoading = false,
+                    error = LoginError.ProfileLoadFailure(
+                        reason = LoginError.ProfileLoadFailure.Reason.GENERIC_ERROR
+                    ),
+                ),
+                onEvent = { }
+            )
+        }
+    }
+
+    @Test
     @Config(qualifiers = "+land")
     fun loginScreenLandscape() = screenshotTest {
         GravatarAppTheme {

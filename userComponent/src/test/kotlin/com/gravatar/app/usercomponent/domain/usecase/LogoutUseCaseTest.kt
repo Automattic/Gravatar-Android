@@ -2,8 +2,8 @@ package com.gravatar.app.usercomponent.domain.usecase
 
 import com.gravatar.app.testUtils.CoroutineTestRule
 import com.gravatar.app.usercomponent.data.UserSessionPersistence
+import com.gravatar.app.usercomponent.data.UserStorage
 import com.gravatar.app.usercomponent.domain.model.UserSession
-import com.gravatar.app.usercomponent.domain.repository.AuthRepository
 import com.gravatar.app.usercomponent.domain.repository.ProfileRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -25,14 +25,14 @@ class LogoutUseCaseTest {
     var coroutineTestRule = CoroutineTestRule(testDispatcher)
 
     private lateinit var logoutUseCase: LogoutUseCase
-    private val authRepository = mockk<AuthRepository>()
+    private val userStorage = mockk<UserStorage>()
     private val profileRepository = mockk<ProfileRepository>()
     private val userSessionPersistence = mockk<UserSessionPersistence>()
 
     @Before
     fun setup() {
         logoutUseCase = LogoutUseCase(
-            authRepository = authRepository,
+            userStorage = userStorage,
             profileRepository = profileRepository,
             userSessionPersistence = userSessionPersistence,
         )
@@ -40,7 +40,7 @@ class LogoutUseCaseTest {
         // Set up default behavior for mocks
         coEvery { profileRepository.delete() } returns Unit
         coEvery { userSessionPersistence.set(any()) } returns Unit
-        coEvery { authRepository.logout() } returns Unit
+        coEvery { userStorage.clear() } returns Unit
     }
 
     @Test
@@ -50,13 +50,13 @@ class LogoutUseCaseTest {
 
         // Then
         coVerify(exactly = 1) { profileRepository.delete() }
-        coVerify(exactly = 1) { authRepository.logout() }
+        coVerify(exactly = 1) { userStorage.clear() }
         coVerify(exactly = 1) { userSessionPersistence.set(UserSession.LOGGED_OUT) }
 
         // Verify order of calls
         coVerifySequence {
+            userStorage.clear()
             profileRepository.delete()
-            authRepository.logout()
             userSessionPersistence.set(UserSession.LOGGED_OUT)
         }
     }

@@ -1,30 +1,26 @@
 package com.gravatar.app.usercomponent.data
 
-import com.gravatar.app.usercomponent.domain.model.LoginRequest
+import com.gravatar.app.usercomponent.domain.model.OAuthRequest
 import com.gravatar.app.usercomponent.domain.repository.AuthRepository
 
 internal class RealAuthRepository(
     private val wordPressClient: WordPressClient,
-    private val userStorage: UserStorage,
+    private val tokenStorage: AuthTokenStorage,
 ) : AuthRepository {
-    override suspend fun login(loginRequest: LoginRequest): Result<Unit> {
+    override suspend fun fetchToken(oAuthRequest: OAuthRequest): Result<String> {
         return wordPressClient.login(
-            code = loginRequest.code,
-            clientSecret = loginRequest.clientSecret,
-            redirectUri = loginRequest.redirectUri,
-            clientId = loginRequest.clientId
+            code = oAuthRequest.code,
+            clientSecret = oAuthRequest.clientSecret,
+            redirectUri = oAuthRequest.redirectUri,
+            clientId = oAuthRequest.clientId
         ).fold(
             onSuccess = { token ->
-                userStorage.saveToken(token)
-                Result.success(Unit)
+                tokenStorage.saveToken(token)
+                Result.success(token)
             },
             onFailure = { Result.failure(it) }
         )
     }
 
-    override suspend fun isUserLoggedIn(): Boolean = userStorage.getToken() != null
-
-    override suspend fun logout() {
-        userStorage.clear()
-    }
+    override suspend fun getToken() = tokenStorage.getToken()
 }

@@ -19,9 +19,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.gravatar.app.design.components.snackbar.GravatarSnackbarHost
 import com.gravatar.app.homeUi.navigation.HomeDestination
 import com.gravatar.app.homeUi.navigation.HomeNavigation
-import com.gravatar.app.homeUi.presentation.home.components.GravatarSnackbarHost
 
 @Composable
 fun HomeScreen() {

@@ -1,4 +1,4 @@
-package com.gravatar.app.homeUi.presentation.home.components
+package com.gravatar.app.design.components.snackbar
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Snackbar
@@ -11,16 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
-internal data class GravatarSnackbarVisuals(
-    val snackbarType: SnackbarType,
-    override val actionLabel: String?,
-    override val duration: SnackbarDuration,
-    override val message: String,
-    override val withDismissAction: Boolean,
-) : SnackbarVisuals
-
 @Composable
-internal fun GravatarSnackbarHost(hostState: SnackbarHostState, modifier: Modifier = Modifier) {
+fun GravatarSnackbarHost(hostState: SnackbarHostState, modifier: Modifier = Modifier) {
     SnackbarHost(
         modifier = modifier,
         hostState = hostState,
@@ -41,7 +33,7 @@ internal fun GravatarSnackbarHost(hostState: SnackbarHostState, modifier: Modifi
     }
 }
 
-internal suspend fun SnackbarHostState.showGravatarSnackbar(
+suspend fun SnackbarHostState.showGravatarSnackbar(
     message: String,
     actionLabel: String? = null,
     withDismissAction: Boolean = false,
@@ -60,6 +52,14 @@ internal suspend fun SnackbarHostState.showGravatarSnackbar(
     return showSnackbar(visuals)
 }
 
+internal data class GravatarSnackbarVisuals(
+    val snackbarType: SnackbarType,
+    override val actionLabel: String?,
+    override val duration: SnackbarDuration,
+    override val message: String,
+    override val withDismissAction: Boolean,
+) : SnackbarVisuals
+
 internal val SnackbarType.containerColor: Color
     @Composable get() = when (this) {
         SnackbarType.Info -> MaterialTheme.colorScheme.inverseSurface
@@ -72,7 +72,7 @@ internal val SnackbarType.contentColor: Color
         SnackbarType.Error -> MaterialTheme.colorScheme.onErrorContainer
     }
 
-internal enum class SnackbarType {
+enum class SnackbarType {
     Info,
     Error,
 }

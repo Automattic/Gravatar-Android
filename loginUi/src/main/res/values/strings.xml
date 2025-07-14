@@ -3,4 +3,10 @@
     <string name="gravatar" translatable="false">Gravatar</string>
     <string name="your_globally_recognized_avatar">Your globally recognized avatar.</string>
     <string name="log_in">Log In</string>
+    <string name="login_retrieving_token_failure_message">Something went wrong</string>
+    <string name="login_profile_load_failure_title">Unable to load your profile</string>
+    <string name="login_profile_load_failure_generic_message">There was an issue loading your profile.</string>
+    <string name="login_profile_load_failure_cta">Try again</string>
+    <string name="login_profile_load_failure_alternative_cta">Try with another account</string>
+    <string name="login_authorization_denied_title">You need to log in to Gravatar.com</string>
 </resources>
