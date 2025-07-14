@@ -19,7 +19,10 @@ internal data class ProfileUiState(
     val aboutFields: Set<AboutEditorField> = originalAboutFields.map { field ->
         val editedValue = editedAboutFields[field.type]
         if (editedValue != null) {
-            field.copy(value = editedValue)
+            field.copy(
+                value = editedValue,
+                edited = true,
+            )
         } else {
             field
         }

@@ -54,6 +54,7 @@ internal fun AboutFieldsSection(
                     onValueChange = {
                         onValueChange(editorField.copy(value = it))
                     },
+                    edited = editorField.edited,
                 )
             }
         }

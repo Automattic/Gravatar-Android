@@ -1,6 +1,7 @@
 package com.gravatar.app.homeUi.presentation.home.profile.about
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,10 +13,16 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.gravatar.app.design.theme.GravatarAppTheme
 
 @Composable
 internal fun AboutEditField(
@@ -26,7 +33,10 @@ internal fun AboutEditField(
     modifier: Modifier = Modifier,
     maxLines: Int = 1,
     description: String? = null,
+    edited: Boolean = false,
 ) {
+    val inputFieldShape = RoundedCornerShape(8.dp)
+    var isFocused by remember { mutableStateOf(false) }
     Column(
         modifier = modifier
             .fillMaxWidth(),
@@ -38,18 +48,37 @@ internal fun AboutEditField(
         Spacer(modifier = Modifier.height(4.dp))
         BasicTextField(
             value = value,
-            textStyle = MaterialTheme.typography.bodyLarge,
+            textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
             cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
             maxLines = maxLines,
             minLines = maxLines,
             singleLine = maxLines == 1,
             enabled = enabled,
             onValueChange = onValueChange,
+            modifier = Modifier
+                .onFocusChanged {
+                    isFocused = it.hasFocus
+                },
             decorationBox = { innerTextField ->
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.surfaceContainerHigh, RoundedCornerShape(8.dp))
+                        .then(
+                            if (isFocused) {
+                                Modifier
+                                    .background(MaterialTheme.colorScheme.surface, inputFieldShape)
+                                    .border(2.dp, MaterialTheme.colorScheme.primary, inputFieldShape)
+                            } else {
+                                if (edited) {
+                                    Modifier.background(
+                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                                        inputFieldShape
+                                    )
+                                } else {
+                                    Modifier.background(MaterialTheme.colorScheme.surfaceContainerHigh, inputFieldShape)
+                                }
+                            }
+                        )
                         .padding(horizontal = 12.dp, vertical = 12.dp),
                 ) {
                     innerTextField()
@@ -70,7 +99,7 @@ internal fun AboutEditField(
 @Preview(showBackground = true)
 @Composable
 internal fun AboutEditFieldNoDescriptionPreview() {
-    MaterialTheme {
+    GravatarAppTheme {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -89,8 +118,29 @@ internal fun AboutEditFieldNoDescriptionPreview() {
 
 @Preview(showBackground = true)
 @Composable
+internal fun AboutEditFieldEditedPreview() {
+    GravatarAppTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp),
+        ) {
+            AboutEditField(
+                value = "John Doe",
+                description = null,
+                enabled = true,
+                label = "Display name",
+                edited = true,
+                onValueChange = {},
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
 internal fun AboutEditFieldDescriptionPreview() {
-    MaterialTheme {
+    GravatarAppTheme {
         Box(
             modifier = Modifier
                 .fillMaxWidth()

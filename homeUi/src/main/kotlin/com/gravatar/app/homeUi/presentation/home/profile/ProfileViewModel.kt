@@ -166,6 +166,7 @@ internal fun Profile.aboutFields(): Set<AboutEditorField> {
                     AboutInputField.ABOUT_ME -> 4
                     else -> 1
                 },
+                edited = false
             )
         }
         .sortedBy { it.type.order }

@@ -129,10 +129,9 @@ class ProfileViewModelTest {
         runTest {
             // Given
             val profile = profile()
-            profileFlow.emit(profile)
             viewModel = initViewModel()
-
             advanceUntilIdle()
+            profileFlow.emit(profile)
 
             val modifiedField = AboutEditorField(
                 type = AboutInputField.DISPLAY_NAME,
@@ -146,6 +145,7 @@ class ProfileViewModelTest {
             viewModel.uiState.test {
                 val state = awaitItem()
                 assertEquals("Modified Name", state.editedAboutFields[AboutInputField.DISPLAY_NAME])
+                assertTrue(state.aboutFields.firstOrNull { it.type == AboutInputField.DISPLAY_NAME }?.edited == true)
                 assertTrue(state.hasUnsavedChanges)
             }
         }
@@ -157,7 +157,6 @@ class ProfileViewModelTest {
             val profile = profile()
             viewModel = initViewModel()
             advanceUntilIdle()
-
             profileFlow.emit(profile)
 
             val modifiedField = AboutEditorField(

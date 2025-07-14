@@ -1,8 +1,8 @@
 package com.gravatar.app.homeUi.presentation.home.profile.about
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
+import com.gravatar.app.design.theme.GravatarAppTheme
 import com.gravatar.app.testUtils.roborazzi.RoborazziTest
 import org.junit.Test
 
@@ -10,12 +10,13 @@ class AboutSectionTest : RoborazziTest() {
 
     @Test
     fun aboutSection_nameSection_formEnabledFalse() = screenshotTest {
-        MaterialTheme {
+        GravatarAppTheme {
             AboutSection(
                 aboutFields = setOf(
                     AboutEditorField(
                         type = AboutInputField.FIRST_NAME,
                         value = "John",
+                        edited = true,
                     ),
                     AboutEditorField(
                         type = AboutInputField.LAST_NAME,
@@ -44,7 +45,7 @@ class AboutSectionTest : RoborazziTest() {
 
     @Test
     fun aboutSection_professionalSection_formEnabledFalse() = screenshotTest {
-        MaterialTheme {
+        GravatarAppTheme {
             AboutSection(
                 aboutFields = setOf(
                     AboutEditorField(
@@ -65,7 +66,7 @@ class AboutSectionTest : RoborazziTest() {
 
     @Test
     fun aboutSection_aboutSection_formEnabledFalse() = screenshotTest {
-        MaterialTheme {
+        GravatarAppTheme {
             AboutSection(
                 aboutFields = setOf(
                     AboutEditorField(
@@ -87,7 +88,7 @@ class AboutSectionTest : RoborazziTest() {
 
     @Test
     fun aboutSection_mixSections_formEnabledFalse() = screenshotTest {
-        MaterialTheme {
+        GravatarAppTheme {
             AboutSection(
                 aboutFields = setOf(
                     AboutEditorField(
