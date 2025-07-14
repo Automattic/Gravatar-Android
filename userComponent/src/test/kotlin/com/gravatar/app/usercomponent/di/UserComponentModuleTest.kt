@@ -4,6 +4,7 @@ import com.gravatar.app.clock.AppClock
 import com.gravatar.app.foundations.DispatcherProvider
 import com.gravatar.app.usercomponent.data.InMemoryUserSessionPersistence
 import com.gravatar.app.usercomponent.data.WordPressClient
+import com.gravatar.app.usercomponent.data.interceptors.UnauthorizeInterceptor
 import com.gravatar.app.usercomponent.domain.usecase.DeleteUserAvatarUseCase
 import com.gravatar.app.usercomponent.domain.usecase.SelectAvatarUseCase
 import com.gravatar.app.usercomponent.domain.usecase.UploadAvatarUseCase
@@ -27,6 +28,7 @@ class UserComponentModuleTest : KoinTest {
                 definition<SelectAvatarUseCase>(AppClock::class),
                 definition<DeleteUserAvatarUseCase>(AppClock::class),
                 definition<UploadAvatarUseCase>(AppClock::class),
+                definition<UnauthorizeInterceptor>(CoroutineScope::class, DispatcherProvider::class),
             )
         )
     }
