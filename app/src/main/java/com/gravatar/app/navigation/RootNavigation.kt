@@ -29,8 +29,17 @@ fun RootNavigation() {
                 } ?: RootDestination.Splash
 
                 when (userSession) {
-                    LOGGED_IN -> navController.navigateSavingState(RootDestination.Home, popTo = lastRoute)
-                    LOGGED_OUT -> navController.navigateSavingState(RootDestination.Login, popTo = lastRoute)
+                    LOGGED_IN -> navController.navigateToRootDestination(
+                        destination = RootDestination.Home,
+                        popTo = lastRoute,
+                        shouldSaveState = true
+                    )
+
+                    LOGGED_OUT -> navController.navigateToRootDestination(
+                        destination = RootDestination.Login,
+                        popTo = lastRoute,
+                        shouldSaveState = lastRoute == RootDestination.Login
+                    )
                 }
             }
     }
@@ -47,14 +56,18 @@ fun RootNavigation() {
     }
 }
 
-private fun NavHostController.navigateSavingState(destination: Any, popTo: Any) {
+private fun NavHostController.navigateToRootDestination(
+    destination: RootDestination,
+    popTo: RootDestination,
+    shouldSaveState: Boolean = true
+) {
     navigate(destination) {
         popUpTo(popTo) {
             inclusive = true
-            saveState = true
+            saveState = shouldSaveState
         }
         launchSingleTop = true
-        restoreState = true
+        restoreState = shouldSaveState
     }
 }
 
