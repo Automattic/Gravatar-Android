@@ -23,8 +23,6 @@ import com.gravatar.app.usercomponent.domain.usecase.SelectAvatarUseCase
 import com.gravatar.app.usercomponent.domain.usecase.SelectUserAvatar
 import com.gravatar.app.usercomponent.domain.usecase.UploadAvatarUseCase
 import com.gravatar.app.usercomponent.domain.usecase.UploadUserAvatar
-import com.gravatar.services.AvatarService
-import com.gravatar.services.ProfileService
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -43,8 +41,6 @@ val userComponentModule = module {
     factoryOf(::UploadAvatarUseCase) { bind<UploadUserAvatar>() }
     factoryOf(::WordPressClient)
     singleOf(::InMemoryUserSessionPersistence) { bind<UserSessionPersistence>() }
-    single { ProfileService() }
-    single { AvatarService() }
     includes(httpClientModule)
     includes(datastoreModule)
     includes(databaseModule)
