@@ -223,7 +223,7 @@ internal fun GravatarScreen(
                             onChooseFromGalleryClicked = onPickMediaClicked,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 16.dp)
+                                .padding(bottom = 16.dp)
                         )
                     }
                     when {
