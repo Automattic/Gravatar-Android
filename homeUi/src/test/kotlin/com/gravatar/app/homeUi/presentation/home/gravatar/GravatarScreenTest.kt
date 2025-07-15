@@ -1,5 +1,6 @@
 package com.gravatar.app.homeUi.presentation.home.gravatar
 
+import com.gravatar.app.design.theme.GravatarAppTheme
 import com.gravatar.app.testUtils.roborazzi.RoborazziTest
 import com.gravatar.restapi.models.Avatar
 import org.junit.Test
@@ -8,8 +9,8 @@ import java.net.URI
 class GravatarScreenTest : RoborazziTest() {
 
     @Test
-    fun gravatarScreen() {
-        screenshotTest {
+    fun gravatarScreen() = screenshotTest {
+        GravatarAppTheme {
             GravatarScreen(
                 uiState = GravatarUiState(
                     isLoading = false,
@@ -33,8 +34,8 @@ class GravatarScreenTest : RoborazziTest() {
     }
 
     @Test
-    fun gravatarScreenWithNullAvatars() {
-        screenshotTest {
+    fun gravatarScreenWithNullAvatars() = screenshotTest {
+        GravatarAppTheme {
             GravatarScreen(
                 uiState = GravatarUiState(
                     isLoading = false,
@@ -49,8 +50,8 @@ class GravatarScreenTest : RoborazziTest() {
     }
 
     @Test
-    fun gravatarScreenWithEmptyAvatars() {
-        screenshotTest {
+    fun gravatarScreenWithEmptyAvatars() = screenshotTest {
+        GravatarAppTheme {
             GravatarScreen(
                 uiState = GravatarUiState(
                     isLoading = false,

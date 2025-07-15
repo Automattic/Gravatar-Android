@@ -3,7 +3,7 @@ package com.gravatar.app.homeUi.presentation.home.gravatar.components
 import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -33,25 +33,25 @@ internal fun LazyGridScope.avatarsGridSection(
     item(
         span = { GridItemSpan((maxLineSpan)) },
     ) {
-        Text(
-            text = stringResource(R.string.gravatar_tab_previous_avatars),
-            style = MaterialTheme.typography.titleMedium,
-        )
-    }
-    item(
-        span = { GridItemSpan(maxLineSpan) },
-    ) {
-        Text(
-            text = stringResource(
-                if (avatars.isEmpty()) {
-                    R.string.gravatar_tab_empty_avatars
-                } else {
-                    R.string.gravatar_tab_tap_for_options
-                }
-            ),
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(bottom = 10.dp)
-        )
+        Column(
+            modifier = Modifier.padding(top = 16.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.gravatar_tab_previous_avatars),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Text(
+                text = stringResource(
+                    if (avatars.isEmpty()) {
+                        R.string.gravatar_tab_empty_avatars
+                    } else {
+                        R.string.gravatar_tab_tap_for_options
+                    }
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(bottom = 10.dp)
+            )
+        }
     }
     if (avatars.isEmpty()) {
         item(
@@ -80,13 +80,10 @@ internal fun LazyGridScope.avatarsGridSection(
 @Preview(showBackground = true)
 private fun AvatarsGridSectionPreview() {
     MaterialTheme {
-        Box(
-            modifier = Modifier.padding(10.dp),
-        ) {
+        Box {
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(minSize = avatarSize),
                 modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 state = rememberLazyGridState(),
@@ -117,13 +114,10 @@ private fun AvatarsGridSectionPreview() {
 @Preview(showBackground = true)
 private fun AvatarsGridSectionEmptyPreview() {
     MaterialTheme {
-        Box(
-            modifier = Modifier.padding(10.dp),
-        ) {
+        Box {
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(minSize = avatarSize),
                 modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 state = rememberLazyGridState(),
