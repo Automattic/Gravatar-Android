@@ -6,7 +6,6 @@ import com.gravatar.app.usercomponent.data.RealProfileRepository
 import com.gravatar.app.usercomponent.data.RealUserRepository
 import com.gravatar.app.usercomponent.data.UserSessionPersistence
 import com.gravatar.app.usercomponent.data.WordPressClient
-import com.gravatar.app.usercomponent.data.interceptors.UnauthorizeInterceptor
 import com.gravatar.app.usercomponent.domain.repository.AuthRepository
 import com.gravatar.app.usercomponent.domain.repository.ProfileRepository
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
@@ -24,10 +23,6 @@ import com.gravatar.app.usercomponent.domain.usecase.SelectAvatarUseCase
 import com.gravatar.app.usercomponent.domain.usecase.SelectUserAvatar
 import com.gravatar.app.usercomponent.domain.usecase.UploadAvatarUseCase
 import com.gravatar.app.usercomponent.domain.usecase.UploadUserAvatar
-import com.gravatar.services.AvatarService
-import com.gravatar.services.ProfileService
-import kotlinx.coroutines.CoroutineScope
-import okhttp3.OkHttpClient
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -46,14 +41,6 @@ val userComponentModule = module {
     factoryOf(::UploadAvatarUseCase) { bind<UploadUserAvatar>() }
     factoryOf(::WordPressClient)
     singleOf(::InMemoryUserSessionPersistence) { bind<UserSessionPersistence>() }
-    single { UnauthorizeInterceptor(applicationScope = get<CoroutineScope>(), logout = lazy { get<Logout>() }) }
-    single {
-        OkHttpClient.Builder()
-            .addInterceptor(interceptor = get<UnauthorizeInterceptor>())
-            .build()
-    }
-    single { ProfileService(okHttpClient = get<OkHttpClient>()) }
-    single { AvatarService(okHttpClient = get<OkHttpClient>()) }
     includes(httpClientModule)
     includes(datastoreModule)
     includes(databaseModule)
