@@ -28,7 +28,7 @@ class UserComponentModuleTest : KoinTest {
                 definition<SelectAvatarUseCase>(AppClock::class),
                 definition<DeleteUserAvatarUseCase>(AppClock::class),
                 definition<UploadAvatarUseCase>(AppClock::class),
-                definition<UnauthorizeInterceptor>(CoroutineScope::class, DispatcherProvider::class),
+                definition<UnauthorizeInterceptor>(CoroutineScope::class),
             )
         )
     }

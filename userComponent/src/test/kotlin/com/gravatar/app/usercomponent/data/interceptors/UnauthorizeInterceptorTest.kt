@@ -1,13 +1,11 @@
 package com.gravatar.app.usercomponent.data.interceptors
 
-import com.gravatar.app.foundations.DispatcherProvider
 import com.gravatar.app.testUtils.CoroutineTestRule
 import com.gravatar.app.usercomponent.domain.usecase.Logout
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -32,17 +30,11 @@ class UnauthorizeInterceptorTest {
     private lateinit var unauthorizeInterceptor: UnauthorizeInterceptor
     private val logout = mockk<Lazy<Logout>>()
     private val applicationScope = CoroutineScope(testDispatcher)
-    private val testDispatcherProvider = object : DispatcherProvider {
-        override val main: CoroutineDispatcher = testDispatcher
-        override val io: CoroutineDispatcher = testDispatcher
-        override val default: CoroutineDispatcher = testDispatcher
-    }
 
     @Before
     fun setup() {
         unauthorizeInterceptor = UnauthorizeInterceptor(
             applicationScope = applicationScope,
-            dispatcherProvider = testDispatcherProvider,
             logout = logout
         )
     }

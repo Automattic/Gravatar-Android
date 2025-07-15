@@ -1,6 +1,5 @@
 package com.gravatar.app.usercomponent.di
 
-import com.gravatar.app.foundations.DispatcherProvider
 import com.gravatar.app.usercomponent.data.InMemoryUserSessionPersistence
 import com.gravatar.app.usercomponent.data.RealAuthRepository
 import com.gravatar.app.usercomponent.data.RealProfileRepository
@@ -47,7 +46,7 @@ val userComponentModule = module {
     factoryOf(::UploadAvatarUseCase) { bind<UploadUserAvatar>() }
     factoryOf(::WordPressClient)
     singleOf(::InMemoryUserSessionPersistence) { bind<UserSessionPersistence>() }
-    single { UnauthorizeInterceptor(get<CoroutineScope>(), get<DispatcherProvider>(), lazy { get<Logout>() }) }
+    single { UnauthorizeInterceptor(applicationScope = get<CoroutineScope>(), logout = lazy { get<Logout>() }) }
     single {
         OkHttpClient.Builder()
             .addInterceptor(interceptor = get<UnauthorizeInterceptor>())

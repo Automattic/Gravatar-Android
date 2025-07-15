@@ -1,6 +1,5 @@
 package com.gravatar.app.usercomponent.data.interceptors
 
-import com.gravatar.app.foundations.DispatcherProvider
 import com.gravatar.app.usercomponent.domain.usecase.Logout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -16,7 +15,6 @@ import okhttp3.Response
  */
 class UnauthorizeInterceptor(
     private val applicationScope: CoroutineScope,
-    private val dispatcherProvider: DispatcherProvider,
     private val logout: Lazy<Logout>
 ) : Interceptor {
 
@@ -25,7 +23,7 @@ class UnauthorizeInterceptor(
         val response = chain.proceed(request)
 
         if (response.code == HttpResponseCode.UNAUTHORIZED) {
-            applicationScope.launch(dispatcherProvider.io) {
+            applicationScope.launch {
                 logout.value.invoke()
             }
         }
