@@ -122,12 +122,6 @@ class ProfileViewModelTest {
 
         val lastNameField = aboutFields.find { it.type == AboutInputField.LAST_NAME }
         assertEquals("LastName should match mock profile", profile.lastName.orEmpty(), lastNameField?.value)
-
-        val cellPhoneField = aboutFields.find { it.type == AboutInputField.CELL_PHONE }
-        assertEquals("CellPhone should match mock profile", profile.contactInfo?.cellPhone, cellPhoneField?.value)
-
-        val contactEmailField = aboutFields.find { it.type == AboutInputField.CONTACT_EMAIL }
-        assertEquals("ContactEmail should match mock profile", profile.contactInfo?.email, contactEmailField?.value)
     }
 
     @Test
@@ -135,10 +129,9 @@ class ProfileViewModelTest {
         runTest {
             // Given
             val profile = profile()
-            profileFlow.emit(profile)
             viewModel = initViewModel()
-
             advanceUntilIdle()
+            profileFlow.emit(profile)
 
             val modifiedField = AboutEditorField(
                 type = AboutInputField.DISPLAY_NAME,
@@ -152,6 +145,7 @@ class ProfileViewModelTest {
             viewModel.uiState.test {
                 val state = awaitItem()
                 assertEquals("Modified Name", state.editedAboutFields[AboutInputField.DISPLAY_NAME])
+                assertTrue(state.aboutFields.firstOrNull { it.type == AboutInputField.DISPLAY_NAME }?.edited == true)
                 assertTrue(state.hasUnsavedChanges)
             }
         }
@@ -163,7 +157,6 @@ class ProfileViewModelTest {
             val profile = profile()
             viewModel = initViewModel()
             advanceUntilIdle()
-
             profileFlow.emit(profile)
 
             val modifiedField = AboutEditorField(
@@ -202,8 +195,6 @@ class ProfileViewModelTest {
             AboutInputField.COMPANY to "Test Company",
             AboutInputField.FIRST_NAME to "Test First Name",
             AboutInputField.LAST_NAME to "Test Last Name",
-            AboutInputField.CELL_PHONE to "Test Cell Phone",
-            AboutInputField.CONTACT_EMAIL to "test@example.com"
         )
 
         // When
@@ -219,8 +210,6 @@ class ProfileViewModelTest {
         assertEquals("Test Company", updateRequest.company)
         assertEquals("Test First Name", updateRequest.firstName)
         assertEquals("Test Last Name", updateRequest.lastName)
-        assertEquals("Test Cell Phone", updateRequest.cellPhone)
-        assertEquals("test@example.com", updateRequest.contactEmail)
     }
 
     @Test

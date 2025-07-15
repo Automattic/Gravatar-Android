@@ -23,10 +23,10 @@ internal fun AboutSection(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
-        if (aboutFields.any { it.type.isName }) {
+        if (aboutFields.any { it.type.isAbout }) {
             AboutFieldsSection(
-                label = stringResource(R.string.about_field_section_label_name),
-                fields = aboutFields.filter { it.type.isName }.toSet(),
+                label = null,
+                fields = aboutFields.filter { it.type.isAbout }.toSet(),
                 formEnabled = formEnabled,
                 onValueChange = onValueChange,
             )
@@ -35,22 +35,6 @@ internal fun AboutSection(
             AboutFieldsSection(
                 label = stringResource(R.string.about_field_section_label_professional),
                 fields = aboutFields.filter { it.type.isProfessional }.toSet(),
-                formEnabled = formEnabled,
-                onValueChange = onValueChange,
-            )
-        }
-        if (aboutFields.any { it.type.isAbout }) {
-            AboutFieldsSection(
-                label = stringResource(R.string.about_field_section_label_about),
-                fields = aboutFields.filter { it.type.isAbout }.toSet(),
-                formEnabled = formEnabled,
-                onValueChange = onValueChange,
-            )
-        }
-        if (aboutFields.any { it.type.isContact }) {
-            AboutFieldsSection(
-                label = stringResource(R.string.about_field_section_label_contact),
-                fields = aboutFields.filter { it.type.isContact }.toSet(),
                 formEnabled = formEnabled,
                 onValueChange = onValueChange,
             )
@@ -69,20 +53,18 @@ internal val AboutEditorField.labelRes: Int
         AboutInputField.JOB_TITLE -> R.string.about_field_label_job_title
         AboutInputField.FIRST_NAME -> R.string.about_field_label_first_name
         AboutInputField.LAST_NAME -> R.string.about_field_label_last_name
-        AboutInputField.CELL_PHONE -> R.string.about_field_label_cell_phone
-        AboutInputField.CONTACT_EMAIL -> R.string.about_field_label_contact_email
     }
 
 internal val AboutEditorField.descriptionRes: Int?
     @StringRes get() = when (this.type) {
+        AboutInputField.ABOUT_ME -> R.string.about_field_description_about_me
+        AboutInputField.PRONUNCIATION -> R.string.about_field_description_pronunciation
         else -> null
     }
 
 internal enum class Section {
-    NAME,
-    PROFESSIONAL,
     ABOUT,
-    CONTACT,
+    PROFESSIONAL,
 }
 
 @Preview(showBackground = true)
@@ -128,14 +110,6 @@ internal fun AboutSectionPreview() {
                 AboutEditorField(
                     type = AboutInputField.LAST_NAME,
                     value = "Doe",
-                ),
-                AboutEditorField(
-                    type = AboutInputField.CELL_PHONE,
-                    value = "123-456-7890",
-                ),
-                AboutEditorField(
-                    type = AboutInputField.CONTACT_EMAIL,
-                    value = "gravatar@automattic.com",
                 ),
             ),
             formEnabled = true,

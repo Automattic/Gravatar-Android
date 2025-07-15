@@ -4,4 +4,5 @@ internal data class AboutEditorField(
     val type: AboutInputField,
     val value: String,
     val maxLines: Int = 1,
+    val edited: Boolean = false,
 )

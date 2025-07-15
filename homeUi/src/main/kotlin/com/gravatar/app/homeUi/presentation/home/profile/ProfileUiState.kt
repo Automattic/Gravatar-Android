@@ -10,6 +10,7 @@ internal data class ProfileUiState(
     val profile: Profile? = null,
     val editedAboutFields: Map<AboutInputField, String> = emptyMap(),
     val isSavingProfile: Boolean = false,
+    val isRefreshing: Boolean = false,
 ) {
 
     val originalAboutFields: Set<AboutEditorField> = profile?.aboutFields() ?: emptySet()
@@ -19,11 +20,16 @@ internal data class ProfileUiState(
     val aboutFields: Set<AboutEditorField> = originalAboutFields.map { field ->
         val editedValue = editedAboutFields[field.type]
         if (editedValue != null) {
-            field.copy(value = editedValue)
+            field.copy(
+                value = editedValue,
+                edited = true,
+            )
         } else {
             field
         }
     }.toSet()
 
     val hasUnsavedChanges: Boolean = editedAboutFields.isNotEmpty()
+
+    val pullToRefreshEnabled: Boolean = !hasUnsavedChanges
 }
