@@ -3,7 +3,6 @@ package com.gravatar.app.homeUi.presentation.home.gravatar.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -12,22 +11,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.gravatar.app.design.theme.GravatarAppTheme
 import com.gravatar.app.homeUi.R
 
 @Composable
 fun UploadNewAvatarSection(
     onTakePictureClicked: () -> Unit,
-    onChooseFromGalleryClicked: () -> Unit
+    onChooseFromGalleryClicked: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 16.dp)
+        modifier = modifier
     ) {
         Text(
             text = stringResource(R.string.gravatar_tab_get_a_new_look),
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(bottom = 10.dp)
+        )
+        Text(
+            text = stringResource(R.string.gravatar_tab_upload_avatar_message),
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(bottom = 16.dp)
         )
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -53,7 +56,7 @@ fun UploadNewAvatarSection(
 @Composable
 @Preview(showBackground = true)
 private fun UploadNewAvatarSectionPreview() {
-    MaterialTheme {
+    GravatarAppTheme {
         UploadNewAvatarSection(
             onTakePictureClicked = {},
             onChooseFromGalleryClicked = {}
