@@ -622,9 +622,6 @@ class GravatarViewModelTest {
             )
             assertEquals(expectedState, awaitItem())
         }
-        viewModel.actions.test {
-            assertEquals(GravatarAction.AvatarDeleted, awaitItem())
-        }
         coVerify { deleteUserAvatar(avatarIdToDelete, false) }
     }
 
@@ -659,9 +656,6 @@ class GravatarViewModelTest {
                 selectedAvatarId = null
             )
             assertEquals(expectedState, awaitItem())
-        }
-        viewModel.actions.test {
-            assertEquals(GravatarAction.AvatarDeleted, expectMostRecentItem())
         }
         coVerify { deleteUserAvatar(selectedAvatarId, true) }
     }

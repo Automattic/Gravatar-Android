@@ -251,9 +251,6 @@ internal class GravatarViewModel(
                     )
                 }
                 deleteUserAvatar(avatarId, isSelectedAvatar)
-                    .onSuccess { result ->
-                        _actions.send(GravatarAction.AvatarDeleted)
-                    }
                     .onFailure { error ->
                         _actions.send(GravatarAction.AvatarDeletionFailed)
 
