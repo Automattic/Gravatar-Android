@@ -1,13 +1,11 @@
 package com.gravatar.app.usercomponent.domain.usecase
 
-import com.gravatar.app.clock.AppClock
 import com.gravatar.app.testUtils.CoroutineTestRule
 import com.gravatar.app.usercomponent.data.AvatarCacheBusterStorage
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -26,19 +24,14 @@ class SelectAvatarUseCaseTest {
     private lateinit var selectAvatarUseCase: SelectAvatarUseCase
     private val userRepository = mockk<UserRepository>()
     private val avatarCacheBusterStorage = mockk<AvatarCacheBusterStorage>()
-    private val clock = mockk<AppClock>()
 
     private val testAvatarId = "test-avatar-id"
-    private val testTimestamp = 1234567890L
 
     @Before
     fun setup() {
-        coEvery { clock.now() } returns testTimestamp
-
         selectAvatarUseCase = SelectAvatarUseCase(
             userRepository = userRepository,
             avatarCacheBusterStorage = avatarCacheBusterStorage,
-            clock = clock
         )
     }
 
@@ -46,7 +39,7 @@ class SelectAvatarUseCaseTest {
     fun `invoke should call userRepository selectAvatar with correct avatarId`() = runTest {
         // Given
         coEvery { userRepository.selectAvatar(any()) } returns Result.success(Unit)
-        coEvery { avatarCacheBusterStorage.saveAvatarCacheBuster(testTimestamp.toString()) } returns Unit
+        coEvery { avatarCacheBusterStorage.saveAvatarCacheBuster(testAvatarId) } returns Unit
 
         // When
         selectAvatarUseCase(testAvatarId)
@@ -59,15 +52,14 @@ class SelectAvatarUseCaseTest {
     fun `invoke should save avatar cache buster when userRepository returns success`() = runTest {
         // Given
         coEvery { userRepository.selectAvatar(any()) } returns Result.success(Unit)
-        coEvery { avatarCacheBusterStorage.saveAvatarCacheBuster(testTimestamp.toString()) } returns Unit
+        coEvery { avatarCacheBusterStorage.saveAvatarCacheBuster(testAvatarId) } returns Unit
 
         // When
         val result = selectAvatarUseCase(testAvatarId)
 
         // Then
         assert(result.isSuccess)
-        verify { clock.now() }
-        coVerify { avatarCacheBusterStorage.saveAvatarCacheBuster(testTimestamp.toString()) }
+        coVerify { avatarCacheBusterStorage.saveAvatarCacheBuster(testAvatarId) }
     }
 
     @Test

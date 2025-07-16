@@ -1,6 +1,5 @@
 package com.gravatar.app.usercomponent.domain.usecase
 
-import com.gravatar.app.clock.AppClock
 import com.gravatar.app.testUtils.CoroutineTestRule
 import com.gravatar.app.usercomponent.data.AvatarCacheBusterStorage
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
@@ -9,9 +8,7 @@ import com.gravatar.services.ErrorType
 import com.gravatar.services.GravatarResult
 import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -32,20 +29,16 @@ class UploadAvatarUseCaseTest {
     private lateinit var uploadAvatarUseCase: UploadAvatarUseCase
     private val userRepository = mockk<UserRepository>()
     private val avatarCacheBusterStorage = mockk<AvatarCacheBusterStorage>()
-    private val clock = mockk<AppClock>()
 
     private val testAvatarFile = mockk<File>()
-    private val testTimestamp = 1234567890L
 
     @Before
     fun setup() {
-        every { clock.now() } returns testTimestamp
         coEvery { avatarCacheBusterStorage.saveAvatarCacheBuster(any()) } returns Unit
 
         uploadAvatarUseCase = UploadAvatarUseCase(
             userRepository = userRepository,
             avatarCacheBusterStorage = avatarCacheBusterStorage,
-            clock = clock
         )
     }
 
@@ -100,8 +93,7 @@ class UploadAvatarUseCaseTest {
 
         // Then
         assert(result is GravatarResult.Success)
-        verify { clock.now() }
-        coVerify { avatarCacheBusterStorage.saveAvatarCacheBuster(testTimestamp.toString()) }
+        coVerify { avatarCacheBusterStorage.saveAvatarCacheBuster(selectedAvatar.imageId) }
     }
 
     @Test
