@@ -3,7 +3,6 @@ package com.gravatar.app.homeUi.presentation.home.profile
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
@@ -35,7 +34,7 @@ import com.gravatar.app.design.components.snackbar.showGravatarSnackbar
 import com.gravatar.app.homeUi.R
 import com.gravatar.app.homeUi.presentation.home.profile.about.AboutInputField
 import com.gravatar.app.homeUi.presentation.home.profile.about.AboutSection
-import com.gravatar.app.homeUi.presentation.home.profile.header.ProfileHeader
+import com.gravatar.app.homeUi.presentation.home.profile.header.AnimatedProfileHeader
 import com.gravatar.app.homeUi.presentation.home.profile.header.ProfileHeaderSaveState
 import com.gravatar.extensions.defaultProfile
 import kotlinx.coroutines.CoroutineScope
@@ -43,6 +42,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.koinViewModel
+import kotlin.math.roundToInt
 
 @Composable
 internal fun ProfileScreen(viewModel: ProfileViewModel = koinViewModel(), snackbarHostState: SnackbarHostState) {
@@ -76,6 +76,15 @@ internal fun ProfileScreen(viewModel: ProfileViewModel = koinViewModel(), snackb
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
+    val scrollState = rememberScrollState()
+    // Calculate scroll fraction (0 to 1) for animation
+    val maxScrollForAnimation = 400f
+    val scrollFraction = if (scrollState.isScrollInProgress) {
+        (scrollState.value / maxScrollForAnimation).coerceIn(0f, 1f)
+    } else {
+        (scrollState.value / maxScrollForAnimation).roundToInt().coerceIn(0, 1).toFloat()
+    }
+
     PullToRefreshBox(
         enabled = uiState.pullToRefreshEnabled,
         onRefresh = { onEvent(ProfileEvent.OnRefreshProfile) },
@@ -90,21 +99,20 @@ internal fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> U
             uiState.profile.let { profile ->
                 if (profile != null) {
                     Column {
-                        Row {
-                            ProfileHeader(
-                                profile = profile,
-                                avatarUrl = uiState.avatarUrl,
-                                saveState = when {
-                                    uiState.isSavingProfile -> ProfileHeaderSaveState.SAVING
-                                    uiState.hasUnsavedChanges -> ProfileHeaderSaveState.UNSAVED
-                                    else -> ProfileHeaderSaveState.SAVED
-                                },
-                                onSaveProfile = { onEvent(ProfileEvent.OnSaveClicked) },
-                            )
-                        }
+                        AnimatedProfileHeader(
+                            profile = profile,
+                            avatarUrl = uiState.avatarUrl,
+                            saveState = when {
+                                uiState.isSavingProfile -> ProfileHeaderSaveState.SAVING
+                                uiState.hasUnsavedChanges -> ProfileHeaderSaveState.UNSAVED
+                                else -> ProfileHeaderSaveState.SAVED
+                            },
+                            onSaveProfile = { onEvent(ProfileEvent.OnSaveClicked) },
+                            scrollPosition = scrollFraction
+                        )
                         Column(
                             Modifier
-                                .verticalScroll(rememberScrollState())
+                                .verticalScroll(scrollState)
                                 .padding(vertical = 16.dp)
                         ) {
                             AboutSection(
@@ -200,5 +208,56 @@ private fun ProfileScreenPreview() {
             ),
         ),
         onEvent = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun AnimatedProfileHeaderExpandedPreview() {
+    AnimatedProfileHeader(
+        profile = defaultProfile(
+            hash = "",
+            displayName = "John Doe",
+            jobTitle = "Software Engineer",
+            company = "Automattic"
+        ),
+        avatarUrl = "https://gravatar.com/avatar/test",
+        saveState = ProfileHeaderSaveState.UNSAVED,
+        onSaveProfile = {},
+        scrollPosition = 0f // Fully expanded
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun AnimatedProfileHeaderCollapsedPreview() {
+    AnimatedProfileHeader(
+        profile = defaultProfile(
+            hash = "",
+            displayName = "John Doe",
+            jobTitle = "Software Engineer",
+            company = "Automattic"
+        ),
+        avatarUrl = "https://gravatar.com/avatar/test",
+        saveState = ProfileHeaderSaveState.UNSAVED,
+        onSaveProfile = {},
+        scrollPosition = 1f // Fully collapsed
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun AnimatedProfileHeaderTransitionPreview() {
+    AnimatedProfileHeader(
+        profile = defaultProfile(
+            hash = "",
+            displayName = "John Doe",
+            jobTitle = "Software Engineer",
+            company = "Automattic"
+        ),
+        avatarUrl = "https://gravatar.com/avatar/test",
+        saveState = ProfileHeaderSaveState.UNSAVED,
+        onSaveProfile = {},
+        scrollPosition = 0.5f // Mid-transition
     )
 }

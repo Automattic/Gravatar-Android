@@ -33,7 +33,7 @@ internal fun GravatarAvatarWithShadow(
         mutableStateOf(false)
     }
 
-    val finalModifier = remember(loaded, borderShape) {
+    val finalModifier = remember(loaded, borderShape, modifier) {
         if (loaded) {
             modifier
                 .clip(borderShape)
@@ -50,7 +50,7 @@ internal fun GravatarAvatarWithShadow(
     Box(
         modifier = finalModifier
     ) {
-        AsyncImageWithCachePlaceholder(url, modifier.clip(borderShape), onLoadedState = {
+        AsyncImageWithCachePlaceholder(url, Modifier.clip(borderShape), onLoadedState = {
             loaded = it
         })
     }
