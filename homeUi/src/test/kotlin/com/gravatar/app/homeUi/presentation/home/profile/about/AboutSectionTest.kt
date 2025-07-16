@@ -38,6 +38,7 @@ class AboutSectionTest : RoborazziTest() {
                 ),
                 formEnabled = false,
                 onValueChange = { },
+                onFieldFocused = { },
                 modifier = Modifier.fillMaxWidth(),
             )
         }
@@ -59,6 +60,7 @@ class AboutSectionTest : RoborazziTest() {
                 ),
                 formEnabled = false,
                 onValueChange = { },
+                onFieldFocused = { },
                 modifier = Modifier.fillMaxWidth(),
             )
         }
@@ -81,6 +83,7 @@ class AboutSectionTest : RoborazziTest() {
                 ),
                 formEnabled = false,
                 onValueChange = { },
+                onFieldFocused = { },
                 modifier = Modifier.fillMaxWidth(),
             )
         }
@@ -106,6 +109,7 @@ class AboutSectionTest : RoborazziTest() {
                 ),
                 formEnabled = false,
                 onValueChange = { },
+                onFieldFocused = { },
                 modifier = Modifier.fillMaxWidth(),
             )
         }

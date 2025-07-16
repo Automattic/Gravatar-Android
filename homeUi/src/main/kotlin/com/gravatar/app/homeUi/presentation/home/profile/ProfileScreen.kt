@@ -20,7 +20,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -76,13 +79,14 @@ internal fun ProfileScreen(viewModel: ProfileViewModel = koinViewModel(), snackb
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
+    var isAnyFieldFocused by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
     // Calculate scroll fraction (0 to 1) for animation
-    val maxScrollForAnimation = 400f
-    val scrollFraction = if (scrollState.isScrollInProgress) {
-        (scrollState.value / maxScrollForAnimation).coerceIn(0f, 1f)
-    } else {
-        (scrollState.value / maxScrollForAnimation).roundToInt().coerceIn(0, 1).toFloat()
+    val maxScrollForAnimation = 300f
+    val scrollFraction = when {
+        isAnyFieldFocused -> 1f // Reset to 0 when any field is focused
+        scrollState.isScrollInProgress -> (scrollState.value / maxScrollForAnimation).coerceIn(0f, 1f)
+        else -> (scrollState.value / maxScrollForAnimation).roundToInt().coerceIn(0, 1).toFloat()
     }
 
     PullToRefreshBox(
@@ -121,6 +125,7 @@ internal fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> U
                                 onValueChange = {
                                     onEvent(ProfileEvent.OnProfileFieldUpdated(it))
                                 },
+                                onFieldFocused = { isAnyFieldFocused = it },
                                 modifier = Modifier.padding(horizontal = 16.dp)
                             )
                         }

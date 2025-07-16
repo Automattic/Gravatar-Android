@@ -18,6 +18,7 @@ internal fun AboutFieldsSection(
     fields: Set<AboutEditorField>,
     formEnabled: Boolean,
     onValueChange: (AboutEditorField) -> Unit,
+    onFieldFocused: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     sectionDescription: String? = null,
 ) {
@@ -54,6 +55,9 @@ internal fun AboutFieldsSection(
                     onValueChange = {
                         onValueChange(editorField.copy(value = it))
                     },
+                    onFieldFocused = {
+                        onFieldFocused(it)
+                    },
                     edited = editorField.edited,
                 )
             }
@@ -80,5 +84,6 @@ private fun AboutFieldsSectionPreview() {
         ),
         formEnabled = true,
         onValueChange = {},
+        onFieldFocused = {},
     )
 }

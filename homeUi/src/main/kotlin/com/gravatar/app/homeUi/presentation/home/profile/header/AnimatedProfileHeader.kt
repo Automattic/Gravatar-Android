@@ -35,7 +35,7 @@ import com.gravatar.restapi.models.Profile
 private val AVATAR_EXPANDED_SIZE = 104.dp
 private val AVATAR_COLLAPSED_SIZE = 44.dp
 private val HEADER_HORIZONTAL_PADDING = 16.dp
-private val PROFILE_INFO_START_PADDING = 8.dp
+private val PROFILE_INFO_START_PADDING = 16.dp
 private val PROFILE_INFO_TOP_PADDING = 16.dp
 
 @Composable
@@ -46,6 +46,24 @@ internal fun AnimatedProfileHeader(
     onSaveProfile: () -> Unit,
     scrollPosition: Float, // 0f = fully expanded, 1f = fully collapsed
     modifier: Modifier = Modifier
+) {
+    when (saveState) {
+        ProfileHeaderSaveState.SAVED -> {
+            AnimatedProfileHeaderSavedState(scrollPosition, modifier, avatarUrl, profile)
+        }
+        ProfileHeaderSaveState.SAVING,
+        ProfileHeaderSaveState.UNSAVED -> {
+            ProfileHeader(profile, avatarUrl, saveState, onSaveProfile, modifier)
+        }
+    }
+}
+
+@Composable
+private fun AnimatedProfileHeaderSavedState(
+    scrollPosition: Float,
+    modifier: Modifier,
+    avatarUrl: String?,
+    profile: Profile
 ) {
     // Avatar animations
     val avatarSize by animateDpAsState(
