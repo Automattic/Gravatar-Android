@@ -38,7 +38,9 @@ import com.gravatar.app.homeUi.R
 import com.gravatar.app.homeUi.presentation.home.profile.about.AboutInputField
 import com.gravatar.app.homeUi.presentation.home.profile.about.AboutSection
 import com.gravatar.app.homeUi.presentation.home.profile.header.AnimatedProfileHeader
+import com.gravatar.app.homeUi.presentation.home.profile.header.AnimatedProfileHeaderState
 import com.gravatar.app.homeUi.presentation.home.profile.header.ProfileHeaderSaveState
+import com.gravatar.app.homeUi.presentation.home.profile.header.rememberAnimatedProfileHeaderState
 import com.gravatar.extensions.defaultProfile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -81,13 +83,19 @@ internal fun ProfileScreen(viewModel: ProfileViewModel = koinViewModel(), snackb
 internal fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
     var isAnyFieldFocused by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
-    // Calculate scroll fraction (0 to 1) for animation
+    // Calculate scroll fraction
     val maxScrollForAnimation = 300f
-    val scrollFraction = when {
-        isAnyFieldFocused -> 1f // Reset to 0 when any field is focused
-        scrollState.isScrollInProgress -> (scrollState.value / maxScrollForAnimation).coerceIn(0f, 1f)
-        else -> (scrollState.value / maxScrollForAnimation).roundToInt().coerceIn(0, 1).toFloat()
-    }
+    val headerExpansion = rememberAnimatedProfileHeaderState()
+    headerExpansion.updateExpansion(
+        when {
+            isAnyFieldFocused -> AnimatedProfileHeaderState.MIN_EXPANSION_FRACTION
+            else -> {
+                val fraction = scrollState.value / maxScrollForAnimation
+                // Only apply roundToInt when not scrolling for a snapping effect
+                if (scrollState.isScrollInProgress) fraction else fraction.roundToInt().toFloat()
+            }
+        }
+    )
 
     PullToRefreshBox(
         enabled = uiState.pullToRefreshEnabled,
@@ -112,7 +120,7 @@ internal fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> U
                                 else -> ProfileHeaderSaveState.SAVED
                             },
                             onSaveProfile = { onEvent(ProfileEvent.OnSaveClicked) },
-                            scrollPosition = scrollFraction
+                            headerState = headerExpansion
                         )
                         Column(
                             Modifier
@@ -229,7 +237,7 @@ private fun AnimatedProfileHeaderExpandedPreview() {
         avatarUrl = "https://gravatar.com/avatar/test",
         saveState = ProfileHeaderSaveState.UNSAVED,
         onSaveProfile = {},
-        scrollPosition = 0f // Fully expanded
+        headerState = AnimatedProfileHeaderState.EXPANDED
     )
 }
 
@@ -246,7 +254,7 @@ private fun AnimatedProfileHeaderCollapsedPreview() {
         avatarUrl = "https://gravatar.com/avatar/test",
         saveState = ProfileHeaderSaveState.UNSAVED,
         onSaveProfile = {},
-        scrollPosition = 1f // Fully collapsed
+        headerState = AnimatedProfileHeaderState.COLLAPSED
     )
 }
 
@@ -263,6 +271,6 @@ private fun AnimatedProfileHeaderTransitionPreview() {
         avatarUrl = "https://gravatar.com/avatar/test",
         saveState = ProfileHeaderSaveState.UNSAVED,
         onSaveProfile = {},
-        scrollPosition = 0.5f // Mid-transition
+        headerState = AnimatedProfileHeaderState(0.5f)
     )
 }

@@ -1,5 +1,7 @@
 package com.gravatar.app.homeUi.presentation.home.profile.header
 
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.SpringSpec
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,7 +14,10 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -21,12 +26,17 @@ import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
 import com.gravatar.app.homeUi.presentation.home.components.AsyncImageWithCachePlaceholder
 import com.gravatar.app.homeUi.presentation.home.components.GravatarAvatarWithShadow
@@ -44,76 +54,77 @@ internal fun AnimatedProfileHeader(
     avatarUrl: String?,
     saveState: ProfileHeaderSaveState,
     onSaveProfile: () -> Unit,
-    scrollPosition: Float, // 0f = fully expanded, 1f = fully collapsed
+    headerState: AnimatedProfileHeaderState,
     modifier: Modifier = Modifier
 ) {
-    when (saveState) {
-        ProfileHeaderSaveState.SAVED -> {
-            AnimatedProfileHeaderSavedState(scrollPosition, modifier, avatarUrl, profile)
-        }
-        ProfileHeaderSaveState.SAVING,
-        ProfileHeaderSaveState.UNSAVED -> {
-            ProfileHeader(profile, avatarUrl, saveState, onSaveProfile, modifier)
-        }
+    if (saveState == ProfileHeaderSaveState.SAVED) {
+        AnimatedProfileHeaderSavedState(headerState, modifier, avatarUrl, profile)
+    } else {
+        ProfileHeader(profile, avatarUrl, saveState, onSaveProfile, modifier)
     }
 }
 
 @Composable
 private fun AnimatedProfileHeaderSavedState(
-    scrollPosition: Float,
+    headerState: AnimatedProfileHeaderState,
     modifier: Modifier,
     avatarUrl: String?,
     profile: Profile
 ) {
-    // Avatar animations
+    val density = LocalDensity.current
+
     val avatarSize by animateDpAsState(
-        targetValue = lerp(AVATAR_EXPANDED_SIZE, AVATAR_COLLAPSED_SIZE, scrollPosition),
+        targetValue = lerp(AVATAR_EXPANDED_SIZE, AVATAR_COLLAPSED_SIZE, headerState.expansionFraction),
         label = "avatarSize"
     )
-    val configuration = LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp.dp
+    val screenWidth = with(density) { LocalWindowInfo.current.containerSize.width.toDp() }
 
-    // Avatar animations
-    val avatarOffset by animateDpAsState(
-        targetValue = lerp(
-            (screenWidth / 2) - (AVATAR_EXPANDED_SIZE / 2) - HEADER_HORIZONTAL_PADDING,
-            0.dp,
-            scrollPosition
-        ),
+    val avatarOffset by animateDpOffsetAsState(
+        targetValue = remember(screenWidth, headerState.expansionFraction) {
+            DpOffset(
+                x = lerp(
+                    (screenWidth / 2) - (AVATAR_EXPANDED_SIZE / 2) - HEADER_HORIZONTAL_PADDING,
+                    0.dp,
+                    headerState.expansionFraction
+                ),
+                y = 0.dp
+            )
+        },
         label = "avatarOffset"
     )
 
-    val density = LocalDensity.current
-    var displayNameWidth by remember { mutableStateOf(0.dp) }
-    var displayNameHeight by remember { mutableStateOf(0.dp) }
-    val displayNameXOffset by animateDpAsState(
-        targetValue = lerp(
-            (screenWidth / 2 - (displayNameWidth / 2) - HEADER_HORIZONTAL_PADDING),
-            AVATAR_COLLAPSED_SIZE + PROFILE_INFO_START_PADDING,
-            scrollPosition
+    var displayNameSize by remember(profile.displayName) { mutableStateOf(DpSize.Zero) }
+    val displayNameOffset by animateDpOffsetAsState(
+        targetValue = DpOffset(
+            x = lerp(
+                (screenWidth / 2 - (displayNameSize.width / 2) - HEADER_HORIZONTAL_PADDING),
+                AVATAR_COLLAPSED_SIZE + PROFILE_INFO_START_PADDING,
+                headerState.expansionFraction
+            ),
+            y = lerp(
+                AVATAR_EXPANDED_SIZE + PROFILE_INFO_TOP_PADDING,
+                0.dp,
+                headerState.expansionFraction
+            )
         ),
-        label = "infoXOffset"
-    )
-    val displayNameYOffset by animateDpAsState(
-        targetValue = lerp(AVATAR_EXPANDED_SIZE + PROFILE_INFO_TOP_PADDING, 0.dp, scrollPosition),
-        label = "infoYOffset"
+        label = "displayNameOffset"
     )
 
-    var jobInfoWidth by remember { mutableStateOf(0.dp) }
-    val jobInfoXOffset by animateDpAsState(
-        targetValue = lerp(
-            (screenWidth / 2 - (jobInfoWidth / 2) - HEADER_HORIZONTAL_PADDING),
-            AVATAR_COLLAPSED_SIZE + PROFILE_INFO_START_PADDING,
-            scrollPosition
+    var jobInfoSize by remember { mutableStateOf(DpSize.Zero) }
+    val jobInfoOffset by animateDpOffsetAsState(
+        targetValue = DpOffset(
+            x = lerp(
+                (screenWidth / 2 - (jobInfoSize.width / 2) - HEADER_HORIZONTAL_PADDING),
+                AVATAR_COLLAPSED_SIZE + PROFILE_INFO_START_PADDING,
+                headerState.expansionFraction
+            ),
+            y = lerp(
+                AVATAR_EXPANDED_SIZE + displayNameSize.height + PROFILE_INFO_TOP_PADDING,
+                displayNameSize.height,
+                headerState.expansionFraction
+            )
         ),
-        label = "infoXOffset"
-    )
-    val jobInfoYOffset by animateDpAsState(
-        targetValue = lerp(
-            AVATAR_EXPANDED_SIZE + displayNameHeight + PROFILE_INFO_TOP_PADDING,
-            displayNameHeight,
-            scrollPosition
-        ),
+        label = "jobInfoOffset"
     )
 
     Box(
@@ -138,7 +149,7 @@ private fun AnimatedProfileHeaderSavedState(
         ) {
             // Avatar with animated position
             Box(
-                modifier = Modifier.offset(avatarOffset, 0.dp)
+                modifier = Modifier.offset(avatarOffset.x, avatarOffset.y)
             ) {
                 GravatarAvatarWithShadow(
                     url = avatarUrl.orEmpty(),
@@ -158,13 +169,9 @@ private fun AnimatedProfileHeaderSavedState(
                     maxFontSize = 18.sp
                 ),
                 modifier = Modifier
-                    .padding(
-                        start = displayNameXOffset.coerceAtLeast(0.dp),
-                        top = displayNameYOffset.coerceAtLeast(0.dp)
-                    )
+                    .padding(start = displayNameOffset.x, top = displayNameOffset.y)
                     .onGloballyPositioned { coordinates ->
-                        displayNameWidth = with(density) { coordinates.size.width.toDp() }
-                        displayNameHeight = with(density) { coordinates.size.height.toDp() }
+                        displayNameSize = coordinates.size.toDpSize(density)
                     },
             )
 
@@ -180,9 +187,9 @@ private fun AnimatedProfileHeaderSavedState(
                         maxFontSize = 14.sp
                     ),
                     modifier = Modifier
-                        .padding(start = jobInfoXOffset.coerceAtLeast(0.dp), top = jobInfoYOffset.coerceAtLeast(0.dp))
+                        .padding(start = jobInfoOffset.x, top = jobInfoOffset.y)
                         .onGloballyPositioned { coordinates ->
-                            jobInfoWidth = with(density) { coordinates.size.width.toDp() }
+                            jobInfoSize = coordinates.size.toDpSize(density)
                         },
                 )
             }
@@ -190,13 +197,71 @@ private fun AnimatedProfileHeaderSavedState(
     }
 }
 
-// Helper function for linear interpolation
-private fun lerp(start: Float, end: Float, fraction: Float): Float {
-    return start + fraction * (end - start)
+class AnimatedProfileHeaderState(
+    initialExpansionFraction: Float
+) {
+    companion object {
+        internal const val MAX_EXPANSION_FRACTION = 0f
+        internal const val MIN_EXPANSION_FRACTION = 1f
+
+        internal val COLLAPSED = AnimatedProfileHeaderState(MIN_EXPANSION_FRACTION)
+        internal val EXPANDED = AnimatedProfileHeaderState(MAX_EXPANSION_FRACTION)
+    }
+
+    var expansionFraction by mutableFloatStateOf(initialExpansionFraction)
+        private set
+
+    fun updateExpansion(fraction: Float) {
+        expansionFraction = fraction.coerceIn(
+            MAX_EXPANSION_FRACTION,
+            MIN_EXPANSION_FRACTION
+        )
+    }
 }
 
-private fun lerp(start: Dp, end: Dp, fraction: Float): Dp {
-    return Dp(lerp(start.value, end.value, fraction))
+// Use in the composable
+@Composable
+fun rememberAnimatedProfileHeaderState(
+    initialExpansionFraction: Float = AnimatedProfileHeaderState.MAX_EXPANSION_FRACTION
+): AnimatedProfileHeaderState {
+    return remember { AnimatedProfileHeaderState(initialExpansionFraction) }
+}
+
+private fun IntSize.toDpSize(density: Density): DpSize {
+    return DpSize(
+        width = with(density) { width.toDp() },
+        height = with(density) { height.toDp() },
+    )
+}
+
+/**
+ * Animates a [DpOffset] to a target value.
+ *
+ * @param targetValue The target value to animate to.
+ * @param animationSpec The animation spec to configure the animation.
+ * @param label An optional label for the animation, useful for debugging.
+ * @return A [State] object that holds the animated [DpOffset] value.
+ */
+@Composable
+fun animateDpOffsetAsState(
+    targetValue: DpOffset,
+    animationSpec: AnimationSpec<Dp> = SpringSpec(),
+    label: String = "DpOffsetAnimation"
+): State<DpOffset> {
+    val xOffset = animateDpAsState(
+        targetValue = targetValue.x,
+        animationSpec = animationSpec,
+        label = "$label-X"
+    )
+    val yOffset = animateDpAsState(
+        targetValue = targetValue.y,
+        animationSpec = animationSpec,
+        label = "$label-Y"
+    )
+
+    return remember(xOffset, yOffset) {
+        derivedStateOf { DpOffset(xOffset.value, yOffset.value) }
+    }
 }
 
 private fun Profile.jobInfo(): String {
