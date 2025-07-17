@@ -41,10 +41,10 @@ internal class LoginViewModel(
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
-                    error = null
+                    error = null,
+                    isLoading = false,
                 )
             }
-            sendAction(LoginAction.StartOAuth)
         }
     }
 
