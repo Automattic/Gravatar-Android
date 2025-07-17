@@ -1,0 +1,118 @@
+{
+  ConstraintSets: {
+    collapsed: {
+      avatar1: {
+        width: 44,
+        height: 44,
+        start: [
+          'parent',
+          'start',
+          16
+        ],
+        bottom: [
+          'parent',
+          'bottom',
+          16
+        ]
+      },
+      avatar2: {
+        width: 30,
+        height: 30,
+        start: [
+          'avatar1',
+          'end',
+          8
+        ],
+        bottom: [
+          'avatar1',
+          'bottom',
+          0
+        ],
+        top: [
+          'avatar1',
+          'top',
+          0
+        ],
+      },
+      menuButton: {
+        width: 44,
+        height: 44,
+        end: [
+          'parent',
+          'end',
+          16
+        ],
+        bottom: [
+          'avatar1',
+          'bottom',
+          0
+        ],
+        top: [
+          'avatar1',
+          'top',
+          0
+        ],
+      }
+    },
+    expanded: {
+      avatar1: {
+        width: 105,
+        height: 105,
+        start: [
+          'parent',
+          'start',
+          0
+        ],
+        end: [
+          'parent',
+          'end',
+          0
+        ],
+        top: [
+          'parent',
+          'top',
+          16
+        ],
+        bottom: [
+          'parent',
+          'bottom',
+          16
+        ],
+      },
+      avatar2: {
+        width: 49,
+        height: 49,
+        end: [
+          'avatar1',
+          'end',
+          -24
+        ],
+        bottom: [
+          'avatar1',
+          'bottom',
+          0
+        ]
+      },
+      menuButton: {
+        width: 44,
+        height: 44,
+        end: [
+          'parent',
+          'end',
+          16
+        ],
+        top: [
+          'parent',
+          'top',
+          16
+        ]
+      }
+    }
+  },
+  Transitions: {
+    default: {
+      from: 'collapsed',
+      to: 'expanded'
+    }
+  }
+}

@@ -46,7 +46,6 @@ internal fun GravatarAvatarWithShadow(
                 .clip(borderShape)
         }
     }
-
     Box(
         modifier = finalModifier
     ) {
