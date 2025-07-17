@@ -3,10 +3,12 @@ package com.gravatar.app.homeUi.presentation.home.profile
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -20,13 +22,16 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
@@ -35,14 +40,17 @@ import com.gravatar.app.design.components.snackbar.showGravatarSnackbar
 import com.gravatar.app.homeUi.R
 import com.gravatar.app.homeUi.presentation.home.profile.about.AboutInputField
 import com.gravatar.app.homeUi.presentation.home.profile.about.AboutSection
-import com.gravatar.app.homeUi.presentation.home.profile.header.ProfileHeader
+import com.gravatar.app.homeUi.presentation.home.profile.header.AnimatedProfileHeader
+import com.gravatar.app.homeUi.presentation.home.profile.header.AnimatedProfileHeaderState
 import com.gravatar.app.homeUi.presentation.home.profile.header.ProfileHeaderSaveState
+import com.gravatar.app.homeUi.presentation.home.profile.header.rememberAnimatedProfileHeaderState
 import com.gravatar.extensions.defaultProfile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.koinViewModel
+import kotlin.math.roundToInt
 
 @Composable
 internal fun ProfileScreen(viewModel: ProfileViewModel = koinViewModel(), snackbarHostState: SnackbarHostState) {
@@ -73,9 +81,28 @@ internal fun ProfileScreen(viewModel: ProfileViewModel = koinViewModel(), snackb
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 internal fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
+    val isKeyboardOpen = WindowInsets.isImeVisible
+    val scrollState = rememberScrollState()
+    // Calculate scroll fraction
+    val maxScrollForAnimation = 300f
+    val headerExpansion = rememberAnimatedProfileHeaderState()
+    val headerExpansionFraction by remember(scrollState, isKeyboardOpen) {
+        derivedStateOf {
+            when {
+                isKeyboardOpen -> AnimatedProfileHeaderState.MIN_EXPANSION_FRACTION
+                else -> {
+                    val fraction = scrollState.value / maxScrollForAnimation
+                    // Only apply roundToInt when not scrolling for a snapping effect
+                    if (scrollState.isScrollInProgress) fraction else fraction.roundToInt().toFloat()
+                }
+            }
+        }
+    }
+    headerExpansion.updateExpansion(headerExpansionFraction)
+
     PullToRefreshBox(
         enabled = uiState.pullToRefreshEnabled,
         onRefresh = { onEvent(ProfileEvent.OnRefreshProfile) },
@@ -90,21 +117,21 @@ internal fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> U
             uiState.profile.let { profile ->
                 if (profile != null) {
                     Column {
-                        Row {
-                            ProfileHeader(
-                                profile = profile,
-                                avatarUrl = uiState.avatarUrl,
-                                saveState = when {
-                                    uiState.isSavingProfile -> ProfileHeaderSaveState.SAVING
-                                    uiState.hasUnsavedChanges -> ProfileHeaderSaveState.UNSAVED
-                                    else -> ProfileHeaderSaveState.SAVED
-                                },
-                                onSaveProfile = { onEvent(ProfileEvent.OnSaveClicked) },
-                            )
-                        }
+                        AnimatedProfileHeader(
+                            profile = profile,
+                            avatarUrl = uiState.avatarUrl,
+                            saveState = when {
+                                uiState.isSavingProfile -> ProfileHeaderSaveState.SAVING
+                                uiState.hasUnsavedChanges -> ProfileHeaderSaveState.UNSAVED
+                                else -> ProfileHeaderSaveState.SAVED
+                            },
+                            onSaveProfile = { onEvent(ProfileEvent.OnSaveClicked) },
+                            headerState = headerExpansion,
+                            onProfileLinkClicked = { onEvent(ProfileEvent.OnProfileLinkClicked) }
+                        )
                         Column(
                             Modifier
-                                .verticalScroll(rememberScrollState())
+                                .verticalScroll(scrollState)
                                 .padding(vertical = 16.dp)
                         ) {
                             AboutSection(
@@ -113,7 +140,7 @@ internal fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> U
                                 onValueChange = {
                                     onEvent(ProfileEvent.OnProfileFieldUpdated(it))
                                 },
-                                modifier = Modifier.padding(horizontal = 16.dp)
+                                modifier = Modifier.padding(horizontal = 16.dp),
                             )
                         }
                     }
@@ -180,6 +207,11 @@ private fun ProfileAction.handle(
                 )
             }
         }
+
+        is ProfileAction.OpenProfileUrl -> {
+            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, url.toUri())
+            context.startActivity(intent)
+        }
     }
 }
 
@@ -200,5 +232,59 @@ private fun ProfileScreenPreview() {
             ),
         ),
         onEvent = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun AnimatedProfileHeaderExpandedPreview() {
+    AnimatedProfileHeader(
+        profile = defaultProfile(
+            hash = "",
+            displayName = "John Doe",
+            jobTitle = "Software Engineer",
+            company = "Automattic"
+        ),
+        avatarUrl = "https://gravatar.com/avatar/test",
+        saveState = ProfileHeaderSaveState.UNSAVED,
+        onSaveProfile = {},
+        headerState = AnimatedProfileHeaderState.EXPANDED,
+        onProfileLinkClicked = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun AnimatedProfileHeaderCollapsedPreview() {
+    AnimatedProfileHeader(
+        profile = defaultProfile(
+            hash = "",
+            displayName = "John Doe",
+            jobTitle = "Software Engineer",
+            company = "Automattic"
+        ),
+        avatarUrl = "https://gravatar.com/avatar/test",
+        saveState = ProfileHeaderSaveState.UNSAVED,
+        onSaveProfile = {},
+        headerState = AnimatedProfileHeaderState.COLLAPSED,
+        onProfileLinkClicked = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun AnimatedProfileHeaderTransitionPreview() {
+    AnimatedProfileHeader(
+        profile = defaultProfile(
+            hash = "",
+            displayName = "John Doe",
+            jobTitle = "Software Engineer",
+            company = "Automattic"
+        ),
+        avatarUrl = "https://gravatar.com/avatar/test",
+        saveState = ProfileHeaderSaveState.UNSAVED,
+        onSaveProfile = {},
+        headerState = AnimatedProfileHeaderState(0.5f),
+        onProfileLinkClicked = {}
     )
 }

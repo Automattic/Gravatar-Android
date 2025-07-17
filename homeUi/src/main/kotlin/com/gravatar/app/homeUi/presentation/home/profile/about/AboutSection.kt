@@ -114,7 +114,7 @@ internal fun AboutSectionPreview() {
             ),
             formEnabled = true,
             onValueChange = { },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }

@@ -329,6 +329,27 @@ class ProfileViewModelTest {
         }
     }
 
+    @Test
+    fun `when OnProfileLinkClicked event is triggered then OpenProfileUrl action is emitted with correct URL`() = runTest {
+        // Given
+        val testProfile = profile()
+        val expectedUrl = testProfile.profileUrl.toString()
+
+        viewModel = initViewModel()
+        advanceUntilIdle()
+        profileFlow.emit(testProfile)
+        advanceUntilIdle()
+
+        // When
+        viewModel.onEvent(ProfileEvent.OnProfileLinkClicked)
+        advanceUntilIdle()
+
+        // Then
+        viewModel.actions.test {
+            assertEquals(ProfileAction.OpenProfileUrl(expectedUrl), awaitItem())
+        }
+    }
+
     private fun profile(displayName: String = "John Doe") = Profile {
         hash = "mock-hash"
         this.displayName = displayName

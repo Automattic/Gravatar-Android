@@ -40,6 +40,16 @@ internal class ProfileViewModel(
             is ProfileEvent.OnProfileFieldUpdated -> updateProfileField(profileEvent.aboutField)
             ProfileEvent.OnSaveClicked -> saveChanges()
             ProfileEvent.OnRefreshProfile -> refreshProfile(pullToRefresh = true)
+            ProfileEvent.OnProfileLinkClicked -> openProfileUrl()
+        }
+    }
+
+    private fun openProfileUrl() {
+        viewModelScope.launch {
+            val profile = _uiState.value.profile
+            profile?.profileUrl?.toString()?.let { url ->
+                _actions.send(ProfileAction.OpenProfileUrl(url))
+            }
         }
     }
 
