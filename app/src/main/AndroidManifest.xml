@@ -21,7 +21,9 @@
             android:exported="true"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustResize"
-            android:theme="@style/Theme.Gravatar">
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Gravatar"
+            tools:ignore="DiscouragedApi,LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
