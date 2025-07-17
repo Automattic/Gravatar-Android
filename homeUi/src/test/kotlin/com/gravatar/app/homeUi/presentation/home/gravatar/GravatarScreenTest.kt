@@ -34,6 +34,31 @@ class GravatarScreenTest : RoborazziTest() {
     }
 
     @Test
+    fun gravatarScreenWithAvatarsButNoneSelected() = screenshotTest {
+        GravatarAppTheme {
+            GravatarScreen(
+                uiState = GravatarUiState(
+                    isLoading = false,
+                    avatars = List(10) {
+                        Avatar {
+                            imageUrl = URI.create("https://gravatar.com/avatar/test")
+                            imageId = it.toString()
+                            rating = Avatar.Rating.G
+                            altText = "alt"
+                            updatedDate = ""
+                            selected = false
+                        }
+                    },
+                    selectedAvatarId = null
+                ),
+                onEvent = { },
+                onTakePictureClicked = { },
+                onPickMediaClicked = { },
+            )
+        }
+    }
+
+    @Test
     fun gravatarScreenWithNullAvatars() = screenshotTest {
         GravatarAppTheme {
             GravatarScreen(
