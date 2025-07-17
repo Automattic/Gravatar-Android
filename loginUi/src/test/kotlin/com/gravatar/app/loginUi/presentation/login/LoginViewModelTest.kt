@@ -159,6 +159,31 @@ class LoginViewModelTest {
         }
     }
 
+    @Test
+    fun `onEvent OnTryAnotherAccountClicked should clear error and loading state`() = runTest {
+        // Given
+        initViewModel()
+
+        // First set an error state by triggering an error event
+        viewModel.onEvent(LoginEvent.OAuthResultReceived(OAuthResult.Error))
+        advanceUntilIdle()
+
+        // Verify error state is set
+        viewModel.uiState.test {
+            val errorState = awaitItem()
+            assertEquals(LoginError.AuthorizationDenied, errorState.error)
+        }
+
+        // When - trigger the try another account event
+        viewModel.onEvent(LoginEvent.OnTryAnotherAccountClicked)
+        advanceUntilIdle()
+
+        // Then - verify error is cleared
+        viewModel.uiState.test {
+            assertEquals(LoginUiState(isLoading = false, error = null), awaitItem())
+        }
+    }
+
     private fun initViewModel() {
         viewModel = LoginViewModel(
             login = login,
