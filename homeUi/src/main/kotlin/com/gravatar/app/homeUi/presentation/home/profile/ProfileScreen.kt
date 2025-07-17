@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
@@ -89,16 +90,19 @@ internal fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> U
     // Calculate scroll fraction
     val maxScrollForAnimation = 300f
     val headerExpansion = rememberAnimatedProfileHeaderState()
-    headerExpansion.updateExpansion(
-        when {
-            isKeyboardOpen -> AnimatedProfileHeaderState.MIN_EXPANSION_FRACTION
-            else -> {
-                val fraction = scrollState.value / maxScrollForAnimation
-                // Only apply roundToInt when not scrolling for a snapping effect
-                if (scrollState.isScrollInProgress) fraction else fraction.roundToInt().toFloat()
+    val headerExpansionFraction by remember {
+        derivedStateOf {
+            when {
+                isKeyboardOpen -> AnimatedProfileHeaderState.MIN_EXPANSION_FRACTION
+                else -> {
+                    val fraction = scrollState.value / maxScrollForAnimation
+                    // Only apply roundToInt when not scrolling for a snapping effect
+                    if (scrollState.isScrollInProgress) fraction else fraction.roundToInt().toFloat()
+                }
             }
         }
-    )
+    }
+    headerExpansion.updateExpansion(headerExpansionFraction)
 
     PullToRefreshBox(
         enabled = uiState.pullToRefreshEnabled,
@@ -206,7 +210,7 @@ private fun ProfileAction.handle(
         }
 
         is ProfileAction.OpenProfileUrl -> {
-            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url))
+            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, url.toUri())
             context.startActivity(intent)
         }
     }

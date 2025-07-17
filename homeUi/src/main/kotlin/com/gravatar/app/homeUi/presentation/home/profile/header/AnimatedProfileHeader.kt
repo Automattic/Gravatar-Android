@@ -72,10 +72,15 @@ internal fun AnimatedProfileHeader(
     onProfileLinkClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (saveState == ProfileHeaderSaveState.SAVED) {
-        AnimatedProfileHeaderSavedState(headerState, modifier, avatarUrl, profile, onProfileLinkClicked)
-    } else {
-        ProfileHeader(profile, avatarUrl, saveState, onSaveProfile, modifier)
+    when (saveState) {
+        ProfileHeaderSaveState.SAVED -> {
+            AnimatedProfileHeaderSavedState(headerState, modifier, avatarUrl, profile, onProfileLinkClicked)
+        }
+
+        ProfileHeaderSaveState.UNSAVED,
+        ProfileHeaderSaveState.SAVING -> {
+            ProfileHeader(profile, avatarUrl, saveState, onSaveProfile, modifier)
+        }
     }
 }
 
