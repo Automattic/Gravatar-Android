@@ -3,11 +3,12 @@ package com.gravatar.app.homeUi.presentation.home.profile
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -20,7 +21,6 @@ import androidx.compose.material3.pulltorefresh.pullToRefresh
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -29,7 +29,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
@@ -82,15 +81,15 @@ internal fun ProfileScreen(viewModel: ProfileViewModel = koinViewModel(), snackb
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 internal fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
-    val isKeyboardOpen by rememberImeState()
+    val isKeyboardOpen = WindowInsets.isImeVisible
     val scrollState = rememberScrollState()
     // Calculate scroll fraction
     val maxScrollForAnimation = 300f
     val headerExpansion = rememberAnimatedProfileHeaderState()
-    val headerExpansionFraction by remember {
+    val headerExpansionFraction by remember(scrollState, isKeyboardOpen) {
         derivedStateOf {
             when {
                 isKeyboardOpen -> AnimatedProfileHeaderState.MIN_EXPANSION_FRACTION
@@ -212,20 +211,6 @@ private fun ProfileAction.handle(
         is ProfileAction.OpenProfileUrl -> {
             val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, url.toUri())
             context.startActivity(intent)
-        }
-    }
-}
-
-@Composable
-private fun rememberImeState(): State<Boolean> {
-    val imeInsets = WindowInsets.ime
-    val density = LocalDensity.current
-
-    return remember {
-        derivedStateOf {
-            with(density) {
-                imeInsets.getBottom(this) > 0
-            }
         }
     }
 }
