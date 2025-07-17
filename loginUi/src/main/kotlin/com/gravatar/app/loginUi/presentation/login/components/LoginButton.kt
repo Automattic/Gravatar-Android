@@ -21,7 +21,7 @@ internal fun LoginButton(
     Button(
         modifier = modifier
             .fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(100),
         enabled = !isLoading,
         onClick = onClick
     ) {
