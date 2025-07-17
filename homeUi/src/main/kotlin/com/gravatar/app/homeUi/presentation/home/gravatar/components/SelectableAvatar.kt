@@ -148,23 +148,19 @@ private fun BoxScope.LoadedOverlay(
     modifier: Modifier = Modifier,
 ) {
     if (isSelected) {
-        Box(
+        Icon(
+            imageVector = Icons.Default.Done,
+            contentDescription = null,
             modifier = modifier
-                .align(Alignment.Center)
+                .padding(10.dp)
+                .size(22.dp)
+                .border(1.dp, Color.White, CircleShape)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.primary)
-                .border(1.dp, Color.White, CircleShape)
-                .padding(5.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Done,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(22.dp)
-                    .align(Alignment.Center),
-                tint = Color.White,
-            )
-        }
+                .padding(2.dp)
+                .align(Alignment.BottomEnd),
+            tint = Color.White,
+        )
     }
 }
 
@@ -232,7 +228,7 @@ private fun SelectableAvatarNotSelectedPreview() {
     SelectableAvatar(
         "https://gravatar.com/avatar/fd2188b818f15e629f7b62896b5c6075?s=250",
         isSelected = false,
-        modifier = Modifier.size(150.dp),
+        modifier = Modifier.size(avatarSize),
         loadingState = AvatarLoadingState.None,
     )
 }
@@ -243,7 +239,8 @@ private fun SelectableAvatarSelectedPreview() {
     SelectableAvatar(
         "https://gravatar.com/avatar/fd2188b818f15e629f7b62896b5c6075?s=250",
         isSelected = true,
-        modifier = Modifier.size(150.dp),
+        modifier = Modifier
+            .size(avatarSize),
         loadingState = AvatarLoadingState.None,
     )
 }
