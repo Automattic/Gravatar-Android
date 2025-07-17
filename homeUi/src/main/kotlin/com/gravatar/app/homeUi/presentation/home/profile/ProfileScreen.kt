@@ -26,7 +26,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -124,7 +123,8 @@ internal fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> U
                                 else -> ProfileHeaderSaveState.SAVED
                             },
                             onSaveProfile = { onEvent(ProfileEvent.OnSaveClicked) },
-                            headerState = headerExpansion
+                            headerState = headerExpansion,
+                            onProfileLinkClicked = { onEvent(ProfileEvent.OnProfileLinkClicked) }
                         )
                         Column(
                             Modifier
@@ -204,6 +204,11 @@ private fun ProfileAction.handle(
                 )
             }
         }
+
+        is ProfileAction.OpenProfileUrl -> {
+            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url))
+            context.startActivity(intent)
+        }
     }
 }
 
@@ -254,7 +259,8 @@ private fun AnimatedProfileHeaderExpandedPreview() {
         avatarUrl = "https://gravatar.com/avatar/test",
         saveState = ProfileHeaderSaveState.UNSAVED,
         onSaveProfile = {},
-        headerState = AnimatedProfileHeaderState.EXPANDED
+        headerState = AnimatedProfileHeaderState.EXPANDED,
+        onProfileLinkClicked = {}
     )
 }
 
@@ -271,7 +277,8 @@ private fun AnimatedProfileHeaderCollapsedPreview() {
         avatarUrl = "https://gravatar.com/avatar/test",
         saveState = ProfileHeaderSaveState.UNSAVED,
         onSaveProfile = {},
-        headerState = AnimatedProfileHeaderState.COLLAPSED
+        headerState = AnimatedProfileHeaderState.COLLAPSED,
+        onProfileLinkClicked = {}
     )
 }
 
@@ -288,6 +295,7 @@ private fun AnimatedProfileHeaderTransitionPreview() {
         avatarUrl = "https://gravatar.com/avatar/test",
         saveState = ProfileHeaderSaveState.UNSAVED,
         onSaveProfile = {},
-        headerState = AnimatedProfileHeaderState(0.5f)
+        headerState = AnimatedProfileHeaderState(0.5f),
+        onProfileLinkClicked = {}
     )
 }

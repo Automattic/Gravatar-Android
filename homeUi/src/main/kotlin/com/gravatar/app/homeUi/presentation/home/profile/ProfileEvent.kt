@@ -10,4 +10,6 @@ internal sealed class ProfileEvent {
     object OnSaveClicked : ProfileEvent()
 
     object OnRefreshProfile : ProfileEvent()
+
+    object OnProfileLinkClicked : ProfileEvent()
 }

@@ -3,13 +3,19 @@ package com.gravatar.app.homeUi.presentation.home.profile.header
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.SpringSpec
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.MaterialTheme
@@ -21,13 +27,17 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Density
@@ -38,15 +48,19 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.lerp
+import com.gravatar.app.homeUi.R
 import com.gravatar.app.homeUi.presentation.home.components.AsyncImageWithCachePlaceholder
 import com.gravatar.app.homeUi.presentation.home.components.GravatarAvatarWithShadow
 import com.gravatar.restapi.models.Profile
 
 private val AVATAR_EXPANDED_SIZE = 104.dp
 private val AVATAR_COLLAPSED_SIZE = 44.dp
-private val HEADER_HORIZONTAL_PADDING = 16.dp
+private val HEADER_PADDING = 16.dp
 private val PROFILE_INFO_START_PADDING = 16.dp
 private val PROFILE_INFO_TOP_PADDING = 16.dp
+private val LINK_TOP_PADDING = 16.dp
+private val LINK_INTERNAL_PADDING = 8.dp
 
 @Composable
 internal fun AnimatedProfileHeader(
@@ -55,10 +69,11 @@ internal fun AnimatedProfileHeader(
     saveState: ProfileHeaderSaveState,
     onSaveProfile: () -> Unit,
     headerState: AnimatedProfileHeaderState,
+    onProfileLinkClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (saveState == ProfileHeaderSaveState.SAVED) {
-        AnimatedProfileHeaderSavedState(headerState, modifier, avatarUrl, profile)
+        AnimatedProfileHeaderSavedState(headerState, modifier, avatarUrl, profile, onProfileLinkClicked)
     } else {
         ProfileHeader(profile, avatarUrl, saveState, onSaveProfile, modifier)
     }
@@ -69,7 +84,8 @@ private fun AnimatedProfileHeaderSavedState(
     headerState: AnimatedProfileHeaderState,
     modifier: Modifier,
     avatarUrl: String?,
-    profile: Profile
+    profile: Profile,
+    onProfileLinkClicked: () -> Unit = {}
 ) {
     val density = LocalDensity.current
 
@@ -83,7 +99,7 @@ private fun AnimatedProfileHeaderSavedState(
         targetValue = remember(screenWidth, headerState.expansionFraction) {
             DpOffset(
                 x = lerp(
-                    (screenWidth / 2) - (AVATAR_EXPANDED_SIZE / 2) - HEADER_HORIZONTAL_PADDING,
+                    (screenWidth / 2) - (AVATAR_EXPANDED_SIZE / 2) - HEADER_PADDING,
                     0.dp,
                     headerState.expansionFraction
                 ),
@@ -97,7 +113,7 @@ private fun AnimatedProfileHeaderSavedState(
     val displayNameOffset by animateDpOffsetAsState(
         targetValue = DpOffset(
             x = lerp(
-                (screenWidth / 2 - (displayNameSize.width / 2) - HEADER_HORIZONTAL_PADDING),
+                (screenWidth / 2 - (displayNameSize.width / 2) - HEADER_PADDING),
                 AVATAR_COLLAPSED_SIZE + PROFILE_INFO_START_PADDING,
                 headerState.expansionFraction
             ),
@@ -114,7 +130,7 @@ private fun AnimatedProfileHeaderSavedState(
     val jobInfoOffset by animateDpOffsetAsState(
         targetValue = DpOffset(
             x = lerp(
-                (screenWidth / 2 - (jobInfoSize.width / 2) - HEADER_HORIZONTAL_PADDING),
+                (screenWidth / 2 - (jobInfoSize.width / 2) - HEADER_PADDING),
                 AVATAR_COLLAPSED_SIZE + PROFILE_INFO_START_PADDING,
                 headerState.expansionFraction
             ),
@@ -125,6 +141,27 @@ private fun AnimatedProfileHeaderSavedState(
             )
         ),
         label = "jobInfoOffset"
+    )
+
+    var linkSize by remember { mutableStateOf(DpSize.Zero) }
+    val linkOffset by animateDpOffsetAsState(
+        targetValue = DpOffset(
+            x = lerp(
+                (screenWidth / 2 - (linkSize.width / 2) - HEADER_PADDING - LINK_INTERNAL_PADDING),
+                screenWidth,
+                headerState.expansionFraction
+            ),
+            y = lerp(
+                AVATAR_EXPANDED_SIZE + displayNameSize.height + jobInfoSize.height + PROFILE_INFO_TOP_PADDING + LINK_TOP_PADDING,
+                0.dp,
+                headerState.expansionFraction
+            )
+        ),
+        label = "linkOffset"
+    )
+    val linkAlpha by animateFloatAsState(
+        targetValue = lerp(1f, 0f, headerState.expansionFraction),
+        label = "linkAlpha"
     )
 
     Box(
@@ -143,7 +180,7 @@ private fun AnimatedProfileHeaderSavedState(
         // Content container with animated layout
         Box(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(HEADER_PADDING)
                 .systemBarsPadding()
                 .fillMaxWidth()
         ) {
@@ -193,11 +230,48 @@ private fun AnimatedProfileHeaderSavedState(
                         },
                 )
             }
+
+            Row(
+                modifier = Modifier
+                    .alpha(linkAlpha)
+                    .padding(start = linkOffset.x, top = linkOffset.y)
+                    .clickable(
+                        onClick = { onProfileLinkClicked() }
+                    )
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(Color.Black)
+                    .padding(LINK_INTERNAL_PADDING)
+                    .onGloballyPositioned { coordinates ->
+                        linkSize = coordinates.size.toDpSize(density)
+                    },
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.profile_header_link_icon),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(16.dp)
+                        .align(Alignment.CenterVertically),
+                )
+                BasicText(
+                    text = profile.urlLink(),
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        color = Color.White,
+                    ),
+                    autoSize = TextAutoSize.StepBased(
+                        maxFontSize = 14.sp
+                    ),
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .align(Alignment.CenterVertically),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
         }
     }
 }
 
-class AnimatedProfileHeaderState(
+internal class AnimatedProfileHeaderState(
     initialExpansionFraction: Float
 ) {
     companion object {
@@ -221,7 +295,7 @@ class AnimatedProfileHeaderState(
 
 // Use in the composable
 @Composable
-fun rememberAnimatedProfileHeaderState(
+internal fun rememberAnimatedProfileHeaderState(
     initialExpansionFraction: Float = AnimatedProfileHeaderState.MAX_EXPANSION_FRACTION
 ): AnimatedProfileHeaderState {
     return remember { AnimatedProfileHeaderState(initialExpansionFraction) }
@@ -243,7 +317,7 @@ private fun IntSize.toDpSize(density: Density): DpSize {
  * @return A [State] object that holds the animated [DpOffset] value.
  */
 @Composable
-fun animateDpOffsetAsState(
+private fun animateDpOffsetAsState(
     targetValue: DpOffset,
     animationSpec: AnimationSpec<Dp> = SpringSpec(),
     label: String = "DpOffsetAnimation"
@@ -274,4 +348,8 @@ private fun Profile.jobInfo(): String {
             append(company)
         }
     }
+}
+
+private fun Profile.urlLink(): String {
+    return StringBuilder().append(profileUrl.host).append(profileUrl.path).toString()
 }

@@ -19,7 +19,8 @@ class AnimatedProfileHeaderTest : RoborazziTest() {
                 avatarUrl = "https://gravatar.com/avatar/test",
                 saveState = ProfileHeaderSaveState.SAVED,
                 onSaveProfile = {},
-                headerState = AnimatedProfileHeaderState.EXPANDED
+                headerState = AnimatedProfileHeaderState.EXPANDED,
+                onProfileLinkClicked = {}
             )
         }
     }
@@ -37,7 +38,8 @@ class AnimatedProfileHeaderTest : RoborazziTest() {
                 avatarUrl = "https://gravatar.com/avatar/test",
                 saveState = ProfileHeaderSaveState.SAVED,
                 onSaveProfile = {},
-                headerState = AnimatedProfileHeaderState.COLLAPSED
+                headerState = AnimatedProfileHeaderState.COLLAPSED,
+                onProfileLinkClicked = {},
             )
         }
     }
@@ -55,7 +57,8 @@ class AnimatedProfileHeaderTest : RoborazziTest() {
                 avatarUrl = "https://gravatar.com/avatar/test",
                 saveState = ProfileHeaderSaveState.SAVED,
                 onSaveProfile = {},
-                headerState = AnimatedProfileHeaderState(0.5f)
+                headerState = AnimatedProfileHeaderState(0.5f),
+                onProfileLinkClicked = {},
             )
         }
     }
