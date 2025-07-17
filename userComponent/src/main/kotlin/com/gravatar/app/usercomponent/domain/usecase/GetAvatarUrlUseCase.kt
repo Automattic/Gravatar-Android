@@ -1,5 +1,6 @@
 package com.gravatar.app.usercomponent.domain.usecase
 
+import com.gravatar.AvatarQueryOptions
 import com.gravatar.AvatarUrl
 import com.gravatar.app.usercomponent.data.AvatarCacheBusterStorage
 import com.gravatar.app.usercomponent.domain.repository.ProfileRepository
@@ -15,6 +16,10 @@ internal class GetAvatarUrlUseCase(
     private val avatarCacheBusterStorage: AvatarCacheBusterStorage,
 ) : GetAvatarUrl {
 
+    companion object {
+        private const val AVATAR_SIZE = 512
+    }
+
     override fun invoke(): Flow<URL?> {
         return avatarCacheBusterStorage.getAvatarCacheBuster()
             .combine(
@@ -23,6 +28,9 @@ internal class GetAvatarUrlUseCase(
                 hash?.let {
                     AvatarUrl(
                         hash = Hash(it),
+                        avatarQueryOptions = AvatarQueryOptions.Builder()
+                            .setPreferredSize(AVATAR_SIZE)
+                            .build()
                     ).url(cacheBuster)
                 }
             }

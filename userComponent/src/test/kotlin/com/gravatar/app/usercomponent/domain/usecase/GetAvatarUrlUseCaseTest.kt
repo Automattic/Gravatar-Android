@@ -1,6 +1,7 @@
 package com.gravatar.app.usercomponent.domain.usecase
 
 import app.cash.turbine.test
+import com.gravatar.AvatarQueryOptions
 import com.gravatar.AvatarUrl
 import com.gravatar.app.testUtils.CoroutineTestRule
 import com.gravatar.app.usercomponent.data.AvatarCacheBusterStorage
@@ -40,6 +41,14 @@ class GetAvatarUrlUseCaseTest {
         }
     }
 
+    private val hash = "test-hash"
+    val avatarUrl = AvatarUrl(
+        hash = Hash(hash),
+        avatarQueryOptions = AvatarQueryOptions.Builder()
+            .setPreferredSize(512)
+            .build()
+    )
+
     @Before
     fun setup() {
         getAvatarUrlUseCase = GetAvatarUrlUseCase(
@@ -51,13 +60,12 @@ class GetAvatarUrlUseCaseTest {
     @Test
     fun `invoke should return URL when profile repository returns a valid hash`() = runTest {
         // Given
-        val hash = "test-hash"
         val profile = createProfile(hash)
         coEvery { profileRepository.get() } returns flow { emit(profile) }
 
         // When & Then
         getAvatarUrlUseCase().test {
-            val expectedUrl = AvatarUrl(Hash(hash)).url(null)
+            val expectedUrl = avatarUrl.url(null)
             assertEquals(expectedUrl, awaitItem())
             expectNoEvents()
         }
@@ -84,7 +92,7 @@ class GetAvatarUrlUseCaseTest {
 
         // When & Then
         getAvatarUrlUseCase().test {
-            val initialUrl = AvatarUrl(Hash(hash)).url(null)
+            val initialUrl = avatarUrl.url(null)
             assertEquals(initialUrl, awaitItem())
 
             // Update cache buster
@@ -92,7 +100,7 @@ class GetAvatarUrlUseCaseTest {
             cacheBusterFlow.emit(cacheBuster)
 
             // Should emit new URL with cache buster
-            val updatedUrl = AvatarUrl(Hash(hash)).url(cacheBuster)
+            val updatedUrl = avatarUrl.url(cacheBuster)
             assertEquals(updatedUrl, awaitItem())
 
             // Update cache buster again
@@ -100,7 +108,7 @@ class GetAvatarUrlUseCaseTest {
             cacheBusterFlow.emit(newCacheBuster)
 
             // Should emit new URL with new cache buster
-            val newUrl = AvatarUrl(Hash(hash)).url(newCacheBuster)
+            val newUrl = avatarUrl.url(newCacheBuster)
             assertEquals(newUrl, awaitItem())
 
             // No more items should be emitted
