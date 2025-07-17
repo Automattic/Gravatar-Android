@@ -30,7 +30,6 @@ internal fun AboutEditField(
     value: String,
     enabled: Boolean,
     onValueChange: (String) -> Unit,
-    onFieldFocused: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     maxLines: Int = 1,
     description: String? = null,
@@ -59,7 +58,6 @@ internal fun AboutEditField(
             modifier = Modifier
                 .onFocusChanged {
                     isFocused = it.hasFocus
-                    onFieldFocused(it.hasFocus)
                 },
             decorationBox = { innerTextField ->
                 Box(
@@ -113,7 +111,6 @@ internal fun AboutEditFieldNoDescriptionPreview() {
                 enabled = true,
                 label = "Display name",
                 onValueChange = {},
-                onFieldFocused = {},
             )
         }
     }
@@ -135,7 +132,6 @@ internal fun AboutEditFieldEditedPreview() {
                 label = "Display name",
                 edited = true,
                 onValueChange = {},
-                onFieldFocused = {},
             )
         }
     }
@@ -161,7 +157,6 @@ internal fun AboutEditFieldDescriptionPreview() {
                 label = "About me",
                 maxLines = 4,
                 onValueChange = {},
-                onFieldFocused = {},
             )
         }
     }

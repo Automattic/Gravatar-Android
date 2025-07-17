@@ -3,8 +3,10 @@ package com.gravatar.app.homeUi.presentation.home.profile
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -18,15 +20,17 @@ import androidx.compose.material3.pulltorefresh.pullToRefresh
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -81,14 +85,14 @@ internal fun ProfileScreen(viewModel: ProfileViewModel = koinViewModel(), snackb
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
-    var isAnyFieldFocused by remember { mutableStateOf(false) }
+    val isKeyboardOpen by rememberImeState()
     val scrollState = rememberScrollState()
     // Calculate scroll fraction
     val maxScrollForAnimation = 300f
     val headerExpansion = rememberAnimatedProfileHeaderState()
     headerExpansion.updateExpansion(
         when {
-            isAnyFieldFocused -> AnimatedProfileHeaderState.MIN_EXPANSION_FRACTION
+            isKeyboardOpen -> AnimatedProfileHeaderState.MIN_EXPANSION_FRACTION
             else -> {
                 val fraction = scrollState.value / maxScrollForAnimation
                 // Only apply roundToInt when not scrolling for a snapping effect
@@ -133,8 +137,7 @@ internal fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> U
                                 onValueChange = {
                                     onEvent(ProfileEvent.OnProfileFieldUpdated(it))
                                 },
-                                onFieldFocused = { isAnyFieldFocused = it },
-                                modifier = Modifier.padding(horizontal = 16.dp)
+                                modifier = Modifier.padding(horizontal = 16.dp),
                             )
                         }
                     }
@@ -199,6 +202,20 @@ private fun ProfileAction.handle(
                     withDismissAction = true,
                     snackbarType = SnackbarType.Error,
                 )
+            }
+        }
+    }
+}
+
+@Composable
+private fun rememberImeState(): State<Boolean> {
+    val imeInsets = WindowInsets.ime
+    val density = LocalDensity.current
+
+    return remember {
+        derivedStateOf {
+            with(density) {
+                imeInsets.getBottom(this) > 0
             }
         }
     }

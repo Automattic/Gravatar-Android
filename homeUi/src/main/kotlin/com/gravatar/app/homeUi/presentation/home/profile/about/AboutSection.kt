@@ -17,7 +17,6 @@ internal fun AboutSection(
     aboutFields: Set<AboutEditorField>,
     formEnabled: Boolean,
     onValueChange: (AboutEditorField) -> Unit,
-    onFieldFocused: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -30,7 +29,6 @@ internal fun AboutSection(
                 fields = aboutFields.filter { it.type.isAbout }.toSet(),
                 formEnabled = formEnabled,
                 onValueChange = onValueChange,
-                onFieldFocused = onFieldFocused,
             )
         }
         if (aboutFields.any { it.type.isProfessional }) {
@@ -39,7 +37,6 @@ internal fun AboutSection(
                 fields = aboutFields.filter { it.type.isProfessional }.toSet(),
                 formEnabled = formEnabled,
                 onValueChange = onValueChange,
-                onFieldFocused = onFieldFocused,
             )
         }
     }
@@ -117,7 +114,6 @@ internal fun AboutSectionPreview() {
             ),
             formEnabled = true,
             onValueChange = { },
-            onFieldFocused = { _ -> },
             modifier = Modifier.fillMaxWidth()
         )
     }
