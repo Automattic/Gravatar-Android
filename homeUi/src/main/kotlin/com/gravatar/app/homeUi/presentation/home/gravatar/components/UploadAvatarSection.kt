@@ -31,6 +31,7 @@ fun UploadNewAvatarSection(
         Text(
             text = stringResource(R.string.gravatar_tab_upload_avatar_message),
             style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(bottom = 16.dp)
         )
         Row(

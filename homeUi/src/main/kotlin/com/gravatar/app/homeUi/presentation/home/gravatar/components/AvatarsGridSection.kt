@@ -49,7 +49,8 @@ internal fun LazyGridScope.avatarsGridSection(
                     }
                 ),
                 style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(bottom = 10.dp)
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(bottom = 10.dp),
             )
         }
     }
