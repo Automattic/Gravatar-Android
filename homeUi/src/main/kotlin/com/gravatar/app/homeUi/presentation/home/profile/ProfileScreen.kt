@@ -154,7 +154,7 @@ internal fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> U
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PullToRefreshBox(
+internal fun PullToRefreshBox(
     enabled: Boolean,
     isRefreshing: Boolean,
     onRefresh: () -> Unit,

@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,9 +22,9 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -37,6 +36,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -53,11 +53,15 @@ import com.gravatar.app.homeUi.presentation.home.components.ErrorViewWithRetry
 import com.gravatar.app.homeUi.presentation.home.components.PermissionRationaleDialog
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.AvatarDeletionConfirmationDialog
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.AvatarOption
+import com.gravatar.app.homeUi.presentation.home.gravatar.components.CollapsibleTopAppBar
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.FailedAvatarUploadAlertDialog
+import com.gravatar.app.homeUi.presentation.home.gravatar.components.GRAVATAR_HEADER_COLLAPSED_HEIGHT
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.GravatarHeader
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.UploadNewAvatarSection
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.avatarSize
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.avatarsGridSection
+import com.gravatar.app.homeUi.presentation.home.gravatar.components.rememberExpansionProgress
+import com.gravatar.app.homeUi.presentation.home.profile.PullToRefreshBox
 import com.gravatar.app.homeUi.presentation.openAppPermissionSettings
 import com.gravatar.app.homeUi.presentation.withPermission
 import com.gravatar.app.usercomponent.domain.usecase.Logout
@@ -190,24 +194,39 @@ internal fun GravatarScreen(
             onEvent(GravatarEvent.OnDownloadAvatar(avatar.imageId))
         }
     }
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val expansionProgress = rememberExpansionProgress(scrollBehavior.state)
 
-    Surface(
-        modifier = Modifier.fillMaxSize(),
+    PullToRefreshBox(
+        enabled = expansionProgress == 1f,
+        onRefresh = { onEvent(GravatarEvent.Refresh()) },
+        isRefreshing = uiState.isRefreshing,
+        modifier = Modifier
     ) {
-        val gridState = rememberLazyGridState()
-        val contentPadding = PaddingValues(16.dp)
-        val itemSpacing = 2.dp
+        Scaffold(
+            modifier = Modifier
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
+            topBar = {
+                CollapsibleTopAppBar(
+                    minVisibleHeight = GRAVATAR_HEADER_COLLAPSED_HEIGHT,
+                    scrollBehavior = scrollBehavior,
+                ) {
+                    GravatarHeader(
+                        uiState.avatarUrl,
+                        modifier = Modifier.fillMaxWidth(),
+                        progress = expansionProgress,
+                        onMenuClick = onMenuClick,
+                    )
+                }
+            }
+        ) { innerPadding ->
+            Column(
+                Modifier.padding(innerPadding)
+            ) {
+                val gridState = rememberLazyGridState()
+                val contentPadding = PaddingValues(16.dp)
+                val itemSpacing = 2.dp
 
-        PullToRefreshBox(
-            onRefresh = { onEvent(GravatarEvent.Refresh()) },
-            isRefreshing = uiState.isRefreshing,
-        ) {
-            Column {
-                GravatarHeader(
-                    uiState.avatarUrl,
-                    modifier = Modifier.fillMaxWidth(),
-                    onMenuClick = onMenuClick,
-                )
                 LazyVerticalGrid(
                     columns = GridCells.Adaptive(minSize = avatarSize),
                     state = gridState,
