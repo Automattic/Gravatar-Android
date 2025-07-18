@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -64,13 +65,17 @@ internal fun LazyGridScope.avatarsGridSection(
                 )
             }
         }
+        item(
+            span = { GridItemSpan(maxLineSpan) },
+        ) {
+            Spacer(Modifier.height(10.dp))
+        }
         items(items = avatars, key = { it.avatarId }) { avatarModel ->
             SelectableAvatar(
                 avatar = avatarModel,
                 size = avatarSize,
                 modifier = Modifier
-                    .animateItem()
-                    .padding(top = 10.dp),
+                    .animateItem(),
                 onAvatarOptionClicked = onAvatarOptionClicked,
                 onFailedAvatarClicked = onFailedAvatarClicked,
             )
