@@ -12,3 +12,11 @@ local.properties
 build/
 /captures
 .kotlin/
+
+# Fastlane
+fastlane/README.md
+fastlane/report.xml
+fastlane/.env
+
+# Gems
+/vendor
