@@ -57,7 +57,7 @@ internal fun SaveProfileHeader(
                 ) {
                     // Cancel button
                     Button(
-                        onClick = { onCancelProfile.invoke() },
+                        onClick = { onCancelProfile() },
                         modifier = Modifier
                             .weight(1f)
                             .padding(end = 8.dp),
@@ -70,7 +70,7 @@ internal fun SaveProfileHeader(
 
                     // Save button
                     Button(
-                        onClick = { onSaveProfile.invoke() },
+                        onClick = { onSaveProfile() },
                         modifier = Modifier
                             .weight(1f)
                             .padding(start = 8.dp),
