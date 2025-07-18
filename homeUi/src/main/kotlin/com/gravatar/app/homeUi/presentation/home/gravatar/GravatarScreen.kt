@@ -11,8 +11,8 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,6 +24,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -220,8 +221,10 @@ internal fun GravatarScreen(
                 }
             }
         ) { innerPadding ->
-            Column(
-                Modifier.padding(innerPadding)
+            Surface(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(),
             ) {
                 val gridState = rememberLazyGridState()
                 val contentPadding = PaddingValues(16.dp)
@@ -242,7 +245,7 @@ internal fun GravatarScreen(
                             onChooseFromGalleryClicked = onPickMediaClicked,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(bottom = 16.dp)
+                                .padding(bottom = 14.dp)
                         )
                     }
                     when {
