@@ -39,7 +39,7 @@ internal fun LazyGridScope.avatarsGridSection(
     ) {
         AvatarsGridHeader(
             isGridEmpty = avatars.isEmpty(),
-            modifier = Modifier.padding(top = 16.dp)
+            modifier = Modifier.padding(top = 15.dp)
         )
     }
     if (avatars.isEmpty()) {
