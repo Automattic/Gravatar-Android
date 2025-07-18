@@ -19,6 +19,7 @@ steps:
   - wait
 
   - label: ⚒️ Build
+    if: build.pull_request.id == null
     command: |
       ./gradlew assembleDebug
     notify:
@@ -67,3 +68,13 @@ steps:
     notify:
       - github_commit_status:
           context: Screenshot tests
+
+  - label: 🏗️ Prototype Build
+    if: build.pull_request.id != null
+    command: .buildkite/commands/prototype-build.sh
+    plugins: [ $CI_TOOLKIT ]
+    artifact_paths:
+      - "**/build/outputs/apk/**/*"
+    notify:
+      - github_commit_status:
+          context: Prototype Build
