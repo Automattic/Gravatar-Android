@@ -35,8 +35,12 @@ fun NewAvatarButton(
     Surface(
         onClick = onClick,
         contentColor = MaterialTheme.colorScheme.primary,
+        color = if (isSystemInDarkTheme()) {
+            MaterialTheme.colorScheme.surface
+        } else {
+            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f)
+        },
         shape = shape,
-        tonalElevation = if (isSystemInDarkTheme()) 0.dp else 10.dp,
         modifier = modifier
             .then(
                 if (isSystemInDarkTheme()) {
