@@ -17,8 +17,8 @@ class AnimatedProfileHeaderTest : RoborazziTest() {
                     company = "Automattic"
                 ),
                 avatarUrl = "https://gravatar.com/avatar/test",
-                saveState = ProfileHeaderSaveState.SAVED,
                 onSaveProfile = {},
+                onCancelProfile = {},
                 headerState = AnimatedProfileHeaderState.EXPANDED,
                 onProfileLinkClicked = {}
             )
@@ -36,8 +36,8 @@ class AnimatedProfileHeaderTest : RoborazziTest() {
                     company = "Automattic"
                 ),
                 avatarUrl = "https://gravatar.com/avatar/test",
-                saveState = ProfileHeaderSaveState.SAVED,
                 onSaveProfile = {},
+                onCancelProfile = {},
                 headerState = AnimatedProfileHeaderState.COLLAPSED,
                 onProfileLinkClicked = {},
             )
@@ -55,9 +55,47 @@ class AnimatedProfileHeaderTest : RoborazziTest() {
                     company = "Automattic"
                 ),
                 avatarUrl = "https://gravatar.com/avatar/test",
-                saveState = ProfileHeaderSaveState.SAVED,
                 onSaveProfile = {},
-                headerState = AnimatedProfileHeaderState(0.5f),
+                onCancelProfile = {},
+                headerState = AnimatedProfileHeaderState(0.5f, AnimatedProfileHeaderSavingState.SAVED),
+                onProfileLinkClicked = {},
+            )
+        }
+    }
+
+    @Test
+    fun animatedProfileHeader_whenUnsaved_showsCorrectLayout() {
+        screenshotTest {
+            AnimatedProfileHeader(
+                profile = defaultProfile(
+                    hash = "",
+                    displayName = "John Doe",
+                    jobTitle = "Software Engineer",
+                    company = "Automattic"
+                ),
+                avatarUrl = "https://gravatar.com/avatar/test",
+                onSaveProfile = {},
+                onCancelProfile = {},
+                headerState = AnimatedProfileHeaderState(1.0f, AnimatedProfileHeaderSavingState.UNSAVED),
+                onProfileLinkClicked = {},
+            )
+        }
+    }
+
+    @Test
+    fun animatedProfileHeader_whenSaving_showsCorrectLayout() {
+        screenshotTest {
+            AnimatedProfileHeader(
+                profile = defaultProfile(
+                    hash = "",
+                    displayName = "John Doe",
+                    jobTitle = "Software Engineer",
+                    company = "Automattic"
+                ),
+                avatarUrl = "https://gravatar.com/avatar/test",
+                onSaveProfile = {},
+                onCancelProfile = {},
+                headerState = AnimatedProfileHeaderState(1.0f, AnimatedProfileHeaderSavingState.SAVING),
                 onProfileLinkClicked = {},
             )
         }

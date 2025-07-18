@@ -39,8 +39,15 @@ internal class ProfileViewModel(
         when (profileEvent) {
             is ProfileEvent.OnProfileFieldUpdated -> updateProfileField(profileEvent.aboutField)
             ProfileEvent.OnSaveClicked -> saveChanges()
+            ProfileEvent.OnCancelClicked -> cancelChanges()
             ProfileEvent.OnRefreshProfile -> refreshProfile(pullToRefresh = true)
             ProfileEvent.OnProfileLinkClicked -> openProfileUrl()
+        }
+    }
+
+    private fun cancelChanges() {
+        _uiState.update { currentState ->
+            currentState.copy(editedAboutFields = emptyMap())
         }
     }
 
