@@ -15,13 +15,23 @@ internal fun HomeNavigation(
     navController: NavHostController,
     snackbarHostState: SnackbarHostState,
 ) {
-    NavHost(navController = navController, startDestination = HomeDestination.Gravatar) {
+    NavHost(
+        navController = navController,
+        route = HomeRoute::class,
+        startDestination = HomeDestination.Gravatar
+    ) {
         composable<HomeDestination.Gravatar> {
-            GravatarScreen(snackbarHostState = snackbarHostState)
+            GravatarScreen(
+                viewModelStoreOwner = navController.getBackStackEntry(HomeRoute::class),
+                snackbarHostState = snackbarHostState
+            )
         }
 
         composable<HomeDestination.Profile> {
-            ProfileScreen(snackbarHostState = snackbarHostState)
+            ProfileScreen(
+                viewModelStoreOwner = navController.getBackStackEntry(HomeRoute::class),
+                snackbarHostState = snackbarHostState
+            )
         }
 
         composable<HomeDestination.Share> {
@@ -29,6 +39,9 @@ internal fun HomeNavigation(
         }
     }
 }
+
+@Serializable
+internal object HomeRoute
 
 @Serializable
 internal sealed class HomeDestination(
