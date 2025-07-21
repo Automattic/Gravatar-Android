@@ -18,7 +18,7 @@ internal class AndroidNetworkMonitor(
     private val applicationScope: CoroutineScope,
 ) : NetworkMonitor {
 
-    private val connectivityManager: ConnectivityManager? =
+    private val connectivityManager: ConnectivityManager =
         context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
 
     private val state = MutableSharedFlow<NetworkState>(replay = 1)
@@ -26,7 +26,7 @@ internal class AndroidNetworkMonitor(
     init {
         val networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
-                connectivityManager?.getNetworkCapabilities(network)?.let {
+                connectivityManager.getNetworkCapabilities(network)?.let {
                     if (it.hasCapability(NET_CAPABILITY_INTERNET)) {
                         emit(NetworkState.CONNECTED)
                     }
@@ -60,7 +60,7 @@ internal class AndroidNetworkMonitor(
             .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
             .build()
 
-        connectivityManager?.registerNetworkCallback(networkRequest, networkCallback)
+        connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
     }
 
     override fun observe(): Flow<NetworkState> {
