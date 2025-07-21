@@ -14,6 +14,8 @@ import com.gravatar.app.usercomponent.domain.usecase.Logout
 import com.gravatar.app.usercomponent.domain.usecase.SelectUserAvatar
 import com.gravatar.app.usercomponent.domain.usecase.UploadUserAvatar
 import com.gravatar.restapi.models.Avatar
+import com.gravatar.restapi.models.Profile
+import com.gravatar.restapi.models.ProfileContactInfo
 import com.gravatar.services.ErrorType
 import com.gravatar.services.GravatarResult
 import com.gravatar.types.Hash
@@ -57,6 +59,7 @@ class GravatarViewModelTest {
     private lateinit var viewModel: GravatarViewModel
 
     private val avatarUrlFlow: MutableSharedFlow<URL?> = MutableSharedFlow()
+    private val profileFlow: MutableSharedFlow<Profile?> = MutableSharedFlow()
 
     @Test
     fun `init should fetch avatars`() = runTest {
@@ -885,7 +888,28 @@ class GravatarViewModelTest {
         coVerify { logout.invoke() }
     }
 
+    @Test
+    fun `onEvent OnProfileLinkClicked should emit OpenProfileUrl action with correct URL`() = runTest {
+        // Given
+        coEvery { userRepository.getAvatars() } returns Result.success(emptyList())
+        initViewModel()
+        advanceUntilIdle()
+
+        val testProfile = createProfile()
+        profileFlow.emit(testProfile)
+
+        // When
+        viewModel.onEvent(GravatarEvent.OnProfileLinkClicked)
+
+        // Then
+        viewModel.actions.test {
+            assertEquals(GravatarAction.OpenProfileUrl(testProfile.profileUrl.toString()), awaitItem())
+        }
+    }
+
     private fun initViewModel() {
+        every { userRepository.getProfile() } returns profileFlow
+
         viewModel = GravatarViewModel(
             getAvatarUrl = getAvatarUrl,
             selectUserAvatar = selectUserAvatar,
@@ -911,5 +935,26 @@ class GravatarViewModelTest {
         altText = "alt$id"
         updatedDate = ""
         selected = isSelected
+    }
+
+    private fun createProfile(): Profile = Profile {
+        hash = "test-hash"
+        displayName = "Test User"
+        profileUrl = URI.create("https://gravatar.com/test-hash")
+        avatarUrl = URI.create("https://gravatar.com/avatar/test-hash")
+        avatarAltText = "Avatar for Test User"
+        description = "Test description"
+        pronouns = "They/Them"
+        pronunciation = "Test pronunciation"
+        location = "Test location"
+        jobTitle = "Test job title"
+        company = "Test company"
+        firstName = "Test"
+        lastName = "User"
+        verifiedAccounts = emptyList()
+        contactInfo = ProfileContactInfo {
+            cellPhone = "123-456-7890"
+            email = "test@example.com"
+        }
     }
 }

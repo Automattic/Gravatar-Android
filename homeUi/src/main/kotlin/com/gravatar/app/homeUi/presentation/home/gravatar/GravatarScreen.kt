@@ -42,6 +42,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -180,8 +181,7 @@ internal fun GravatarScreen(
             TopBarOption.Gravatar -> {
             }
 
-            TopBarOption.Profile -> {
-            }
+            TopBarOption.Profile -> onEvent(GravatarEvent.OnProfileLinkClicked)
 
             TopBarOption.Share -> {
             }
@@ -402,6 +402,11 @@ private fun GravatarAction.handle(
                     withDismissAction = true,
                 )
             }
+        }
+
+        is GravatarAction.OpenProfileUrl -> {
+            val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+            context.startActivity(intent)
         }
     }
 }

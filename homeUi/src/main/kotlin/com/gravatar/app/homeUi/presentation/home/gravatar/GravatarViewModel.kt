@@ -13,6 +13,7 @@ import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrl
 import com.gravatar.app.usercomponent.domain.usecase.Logout
 import com.gravatar.app.usercomponent.domain.usecase.SelectUserAvatar
 import com.gravatar.app.usercomponent.domain.usecase.UploadUserAvatar
+import com.gravatar.restapi.models.Profile
 import com.gravatar.services.GravatarResult
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,6 +45,7 @@ internal class GravatarViewModel(
     val actions = _actions.receiveAsFlow()
 
     private val avatarSelectionQueue = Channel<String>(Channel.CONFLATED)
+    private var profile: Profile? = null
 
     init {
         fetchAvatars(isRefreshing = false)
@@ -55,6 +57,15 @@ internal class GravatarViewModel(
                 }
         }
         collectUserAvatar()
+        collectUserProfile()
+    }
+
+    private fun collectUserProfile() {
+        userRepository.getProfile()
+            .onEach { newProfile ->
+                profile = newProfile
+            }
+            .launchIn(viewModelScope)
     }
 
     fun onEvent(event: GravatarEvent) {
@@ -71,6 +82,15 @@ internal class GravatarViewModel(
             is GravatarEvent.OnShowDeleteConfirmation -> showDeleteConfirmation(event.avatarId)
             GravatarEvent.OnDismissDeleteConfirmation -> dismissDeleteConfirmation()
             GravatarEvent.OnLogoutSelected -> logoutUser()
+            GravatarEvent.OnProfileLinkClicked -> openProfileUrl()
+        }
+    }
+
+    private fun openProfileUrl() {
+        viewModelScope.launch {
+            profile?.profileUrl?.toString()?.let { url ->
+                _actions.send(GravatarAction.OpenProfileUrl(url))
+            }
         }
     }
 
