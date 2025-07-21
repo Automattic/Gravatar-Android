@@ -36,7 +36,7 @@ steps:
 
   - label: "🕵️‍♂️ Lint"
     command: |
-      ./gradlew lintDebug
+      ./gradlew :app:lintDebug
       
       upload_sarif_to_github 'app/build/reports/lint-results-debug.sarif'
     plugins: [ $CI_TOOLKIT ]
