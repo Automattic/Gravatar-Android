@@ -903,7 +903,23 @@ class GravatarViewModelTest {
 
         // Then
         viewModel.actions.test {
-            assertEquals(GravatarAction.OpenProfileUrl(testProfile.profileUrl.toString()), awaitItem())
+            assertEquals(GravatarAction.OpenExternalUrl(testProfile.profileUrl.toString()), awaitItem())
+        }
+    }
+
+    @Test
+    fun `onEvent OnGravatarLinkClicked should emit OpenProfileUrl action with Gravatar URL`() = runTest {
+        // Given
+        coEvery { userRepository.getAvatars() } returns Result.success(emptyList())
+        initViewModel()
+        advanceUntilIdle()
+
+        // When
+        viewModel.onEvent(GravatarEvent.OnGravatarLinkClicked)
+
+        // Then
+        viewModel.actions.test {
+            assertEquals(GravatarAction.OpenExternalUrl("https://www.gravatar.com"), awaitItem())
         }
     }
 

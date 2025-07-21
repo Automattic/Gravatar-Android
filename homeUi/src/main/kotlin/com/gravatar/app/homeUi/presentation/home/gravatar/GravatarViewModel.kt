@@ -83,15 +83,24 @@ internal class GravatarViewModel(
             GravatarEvent.OnDismissDeleteConfirmation -> dismissDeleteConfirmation()
             GravatarEvent.OnLogoutSelected -> logoutUser()
             GravatarEvent.OnProfileLinkClicked -> openProfileUrl()
+            GravatarEvent.OnGravatarLinkClicked -> openGravatarWebsite()
+        }
+    }
+
+    private fun openUrl(url: String) {
+        viewModelScope.launch {
+            _actions.send(GravatarAction.OpenExternalUrl(url))
         }
     }
 
     private fun openProfileUrl() {
-        viewModelScope.launch {
-            profile?.profileUrl?.toString()?.let { url ->
-                _actions.send(GravatarAction.OpenProfileUrl(url))
-            }
+        profile?.profileUrl?.toString()?.let { url ->
+            openUrl(url)
         }
+    }
+
+    private fun openGravatarWebsite() {
+        openUrl("https://www.gravatar.com")
     }
 
     private fun logoutUser() {
