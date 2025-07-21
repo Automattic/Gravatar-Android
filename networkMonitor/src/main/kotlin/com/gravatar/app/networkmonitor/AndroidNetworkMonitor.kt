@@ -24,6 +24,11 @@ internal class AndroidNetworkMonitor(
     private val state = MutableSharedFlow<NetworkState>(replay = 1)
 
     init {
+        emitInitialState()
+        registerNetworkCallback()
+    }
+
+    private fun registerNetworkCallback() {
         val networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
                 connectivityManager.getNetworkCapabilities(network)?.let {
@@ -61,6 +66,16 @@ internal class AndroidNetworkMonitor(
             .build()
 
         connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
+    }
+
+    private fun emitInitialState() {
+        val currentNetwork = connectivityManager.activeNetwork
+        val currentCapabilities = connectivityManager.getNetworkCapabilities(currentNetwork)
+        if (currentCapabilities?.hasCapability(NET_CAPABILITY_INTERNET) == true) {
+            emit(NetworkState.CONNECTED)
+        } else {
+            emit(NetworkState.DISCONNECTED)
+        }
     }
 
     override fun observe(): Flow<NetworkState> {
