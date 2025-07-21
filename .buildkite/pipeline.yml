@@ -71,10 +71,10 @@ steps:
   # Run Prototype Build on demand
   ################################
 
-  - block: "On Demand Prototype Build"
+  - block: On Demand Prototype Build
     if: build.pull_request.id != null
     key: run-on-demand-prototype-build
-    prompt: "Build PR Prototype?"
+    prompt: Build Pull Request Prototype?
     blocked_state: passed
 
   - label: 🏗️ Prototype Build
