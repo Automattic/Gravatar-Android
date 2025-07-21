@@ -12,6 +12,7 @@ android {
 dependencies {
     implementation(project(":userComponent"))
     implementation(project(":design"))
+    implementation(project(":networkMonitor"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.material3)

@@ -4,6 +4,7 @@ import com.gravatar.analytics.di.analyticsModule
 import com.gravatar.app.clock.di.clockModule
 import com.gravatar.app.homeUi.di.homeUiModule
 import com.gravatar.app.loginUi.di.loginUiModule
+import com.gravatar.app.networkmonitor.di.networkMonitorModule
 import org.koin.dsl.module
 
 val appModule = module {
@@ -13,5 +14,6 @@ val appModule = module {
         analyticsModule,
         dispatcherModule,
         clockModule,
+        networkMonitorModule,
     )
 }

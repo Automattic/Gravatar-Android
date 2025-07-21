@@ -3,6 +3,7 @@ package com.gravatar.app.homeUi.di
 import com.gravatar.app.homeUi.ImageDownloader
 import com.gravatar.app.homeUi.presentation.FileUtils
 import com.gravatar.app.homeUi.presentation.home.components.topbar.TopBarPickerPopupViewModel
+import com.gravatar.app.homeUi.presentation.home.HomeViewModel
 import com.gravatar.app.homeUi.presentation.home.gravatar.GravatarViewModel
 import com.gravatar.app.homeUi.presentation.home.profile.ProfileViewModel
 import com.gravatar.app.homeUi.presentation.home.share.ShareViewModel
@@ -19,6 +20,7 @@ val homeUiModule = module {
     viewModelOf(::GravatarViewModel)
     viewModelOf(::TopBarPickerPopupViewModel)
     viewModelOf(::ShareViewModel)
+    viewModelOf(::HomeViewModel)
 
     includes(userComponentModule)
 }
