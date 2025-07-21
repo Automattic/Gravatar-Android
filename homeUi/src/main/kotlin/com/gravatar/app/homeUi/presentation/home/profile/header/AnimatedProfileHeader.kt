@@ -85,7 +85,15 @@ internal fun AnimatedProfileHeader(
 
     // Measure without rendering
     MeasureComposableHeight(
-        content = { StaticCollapsedStateToMeasure(profile) },
+        content = {
+            StaticCollapsedStateToMeasure(profile)
+            SaveProfileHeader(
+                saveState = SaveProfileHeaderState.UNSAVED,
+                onSaveProfile = { },
+                onCancelProfile = { },
+                modifier = modifier
+            )
+        },
         onHeightMeasured = { height ->
             measuredHeight = height
         }
