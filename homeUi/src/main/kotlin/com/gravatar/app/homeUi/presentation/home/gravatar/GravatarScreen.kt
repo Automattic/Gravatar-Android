@@ -180,8 +180,7 @@ internal fun GravatarScreen(
             TopBarOption.Logout -> onEvent(GravatarEvent.OnLogoutSelected)
             TopBarOption.Gravatar -> onEvent(GravatarEvent.OnGravatarLinkClicked)
             TopBarOption.Profile -> onEvent(GravatarEvent.OnProfileLinkClicked)
-            TopBarOption.Share -> {
-            }
+            TopBarOption.Share -> onEvent(GravatarEvent.OnShareProfileClicked)
         }
     }
 
@@ -404,6 +403,16 @@ private fun GravatarAction.handle(
         is GravatarAction.OpenExternalUrl -> {
             val intent = Intent(Intent.ACTION_VIEW, url.toUri())
             context.startActivity(intent)
+        }
+
+        is GravatarAction.ShareProfileUrl -> {
+            val shareIntent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, url)
+                type = "text/plain"
+            }
+            val chooserIntent = Intent.createChooser(shareIntent, null)
+            context.startActivity(chooserIntent)
         }
     }
 }

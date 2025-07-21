@@ -923,6 +923,25 @@ class GravatarViewModelTest {
         }
     }
 
+    @Test
+    fun `onEvent OnShareProfileClicked should emit ShareProfileUrl action with correct URL`() = runTest {
+        // Given
+        coEvery { userRepository.getAvatars() } returns Result.success(emptyList())
+        initViewModel()
+        advanceUntilIdle()
+
+        val testProfile = createProfile()
+        profileFlow.emit(testProfile)
+
+        // When
+        viewModel.onEvent(GravatarEvent.OnShareProfileClicked)
+
+        // Then
+        viewModel.actions.test {
+            assertEquals(GravatarAction.ShareProfileUrl(testProfile.profileUrl.toString()), awaitItem())
+        }
+    }
+
     private fun initViewModel() {
         every { userRepository.getProfile() } returns profileFlow
 

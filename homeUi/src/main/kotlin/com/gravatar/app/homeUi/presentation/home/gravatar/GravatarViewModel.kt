@@ -84,6 +84,7 @@ internal class GravatarViewModel(
             GravatarEvent.OnLogoutSelected -> logoutUser()
             GravatarEvent.OnProfileLinkClicked -> openProfileUrl()
             GravatarEvent.OnGravatarLinkClicked -> openGravatarWebsite()
+            GravatarEvent.OnShareProfileClicked -> shareProfileUrl()
         }
     }
 
@@ -96,6 +97,14 @@ internal class GravatarViewModel(
     private fun openProfileUrl() {
         profile?.profileUrl?.toString()?.let { url ->
             openUrl(url)
+        }
+    }
+
+    private fun shareProfileUrl() {
+        viewModelScope.launch {
+            profile?.profileUrl?.toString()?.let { url ->
+                _actions.send(GravatarAction.ShareProfileUrl(url))
+            }
         }
     }
 

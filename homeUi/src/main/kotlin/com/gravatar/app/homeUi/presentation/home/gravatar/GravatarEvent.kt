@@ -17,4 +17,5 @@ sealed class GravatarEvent {
     data object OnLogoutSelected : GravatarEvent()
     data object OnProfileLinkClicked : GravatarEvent()
     data object OnGravatarLinkClicked : GravatarEvent()
+    data object OnShareProfileClicked : GravatarEvent()
 }
