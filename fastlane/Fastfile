@@ -9,7 +9,7 @@ UI.user_error!('Please run fastlane via `bundle exec`') unless FastlaneCore::Hel
 ########################################################################
 
 PROTOTYPE_BUILD_DOMAIN = 'https://cdn.a8c-ci.services'
-PROTOTYPE_BUILD_TYPE = 'debug'
+PROTOTYPE_BUILD_TYPE = 'release'
 
 platform :android do
   # Builds the Gravatar Demo app prototype APK, uploads it to S3, and posts a download link as a comment on the associated pull request.
