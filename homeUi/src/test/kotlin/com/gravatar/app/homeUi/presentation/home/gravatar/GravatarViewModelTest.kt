@@ -10,6 +10,7 @@ import com.gravatar.app.testUtils.CoroutineTestRule
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import com.gravatar.app.usercomponent.domain.usecase.DeleteUserAvatar
 import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrl
+import com.gravatar.app.usercomponent.domain.usecase.Logout
 import com.gravatar.app.usercomponent.domain.usecase.SelectUserAvatar
 import com.gravatar.app.usercomponent.domain.usecase.UploadUserAvatar
 import com.gravatar.restapi.models.Avatar
@@ -50,6 +51,7 @@ class GravatarViewModelTest {
     private val selectUserAvatar: SelectUserAvatar = mockk()
     private val deleteUserAvatar: DeleteUserAvatar = mockk()
     private val uploadUserAvatar: UploadUserAvatar = mockk()
+    private val logout: Logout = mockk()
     private val fileUtils: FileUtils = mockk()
     private val imageDownloader: ImageDownloader = mockk()
     private lateinit var viewModel: GravatarViewModel
@@ -868,12 +870,28 @@ class GravatarViewModelTest {
         }
     }
 
+    @Test
+    fun `onEvent OnLogoutSelected should invoke logout usecase`() = runTest {
+        // Given
+        coEvery { userRepository.getAvatars() } returns Result.success(emptyList())
+        coEvery { logout.invoke() } returns Unit
+        initViewModel()
+
+        // When
+        viewModel.onEvent(GravatarEvent.OnLogoutSelected)
+        advanceUntilIdle()
+
+        // Then
+        coVerify { logout.invoke() }
+    }
+
     private fun initViewModel() {
         viewModel = GravatarViewModel(
             getAvatarUrl = getAvatarUrl,
             selectUserAvatar = selectUserAvatar,
             deleteUserAvatar = deleteUserAvatar,
             uploadUserAvatar = uploadUserAvatar,
+            logout = logout,
             userRepository = userRepository,
             fileUtils = fileUtils,
             imageDownloader = imageDownloader,

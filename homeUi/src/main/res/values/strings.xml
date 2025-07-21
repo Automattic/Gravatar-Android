@@ -51,6 +51,10 @@
     <string name="gravatar_tab_avatar_updated_successfully">Avatar updated.</string>
     <string name="gravatar_tab_avatar_selection_failed">Unable to change your avatar. Try again.</string>
     <string name="gravatar_tab_avatar_deletion_failed">Couldn\'t delete the image. Try again.</string>
+    <string name="gravatar_tab_topbar_menu_visit_profile">Visit your profile</string>
+    <string name="gravatar_tab_topbar_menu_share">Share</string>
+    <string name="gravatar_tab_topbar_menu_gravatar">Gravatar.com</string>
+    <string name="gravatar_tab_topbar_menu_sign_out">Sign out</string>
     <string name="permission_required_alert_title">Permission required</string>
     <string name="permission_required_open_settings">Open settings</string>
     <string name="permission_required_dismiss">Dismiss</string>

@@ -52,6 +52,18 @@
           'top',
           0
         ],
+      },
+      menuPopup: {
+        end: [
+          'parent',
+          'end',
+          0
+        ],
+        top: [
+          'menuButton',
+          'bottom',
+          6
+        ],
       }
     },
     expanded: {
@@ -106,6 +118,18 @@
           'top',
           16
         ]
+      },
+      menuPopup: {
+        end: [
+          'parent',
+          'end',
+          0
+        ],
+        top: [
+          'menuButton',
+          'bottom',
+          6
+        ],
       }
     }
   },

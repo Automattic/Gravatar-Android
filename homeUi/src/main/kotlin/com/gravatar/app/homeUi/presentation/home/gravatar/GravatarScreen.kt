@@ -59,6 +59,7 @@ import com.gravatar.app.homeUi.presentation.home.gravatar.components.Collapsible
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.FailedAvatarUploadAlertDialog
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.GRAVATAR_HEADER_COLLAPSED_HEIGHT
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.GravatarHeader
+import com.gravatar.app.homeUi.presentation.home.gravatar.components.TopBarOption
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.UploadNewAvatarSection
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.avatarSize
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.avatarsGridSection
@@ -66,7 +67,6 @@ import com.gravatar.app.homeUi.presentation.home.gravatar.components.rememberExp
 import com.gravatar.app.homeUi.presentation.home.profile.PullToRefreshBox
 import com.gravatar.app.homeUi.presentation.openAppPermissionSettings
 import com.gravatar.app.homeUi.presentation.withPermission
-import com.gravatar.app.usercomponent.domain.usecase.Logout
 import com.gravatar.restapi.models.Avatar
 import com.yalantis.ucrop.UCrop
 import com.yalantis.ucrop.UCropActivity
@@ -75,7 +75,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.koinViewModel
-import org.koin.compose.koinInject
 import java.io.File
 import java.net.URI
 
@@ -85,7 +84,6 @@ internal fun GravatarScreen(
     viewModel: GravatarViewModel = koinViewModel(viewModelStoreOwner = viewModelStoreOwner),
     snackbarHostState: SnackbarHostState,
 ) {
-    val logout = koinInject<Logout>()
     val scope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsState()
     val lifecycle = LocalLifecycleOwner.current
@@ -150,9 +148,6 @@ internal fun GravatarScreen(
                 mediaPickerLaunched = true
             }
         },
-        onMenuClick = {
-            scope.launch { logout() }
-        }
     )
 }
 
@@ -160,7 +155,6 @@ internal fun GravatarScreen(
 @Composable
 internal fun GravatarScreen(
     uiState: GravatarUiState,
-    onMenuClick: () -> Unit = {},
     onTakePictureClicked: () -> Unit,
     onPickMediaClicked: () -> Unit,
     onEvent: (GravatarEvent) -> Unit = {},
@@ -178,6 +172,20 @@ internal fun GravatarScreen(
             storagePermissionRationaleDialogVisible = true
         }
         avatarToDownload = null
+    }
+
+    val onTopBarOptionClicked: (TopBarOption) -> Unit = { option ->
+        when (option) {
+            TopBarOption.Logout -> onEvent(GravatarEvent.OnLogoutSelected)
+            TopBarOption.Gravatar -> {
+            }
+
+            TopBarOption.Profile -> {
+            }
+
+            TopBarOption.Share -> {
+            }
+        }
     }
 
     val permissionAwareDownloadImageCallback: (Avatar) -> Unit = { avatar ->
@@ -218,7 +226,7 @@ internal fun GravatarScreen(
                         uiState.avatarUrl,
                         modifier = Modifier.fillMaxWidth(),
                         progress = expansionProgress,
-                        onMenuClick = onMenuClick,
+                        onTopBarOptionClicked = onTopBarOptionClicked,
                     )
                 }
             }

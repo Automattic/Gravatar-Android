@@ -10,6 +10,7 @@ import com.gravatar.app.homeUi.presentation.FileUtils
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import com.gravatar.app.usercomponent.domain.usecase.DeleteUserAvatar
 import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrl
+import com.gravatar.app.usercomponent.domain.usecase.Logout
 import com.gravatar.app.usercomponent.domain.usecase.SelectUserAvatar
 import com.gravatar.app.usercomponent.domain.usecase.UploadUserAvatar
 import com.gravatar.services.GravatarResult
@@ -30,6 +31,7 @@ internal class GravatarViewModel(
     private val selectUserAvatar: SelectUserAvatar,
     private val deleteUserAvatar: DeleteUserAvatar,
     private val uploadUserAvatar: UploadUserAvatar,
+    private val logout: Logout,
     private val userRepository: UserRepository,
     private val fileUtils: FileUtils,
     private val imageDownloader: ImageDownloader,
@@ -68,6 +70,13 @@ internal class GravatarViewModel(
             is GravatarEvent.OnDownloadAvatar -> downloadAvatar(event.avatarId)
             is GravatarEvent.OnShowDeleteConfirmation -> showDeleteConfirmation(event.avatarId)
             GravatarEvent.OnDismissDeleteConfirmation -> dismissDeleteConfirmation()
+            GravatarEvent.OnLogoutSelected -> logoutUser()
+        }
+    }
+
+    private fun logoutUser() {
+        viewModelScope.launch {
+            logout()
         }
     }
 
