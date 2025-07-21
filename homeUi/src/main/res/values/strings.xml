@@ -23,6 +23,8 @@
     <string name="gravatar_tab_header_more_options">More options</string>
     <string name="picker_submenu_icon_description">Expand</string>
     <string name="profile_screen_save_button">Save</string>
+    <string name="profile_screen_cancel_button">Cancel</string>
+    <string name="profile_screen_saving">Saving...</string>
     <string name="profile_screen_save_fail_try_again">Unable to save your profile. Try again.</string>
     <string name="profile_screen_saved_successfully">Profile saved.</string>
     <string name="gravatar_tab_get_a_new_look">Get a new look</string>

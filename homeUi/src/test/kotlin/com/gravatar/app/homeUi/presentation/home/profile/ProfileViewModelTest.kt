@@ -20,6 +20,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -347,6 +348,39 @@ class ProfileViewModelTest {
         // Then
         viewModel.actions.test {
             assertEquals(ProfileAction.OpenProfileUrl(expectedUrl), awaitItem())
+        }
+    }
+
+    @Test
+    fun `when OnCancelClicked event is triggered then editedAboutFields are cleared`() = runTest {
+        // Given
+        val originalProfile = profile()
+        viewModel = initViewModel()
+        advanceUntilIdle()
+        profileFlow.emit(originalProfile)
+
+        // Add a modified field to editedAboutFields
+        val modifiedField = AboutEditorField(
+            type = AboutInputField.DISPLAY_NAME,
+            value = "Modified Name"
+        )
+        viewModel.onEvent(ProfileEvent.OnProfileFieldUpdated(modifiedField))
+
+        // Verify that we have unsaved changes
+        viewModel.uiState.test {
+            val state = awaitItem()
+            assertEquals("Modified Name", state.editedAboutFields[AboutInputField.DISPLAY_NAME])
+            assertTrue(state.hasUnsavedChanges)
+        }
+
+        // When
+        viewModel.onEvent(ProfileEvent.OnCancelClicked)
+
+        // Then
+        viewModel.uiState.test {
+            val state = awaitItem()
+            assertTrue(state.editedAboutFields.isEmpty())
+            assertFalse(state.hasUnsavedChanges)
         }
     }
 

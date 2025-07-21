@@ -42,8 +42,8 @@ import com.gravatar.app.homeUi.R
 import com.gravatar.app.homeUi.presentation.home.profile.about.AboutInputField
 import com.gravatar.app.homeUi.presentation.home.profile.about.AboutSection
 import com.gravatar.app.homeUi.presentation.home.profile.header.AnimatedProfileHeader
+import com.gravatar.app.homeUi.presentation.home.profile.header.AnimatedProfileHeaderSavingState
 import com.gravatar.app.homeUi.presentation.home.profile.header.AnimatedProfileHeaderState
-import com.gravatar.app.homeUi.presentation.home.profile.header.ProfileHeaderSaveState
 import com.gravatar.app.homeUi.presentation.home.profile.header.rememberAnimatedProfileHeaderState
 import com.gravatar.extensions.defaultProfile
 import kotlinx.coroutines.CoroutineScope
@@ -93,7 +93,7 @@ internal fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> U
     val scrollState = rememberScrollState()
     // Calculate scroll fraction
     val maxScrollForAnimation = 300f
-    val headerExpansion = rememberAnimatedProfileHeaderState()
+    val headerState = rememberAnimatedProfileHeaderState()
     val headerExpansionFraction by remember(scrollState, isKeyboardOpen) {
         derivedStateOf {
             when {
@@ -106,7 +106,17 @@ internal fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> U
             }
         }
     }
-    headerExpansion.updateExpansion(headerExpansionFraction)
+    val headerSavingState by remember(uiState) {
+        derivedStateOf {
+            when {
+                uiState.isSavingProfile -> AnimatedProfileHeaderSavingState.SAVING
+                uiState.hasUnsavedChanges -> AnimatedProfileHeaderSavingState.UNSAVED
+                else -> AnimatedProfileHeaderSavingState.SAVED
+            }
+        }
+    }
+    headerState.updateExpansion(headerExpansionFraction)
+    headerState.updateSavingState(headerSavingState)
 
     PullToRefreshBox(
         enabled = uiState.pullToRefreshEnabled,
@@ -125,14 +135,10 @@ internal fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> U
                         AnimatedProfileHeader(
                             profile = profile,
                             avatarUrl = uiState.avatarUrl,
-                            saveState = when {
-                                uiState.isSavingProfile -> ProfileHeaderSaveState.SAVING
-                                uiState.hasUnsavedChanges -> ProfileHeaderSaveState.UNSAVED
-                                else -> ProfileHeaderSaveState.SAVED
-                            },
                             onSaveProfile = { onEvent(ProfileEvent.OnSaveClicked) },
-                            headerState = headerExpansion,
-                            onProfileLinkClicked = { onEvent(ProfileEvent.OnProfileLinkClicked) }
+                            onCancelProfile = { onEvent(ProfileEvent.OnCancelClicked) },
+                            headerState = headerState,
+                            onProfileLinkClicked = { onEvent(ProfileEvent.OnProfileLinkClicked) },
                         )
                         Column(
                             Modifier
@@ -251,8 +257,8 @@ private fun AnimatedProfileHeaderExpandedPreview() {
             company = "Automattic"
         ),
         avatarUrl = "https://gravatar.com/avatar/test",
-        saveState = ProfileHeaderSaveState.UNSAVED,
         onSaveProfile = {},
+        onCancelProfile = {},
         headerState = AnimatedProfileHeaderState.EXPANDED,
         onProfileLinkClicked = {}
     )
@@ -269,8 +275,8 @@ private fun AnimatedProfileHeaderCollapsedPreview() {
             company = "Automattic"
         ),
         avatarUrl = "https://gravatar.com/avatar/test",
-        saveState = ProfileHeaderSaveState.UNSAVED,
         onSaveProfile = {},
+        onCancelProfile = {},
         headerState = AnimatedProfileHeaderState.COLLAPSED,
         onProfileLinkClicked = {}
     )
@@ -287,9 +293,9 @@ private fun AnimatedProfileHeaderTransitionPreview() {
             company = "Automattic"
         ),
         avatarUrl = "https://gravatar.com/avatar/test",
-        saveState = ProfileHeaderSaveState.UNSAVED,
         onSaveProfile = {},
-        headerState = AnimatedProfileHeaderState(0.5f),
+        onCancelProfile = {},
+        headerState = AnimatedProfileHeaderState(0.5f, AnimatedProfileHeaderSavingState.SAVED),
         onProfileLinkClicked = {}
     )
 }
