@@ -1,6 +1,8 @@
 package com.gravatar.app.homeUi.presentation.home
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
@@ -109,6 +111,8 @@ internal fun HomeScreen(
                 content(navController, snackbarHostState)
                 AnimatedVisibility(
                     visible = uiState.noInternetBannerVisible,
+                    enter = slideInVertically { fullHeight -> fullHeight },
+                    exit = slideOutVertically { fullHeight -> fullHeight },
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                 ) {
