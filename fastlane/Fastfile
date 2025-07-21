@@ -8,10 +8,8 @@ UI.user_error!('Please run fastlane via `bundle exec`') unless FastlaneCore::Hel
 # Constants
 ########################################################################
 
-PLAY_STORE_TRACK_BETA = 'beta'
-PLAY_STORE_TRACK_PRODUCTION = 'production'
-
 PROTOTYPE_BUILD_DOMAIN = 'https://cdn.a8c-ci.services'
+PROTOTYPE_BUILD_TYPE = 'debug'
 
 platform :android do
   # Builds the Gravatar Demo app prototype APK, uploads it to S3, and posts a download link as a comment on the associated pull request.
@@ -34,11 +32,9 @@ platform :android do
       body: '🚧 Prototype build will be available soon'
     )
 
-    prototype_build_type = 'debug'
-
     gradle(
       task: 'assemble',
-      build_type: prototype_build_type
+      build_type: PROTOTYPE_BUILD_TYPE
     )
 
     upload_path = upload_to_s3(
@@ -54,7 +50,7 @@ platform :android do
       app_display_name: 'Gravatar Android',
       download_url: install_url,
       metadata: {
-        'Build Type': prototype_build_type
+        'Build Type': PROTOTYPE_BUILD_TYPE
       },
       fold: true
     )
