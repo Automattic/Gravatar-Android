@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.gravatar.app.design.components.snackbar.SnackbarType
@@ -53,7 +54,11 @@ import org.koin.androidx.compose.koinViewModel
 import kotlin.math.roundToInt
 
 @Composable
-internal fun ProfileScreen(viewModel: ProfileViewModel = koinViewModel(), snackbarHostState: SnackbarHostState) {
+internal fun ProfileScreen(
+    viewModelStoreOwner: ViewModelStoreOwner,
+    viewModel: ProfileViewModel = koinViewModel(viewModelStoreOwner = viewModelStoreOwner),
+    snackbarHostState: SnackbarHostState
+) {
     val scope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsState()
     val lifecycle = LocalLifecycleOwner.current

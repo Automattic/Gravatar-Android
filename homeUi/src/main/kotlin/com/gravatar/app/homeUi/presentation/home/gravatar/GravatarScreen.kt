@@ -43,6 +43,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.gravatar.app.design.components.snackbar.SnackbarType
@@ -80,7 +81,8 @@ import java.net.URI
 
 @Composable
 internal fun GravatarScreen(
-    viewModel: GravatarViewModel = koinViewModel(),
+    viewModelStoreOwner: ViewModelStoreOwner,
+    viewModel: GravatarViewModel = koinViewModel(viewModelStoreOwner = viewModelStoreOwner),
     snackbarHostState: SnackbarHostState,
 ) {
     val logout = koinInject<Logout>()
