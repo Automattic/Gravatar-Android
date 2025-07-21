@@ -192,7 +192,11 @@ private fun AnimatedProfileHeaderSavedState(
             ),
             y = lerp(
                 AVATAR_EXPANDED_SIZE + PROFILE_INFO_TOP_PADDING,
-                0.dp,
+                if (profile.jobInfo().isBlank()) {
+                    (AVATAR_COLLAPSED_SIZE / 2) - (displayNameSize.height / 2)
+                } else {
+                    0.dp
+                },
                 headerState.expansionFraction
             )
         ),
