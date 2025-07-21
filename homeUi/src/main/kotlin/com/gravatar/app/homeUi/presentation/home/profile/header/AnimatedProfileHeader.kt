@@ -1,9 +1,15 @@
 package com.gravatar.app.homeUi.presentation.home.profile.header
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.SpringSpec
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -63,6 +69,7 @@ private val PROFILE_INFO_START_PADDING = 16.dp
 private val PROFILE_INFO_TOP_PADDING = 16.dp
 private val LINK_TOP_PADDING = 16.dp
 private val LINK_INTERNAL_PADDING = 8.dp
+private const val HEADER_STATE_TRANSITION_DURATION = 300
 
 @Composable
 internal fun AnimatedProfileHeader(
@@ -84,33 +91,55 @@ internal fun AnimatedProfileHeader(
         }
     )
 
-    when (headerState.savingState) {
-        AnimatedProfileHeaderSavingState.SAVED -> {
-            AnimatedProfileHeaderSavedState(
-                headerState = headerState,
-                modifier = modifier.heightIn(min = measuredHeight),
-                avatarUrl = avatarUrl,
-                profile = profile,
-                onProfileLinkClicked = onProfileLinkClicked
-            )
-        }
+    AnimatedContent(
+        targetState = headerState.savingState,
+        transitionSpec = {
+            // Don't animate when switching between UNSAVED and SAVING states
+            if (
+                initialState == AnimatedProfileHeaderSavingState.SAVED ||
+                targetState == AnimatedProfileHeaderSavingState.SAVED
+            ) {
+                // Simple fade in/out animation for other state transitions
+                fadeIn(animationSpec = tween(durationMillis = HEADER_STATE_TRANSITION_DURATION))
+                    .togetherWith(fadeOut(animationSpec = tween(durationMillis = HEADER_STATE_TRANSITION_DURATION)))
+            } else {
+                // No animation
+                ContentTransform(
+                    fadeIn(animationSpec = tween(0)),
+                    fadeOut(animationSpec = tween(0))
+                )
+            }
+        },
+        label = "HeaderStateAnimation"
+    ) { state ->
+        when (state) {
+            AnimatedProfileHeaderSavingState.SAVED -> {
+                AnimatedProfileHeaderSavedState(
+                    headerState = headerState,
+                    modifier = modifier.heightIn(min = measuredHeight),
+                    avatarUrl = avatarUrl,
+                    profile = profile,
+                    onProfileLinkClicked = onProfileLinkClicked
+                )
+            }
 
-        AnimatedProfileHeaderSavingState.UNSAVED -> {
-            SaveProfileHeader(
-                saveState = SaveProfileHeaderState.UNSAVED,
-                onSaveProfile = onSaveProfile,
-                onCancelProfile = onCancelProfile,
-                modifier = modifier.height(height = measuredHeight)
-            )
-        }
+            AnimatedProfileHeaderSavingState.UNSAVED -> {
+                SaveProfileHeader(
+                    saveState = SaveProfileHeaderState.UNSAVED,
+                    onSaveProfile = onSaveProfile,
+                    onCancelProfile = onCancelProfile,
+                    modifier = modifier.height(height = measuredHeight)
+                )
+            }
 
-        AnimatedProfileHeaderSavingState.SAVING -> {
-            SaveProfileHeader(
-                saveState = SaveProfileHeaderState.SAVING,
-                onSaveProfile = onSaveProfile,
-                onCancelProfile = onCancelProfile,
-                modifier = modifier.height(height = measuredHeight)
-            )
+            AnimatedProfileHeaderSavingState.SAVING -> {
+                SaveProfileHeader(
+                    saveState = SaveProfileHeaderState.SAVING,
+                    onSaveProfile = onSaveProfile,
+                    onCancelProfile = onCancelProfile,
+                    modifier = modifier.height(height = measuredHeight)
+                )
+            }
         }
     }
 }

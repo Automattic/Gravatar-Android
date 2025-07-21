@@ -28,11 +28,12 @@ internal fun SaveProfileHeader(
     modifier: Modifier = Modifier,
 ) {
     Box(
-        modifier
+        modifier = modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.primary)
             .padding(16.dp)
-            .systemBarsPadding()
+            .systemBarsPadding(),
+        contentAlignment = Alignment.Center,
     ) {
         when (saveState) {
             SaveProfileHeaderState.SAVING -> {
