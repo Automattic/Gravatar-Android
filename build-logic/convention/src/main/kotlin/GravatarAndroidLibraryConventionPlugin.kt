@@ -22,6 +22,7 @@ class GravatarAndroidLibraryConventionPlugin : Plugin<Project> {
                 configureBuildTypes()
                 lint {
                     sarifReport = true
+                    checkDependencies = false
                 }
             }
             configureDetekt()
