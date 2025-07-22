@@ -9,10 +9,12 @@ import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.net.NetworkRequest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.update
 
 internal class AndroidNetworkMonitor(
     context: Context,
@@ -22,31 +24,30 @@ internal class AndroidNetworkMonitor(
     private val connectivityManager: ConnectivityManager =
         context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
 
-    private val state = MutableSharedFlow<NetworkState>(replay = 1)
-
-    private val activeNetworks = mutableSetOf<Network>()
+    private val state = MutableStateFlow<Set<NetworkStatus>>(emptySet())
 
     init {
-        emitInitialState()
         registerNetworkCallback()
     }
 
     private fun registerNetworkCallback() {
         val networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
-                activeNetworks.add(network)
-                emit(NetworkState.CONNECTED)
+                state.update { currentState ->
+                    currentState + NetworkStatus(network, false)
+                }
             }
 
             override fun onLost(network: Network) {
-                activeNetworks.remove(network)
-                if (activeNetworks.isEmpty()) {
-                    emit(NetworkState.DISCONNECTED)
+                state.update { currentState ->
+                    currentState.filter { it.network != network }.toSet()
                 }
             }
 
             override fun onUnavailable() {
-                emit(NetworkState.DISCONNECTED)
+                state.update { currentState ->
+                    emptySet()
+                }
             }
 
             override fun onCapabilitiesChanged(
@@ -54,10 +55,16 @@ internal class AndroidNetworkMonitor(
                 capabilities: NetworkCapabilities
             ) {
                 super.onCapabilitiesChanged(network, capabilities)
-                if (capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)) {
-                    emit(NetworkState.CONNECTED)
-                } else {
-                    emit(NetworkState.DISCONNECTED)
+                state.update { currentState ->
+                    currentState.map { networkStatus ->
+                        if (networkStatus.network == network) {
+                            networkStatus.copy(
+                                hasInternet = capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+                            )
+                        } else {
+                            networkStatus
+                        }
+                    }.toSet()
                 }
             }
         }
@@ -65,29 +72,31 @@ internal class AndroidNetworkMonitor(
             .addCapability(NET_CAPABILITY_INTERNET)
             .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
             .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+            .addTransportType(NetworkCapabilities.TRANSPORT_ETHERNET)
             .build()
 
         connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
     }
 
-    private fun emitInitialState() {
-        val currentNetwork = connectivityManager.activeNetwork
-        val currentCapabilities = connectivityManager.getNetworkCapabilities(currentNetwork)
-        if (currentCapabilities?.hasCapability(NET_CAPABILITY_INTERNET) == true) {
-            emit(NetworkState.CONNECTED)
-        } else {
-            emit(NetworkState.DISCONNECTED)
-        }
-    }
-
     override fun observe(): Flow<NetworkState> {
-        return state.asSharedFlow()
+        return state
+            .map { networks ->
+                if (networks.any { it.hasInternet }) {
+                    NetworkState.CONNECTED
+                } else {
+                    NetworkState.DISCONNECTED
+                }
+            }
             .distinctUntilChanged()
-    }
-
-    private fun emit(value: NetworkState) {
-        applicationScope.launch {
-            state.emit(value)
-        }
+            .shareIn(
+                scope = applicationScope,
+                replay = 1,
+                started = SharingStarted.WhileSubscribed()
+            )
     }
 }
+
+private data class NetworkStatus(
+    val network: Network,
+    val hasInternet: Boolean,
+)
