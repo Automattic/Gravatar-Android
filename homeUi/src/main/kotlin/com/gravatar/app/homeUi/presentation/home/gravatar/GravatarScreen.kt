@@ -42,6 +42,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -66,7 +67,6 @@ import com.gravatar.app.homeUi.presentation.home.gravatar.components.rememberExp
 import com.gravatar.app.homeUi.presentation.home.profile.PullToRefreshBox
 import com.gravatar.app.homeUi.presentation.openAppPermissionSettings
 import com.gravatar.app.homeUi.presentation.withPermission
-import com.gravatar.app.usercomponent.domain.usecase.Logout
 import com.gravatar.restapi.models.Avatar
 import com.yalantis.ucrop.UCrop
 import com.yalantis.ucrop.UCropActivity
@@ -75,7 +75,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.koinViewModel
-import org.koin.compose.koinInject
 import java.io.File
 import java.net.URI
 
@@ -85,7 +84,6 @@ internal fun GravatarScreen(
     viewModel: GravatarViewModel = koinViewModel(viewModelStoreOwner = viewModelStoreOwner),
     snackbarHostState: SnackbarHostState,
 ) {
-    val logout = koinInject<Logout>()
     val scope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsState()
     val lifecycle = LocalLifecycleOwner.current
@@ -150,9 +148,6 @@ internal fun GravatarScreen(
                 mediaPickerLaunched = true
             }
         },
-        onMenuClick = {
-            scope.launch { logout() }
-        }
     )
 }
 
@@ -160,7 +155,6 @@ internal fun GravatarScreen(
 @Composable
 internal fun GravatarScreen(
     uiState: GravatarUiState,
-    onMenuClick: () -> Unit = {},
     onTakePictureClicked: () -> Unit,
     onPickMediaClicked: () -> Unit,
     onEvent: (GravatarEvent) -> Unit = {},
@@ -218,7 +212,6 @@ internal fun GravatarScreen(
                         uiState.avatarUrl,
                         modifier = Modifier.fillMaxWidth(),
                         progress = expansionProgress,
-                        onMenuClick = onMenuClick,
                     )
                 }
             }
@@ -394,6 +387,21 @@ private fun GravatarAction.handle(
                     withDismissAction = true,
                 )
             }
+        }
+
+        is GravatarAction.OpenExternalUrl -> {
+            val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+            context.startActivity(intent)
+        }
+
+        is GravatarAction.ShareProfileUrl -> {
+            val shareIntent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, url)
+                type = "text/plain"
+            }
+            val chooserIntent = Intent.createChooser(shareIntent, null)
+            context.startActivity(chooserIntent)
         }
     }
 }

@@ -27,6 +27,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -47,6 +48,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
@@ -60,6 +62,7 @@ import androidx.compose.ui.util.lerp
 import com.gravatar.app.homeUi.R
 import com.gravatar.app.homeUi.presentation.home.components.AsyncImageWithCachePlaceholder
 import com.gravatar.app.homeUi.presentation.home.components.GravatarAvatarWithShadow
+import com.gravatar.app.homeUi.presentation.home.components.topbar.TopBarPickerPopup
 import com.gravatar.restapi.models.Profile
 
 private val AVATAR_EXPANDED_SIZE = 104.dp
@@ -69,6 +72,7 @@ private val PROFILE_INFO_START_PADDING = 16.dp
 private val PROFILE_INFO_TOP_PADDING = 16.dp
 private val LINK_TOP_PADDING = 16.dp
 private val LINK_INTERNAL_PADDING = 8.dp
+private val MENU_BUTTON_SIZE = 44.dp
 private const val HEADER_STATE_TRANSITION_DURATION = 300
 
 @Composable
@@ -162,11 +166,15 @@ private fun AnimatedProfileHeaderSavedState(
 ) {
     val density = LocalDensity.current
 
+    var topBarMenuVisible by remember { mutableStateOf(false) }
+
     val avatarSize by animateDpAsState(
         targetValue = lerp(AVATAR_EXPANDED_SIZE, AVATAR_COLLAPSED_SIZE, headerState.expansionFraction),
         label = "avatarSize"
     )
     val screenWidth = with(density) { LocalWindowInfo.current.containerSize.width.toDp() }
+
+    var menuButtonSize by remember { mutableStateOf(DpSize.Zero) }
 
     val avatarOffset by animateDpOffsetAsState(
         targetValue = remember(screenWidth, headerState.expansionFraction) {
@@ -218,6 +226,15 @@ private fun AnimatedProfileHeaderSavedState(
             )
         ),
         label = "jobInfoOffset"
+    )
+
+    val labelsEndOffset by animateDpAsState(
+        targetValue = lerp(
+            0.dp,
+            menuButtonSize.width,
+            headerState.expansionFraction
+        ),
+        label = "labelsEndOffset"
     )
 
     var linkSize by remember { mutableStateOf(DpSize.Zero) }
@@ -274,7 +291,7 @@ private fun AnimatedProfileHeaderSavedState(
             DisplayName(
                 displayName = profile.displayName,
                 modifier = Modifier
-                    .padding(start = displayNameOffset.x, top = displayNameOffset.y)
+                    .padding(start = displayNameOffset.x, top = displayNameOffset.y, end = labelsEndOffset)
                     .onGloballyPositioned { coordinates ->
                         displayNameSize = coordinates.size.toDpSize(density)
                     },
@@ -284,11 +301,39 @@ private fun AnimatedProfileHeaderSavedState(
                 JobInfo(
                     jobInfo = jobInfo,
                     modifier = Modifier
-                        .padding(start = jobInfoOffset.x, top = jobInfoOffset.y)
+                        .padding(start = jobInfoOffset.x, top = jobInfoOffset.y, end = labelsEndOffset)
                         .onGloballyPositioned { coordinates ->
                             jobInfoSize = coordinates.size.toDpSize(density)
                         },
                 )
+            }
+
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+            ) {
+                IconButton(
+                    onClick = {
+                        topBarMenuVisible = true
+                    },
+                    modifier = Modifier
+                        .size(MENU_BUTTON_SIZE)
+                        .onGloballyPositioned { coordinates ->
+                            menuButtonSize = coordinates.size.toDpSize(density)
+                        }
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.more_button),
+                        contentDescription = stringResource(R.string.gravatar_tab_header_more_options),
+                    )
+                }
+                if (topBarMenuVisible) {
+                    TopBarPickerPopup(
+                        anchorAlignment = Alignment.End,
+                        offset = DpOffset(0.dp, 6.dp),
+                        onDismissRequest = { topBarMenuVisible = false },
+                    )
+                }
             }
 
             Row(

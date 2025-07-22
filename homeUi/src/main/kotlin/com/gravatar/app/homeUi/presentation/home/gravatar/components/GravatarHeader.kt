@@ -11,7 +11,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.alpha
@@ -30,6 +34,7 @@ import androidx.constraintlayout.compose.layoutId
 import com.gravatar.app.homeUi.R
 import com.gravatar.app.homeUi.presentation.home.components.AsyncImageWithCachePlaceholder
 import com.gravatar.app.homeUi.presentation.home.components.GravatarAvatarWithShadow
+import com.gravatar.app.homeUi.presentation.home.components.topbar.TopBarPickerPopup
 
 val GRAVATAR_HEADER_COLLAPSED_HEIGHT = 2 * 16.dp + 44.dp
 private val CIRCLE_AVATAR_SIZE_EXPANDED = 105.dp
@@ -37,14 +42,14 @@ private val CONTAINER_PADDING = 16.dp
 
 @OptIn(ExperimentalMotionApi::class)
 @Composable
-fun GravatarHeader(
+internal fun GravatarHeader(
     avatarUrl: String?,
     progress: Float,
     modifier: Modifier = Modifier,
-    onMenuClick: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val avatarUrl = avatarUrl.orEmpty()
+    var topBarMenuVisible by remember { mutableStateOf(false) }
 
     val expandedHeight = CIRCLE_AVATAR_SIZE_EXPANDED + CONTAINER_PADDING * 2 + with(LocalDensity.current) {
         WindowInsets.statusBars.getBottom(this).toDp()
@@ -93,7 +98,9 @@ fun GravatarHeader(
 
             // Menu button
             IconButton(
-                onClick = onMenuClick,
+                onClick = {
+                    topBarMenuVisible = true
+                },
                 modifier = Modifier
                     .layoutId("menuButton")
             ) {
@@ -101,6 +108,15 @@ fun GravatarHeader(
                     painter = painterResource(id = R.drawable.more_button),
                     contentDescription = stringResource(R.string.gravatar_tab_header_more_options),
                 )
+            }
+
+            Box(modifier = Modifier.layoutId("menuPopup")) {
+                if (topBarMenuVisible) {
+                    TopBarPickerPopup(
+                        anchorAlignment = Alignment.End,
+                        onDismissRequest = { topBarMenuVisible = false },
+                    )
+                }
             }
         }
     }

@@ -10,4 +10,6 @@ sealed class GravatarAction {
     data object AvatarDeletionFailed : GravatarAction()
     data object DownloadManagerNotAvailable : GravatarAction()
     data object AvatarDownloadStarted : GravatarAction()
+    data class OpenExternalUrl(val url: String) : GravatarAction()
+    data class ShareProfileUrl(val url: String) : GravatarAction()
 }

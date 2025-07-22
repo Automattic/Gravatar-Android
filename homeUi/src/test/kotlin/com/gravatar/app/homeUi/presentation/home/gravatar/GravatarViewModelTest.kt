@@ -13,6 +13,7 @@ import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrl
 import com.gravatar.app.usercomponent.domain.usecase.SelectUserAvatar
 import com.gravatar.app.usercomponent.domain.usecase.UploadUserAvatar
 import com.gravatar.restapi.models.Avatar
+import com.gravatar.restapi.models.Profile
 import com.gravatar.services.ErrorType
 import com.gravatar.services.GravatarResult
 import com.gravatar.types.Hash
@@ -55,6 +56,7 @@ class GravatarViewModelTest {
     private lateinit var viewModel: GravatarViewModel
 
     private val avatarUrlFlow: MutableSharedFlow<URL?> = MutableSharedFlow()
+    private val profileFlow: MutableSharedFlow<Profile?> = MutableSharedFlow()
 
     @Test
     fun `init should fetch avatars`() = runTest {
@@ -869,6 +871,8 @@ class GravatarViewModelTest {
     }
 
     private fun initViewModel() {
+        every { userRepository.getProfile() } returns profileFlow
+
         viewModel = GravatarViewModel(
             getAvatarUrl = getAvatarUrl,
             selectUserAvatar = selectUserAvatar,
