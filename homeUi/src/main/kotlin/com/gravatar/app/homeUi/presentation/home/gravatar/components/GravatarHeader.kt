@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
-import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -35,6 +34,8 @@ import androidx.constraintlayout.compose.layoutId
 import com.gravatar.app.homeUi.R
 import com.gravatar.app.homeUi.presentation.home.components.AsyncImageWithCachePlaceholder
 import com.gravatar.app.homeUi.presentation.home.components.GravatarAvatarWithShadow
+import com.gravatar.app.homeUi.presentation.home.components.TopBarOption
+import com.gravatar.app.homeUi.presentation.home.components.TopBarPickerPopup
 
 val GRAVATAR_HEADER_COLLAPSED_HEIGHT = 2 * 16.dp + 44.dp
 private val CIRCLE_AVATAR_SIZE_EXPANDED = 105.dp

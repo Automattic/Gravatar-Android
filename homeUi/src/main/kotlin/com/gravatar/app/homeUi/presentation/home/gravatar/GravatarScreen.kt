@@ -54,13 +54,13 @@ import com.gravatar.app.homeUi.GravatarFileProvider
 import com.gravatar.app.homeUi.R
 import com.gravatar.app.homeUi.presentation.home.components.ErrorViewWithRetry
 import com.gravatar.app.homeUi.presentation.home.components.PermissionRationaleDialog
+import com.gravatar.app.homeUi.presentation.home.components.TopBarOption
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.AvatarDeletionConfirmationDialog
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.AvatarOption
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.CollapsibleTopAppBar
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.FailedAvatarUploadAlertDialog
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.GRAVATAR_HEADER_COLLAPSED_HEIGHT
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.GravatarHeader
-import com.gravatar.app.homeUi.presentation.home.gravatar.components.TopBarOption
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.UploadNewAvatarSection
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.avatarSize
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.avatarsGridSection
