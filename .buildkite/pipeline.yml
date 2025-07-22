@@ -18,6 +18,19 @@ steps:
   # Wait for Gradle Wrapper to be validated before running any other jobs
   - wait
 
+  - label: ":danger: Danger - PR Check"
+    command: danger
+    key: danger
+    if: build.pull_request.id != null
+    retry:
+      manual:
+        permit_on_passed: true
+    agents:
+      queue: linter
+    notify:
+      - github_commit_status:
+          context: Danger - PR Check
+
   - label: ⚒️ Build
     command: ./gradlew assembleDebug
     notify:
