@@ -5,6 +5,7 @@ import com.gravatar.app.homeUi.presentation.FileUtils
 import com.gravatar.app.homeUi.presentation.home.components.topbar.TopBarPickerPopupViewModel
 import com.gravatar.app.homeUi.presentation.home.gravatar.GravatarViewModel
 import com.gravatar.app.homeUi.presentation.home.profile.ProfileViewModel
+import com.gravatar.app.homeUi.presentation.home.share.ShareViewModel
 import com.gravatar.app.usercomponent.di.userComponentModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.factoryOf
@@ -17,6 +18,7 @@ val homeUiModule = module {
     viewModelOf(::ProfileViewModel)
     viewModelOf(::GravatarViewModel)
     viewModelOf(::TopBarPickerPopupViewModel)
+    viewModelOf(::ShareViewModel)
 
     includes(userComponentModule)
 }

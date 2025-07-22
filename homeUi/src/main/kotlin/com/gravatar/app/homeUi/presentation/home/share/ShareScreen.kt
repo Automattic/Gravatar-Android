@@ -1,18 +1,43 @@
 package com.gravatar.app.homeUi.presentation.home.share
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.ViewModelStoreOwner
+import com.gravatar.app.homeUi.presentation.home.share.components.ShareHeader
+import org.koin.androidx.compose.koinViewModel
 
+@Suppress("UnusedParameter")
 @Composable
-fun ShareScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+internal fun ShareScreen(
+    viewModelStoreOwner: ViewModelStoreOwner,
+    viewModel: ShareViewModel = koinViewModel(viewModelStoreOwner = viewModelStoreOwner),
+    snackbarHostState: SnackbarHostState
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    ShareScreen(
+        uiState = uiState,
+        onEvent = { event ->
+            viewModel.onEvent(event)
+        }
+    )
+}
+
+@Suppress("UnusedParameter")
+@Composable
+internal fun ShareScreen(uiState: ShareUiState, onEvent: (ShareEvent) -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
     ) {
-        Text("Share Screen")
+        ShareHeader()
     }
 }
