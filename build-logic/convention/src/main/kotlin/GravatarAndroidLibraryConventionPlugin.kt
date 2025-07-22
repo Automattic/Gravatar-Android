@@ -32,7 +32,7 @@ class GravatarAndroidLibraryConventionPlugin : Plugin<Project> {
     private fun LibraryExtension.configureBuildTypes() {
         buildTypes {
             getByName("release") {
-                isMinifyEnabled = true
+                isMinifyEnabled = false
                 proguardFiles(
                     getDefaultProguardFile("proguard-android-optimize.txt"),
                     "proguard-rules.pro",
