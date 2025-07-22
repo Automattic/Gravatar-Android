@@ -24,7 +24,7 @@ internal class AndroidNetworkMonitor(
     private val connectivityManager: ConnectivityManager =
         context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
 
-    private val state = MutableStateFlow<Set<NetworkStatus>>(emptySet())
+    private val state = MutableStateFlow<Set<Network>>(emptySet())
 
     init {
         registerNetworkCallback()
@@ -32,15 +32,9 @@ internal class AndroidNetworkMonitor(
 
     private fun registerNetworkCallback() {
         val networkCallback = object : ConnectivityManager.NetworkCallback() {
-            override fun onAvailable(network: Network) {
-                state.update { currentState ->
-                    currentState + NetworkStatus(network, false)
-                }
-            }
-
             override fun onLost(network: Network) {
                 state.update { currentState ->
-                    currentState.filter { it.network != network }.toSet()
+                    currentState.filter { it != network }.toSet()
                 }
             }
 
@@ -56,15 +50,11 @@ internal class AndroidNetworkMonitor(
             ) {
                 super.onCapabilitiesChanged(network, capabilities)
                 state.update { currentState ->
-                    currentState.map { networkStatus ->
-                        if (networkStatus.network == network) {
-                            networkStatus.copy(
-                                hasInternet = capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
-                            )
-                        } else {
-                            networkStatus
-                        }
-                    }.toSet()
+                    if (capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)) {
+                        (currentState + network).toSet()
+                    } else {
+                        currentState.filter { it != network }.toSet()
+                    }
                 }
             }
         }
@@ -81,7 +71,7 @@ internal class AndroidNetworkMonitor(
     override fun observe(): Flow<NetworkState> {
         return state
             .map { networks ->
-                if (networks.any { it.hasInternet }) {
+                if (networks.isNotEmpty()) {
                     NetworkState.CONNECTED
                 } else {
                     NetworkState.DISCONNECTED
@@ -95,8 +85,3 @@ internal class AndroidNetworkMonitor(
             )
     }
 }
-
-private data class NetworkStatus(
-    val network: Network,
-    val hasInternet: Boolean,
-)
