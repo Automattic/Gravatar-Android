@@ -95,18 +95,20 @@ internal class GravatarViewModel(
     }
 
     private fun openProfileUrl() {
-        profile?.profileUrl?.toString()?.let { url ->
+        getProfileUrl()?.let { url ->
             openUrl(url)
         }
     }
 
     private fun shareProfileUrl() {
         viewModelScope.launch {
-            profile?.profileUrl?.toString()?.let { url ->
+            getProfileUrl()?.let { url ->
                 _actions.send(GravatarAction.ShareProfileUrl(url))
             }
         }
     }
+
+    private fun getProfileUrl(): String? = profile?.profileUrl?.toString()
 
     private fun openGravatarWebsite() {
         openUrl("https://www.gravatar.com")
