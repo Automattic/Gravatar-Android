@@ -11,6 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 internal class AndroidNetworkMonitor(
@@ -23,6 +24,8 @@ internal class AndroidNetworkMonitor(
 
     private val state = MutableSharedFlow<NetworkState>(replay = 1)
 
+    private val activeNetworks = mutableSetOf<Network>()
+
     init {
         emitInitialState()
         registerNetworkCallback()
@@ -31,15 +34,15 @@ internal class AndroidNetworkMonitor(
     private fun registerNetworkCallback() {
         val networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
-                connectivityManager.getNetworkCapabilities(network)?.let {
-                    if (it.hasCapability(NET_CAPABILITY_INTERNET)) {
-                        emit(NetworkState.CONNECTED)
-                    }
-                }
+                activeNetworks.add(network)
+                emit(NetworkState.CONNECTED)
             }
 
             override fun onLost(network: Network) {
-                emit(NetworkState.DISCONNECTED)
+                activeNetworks.remove(network)
+                if (activeNetworks.isEmpty()) {
+                    emit(NetworkState.DISCONNECTED)
+                }
             }
 
             override fun onUnavailable() {
@@ -61,7 +64,6 @@ internal class AndroidNetworkMonitor(
         val networkRequest = NetworkRequest.Builder()
             .addCapability(NET_CAPABILITY_INTERNET)
             .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-            .addTransportType(NetworkCapabilities.TRANSPORT_ETHERNET)
             .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
             .build()
 
@@ -80,6 +82,7 @@ internal class AndroidNetworkMonitor(
 
     override fun observe(): Flow<NetworkState> {
         return state.asSharedFlow()
+            .distinctUntilChanged()
     }
 
     private fun emit(value: NetworkState) {
