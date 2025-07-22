@@ -35,7 +35,10 @@ internal fun HomeNavigation(
         }
 
         composable<HomeDestination.Share> {
-            ShareScreen()
+            ShareScreen(
+                viewModelStoreOwner = navController.getBackStackEntry(HomeRoute::class),
+                snackbarHostState = snackbarHostState
+            )
         }
     }
 }
