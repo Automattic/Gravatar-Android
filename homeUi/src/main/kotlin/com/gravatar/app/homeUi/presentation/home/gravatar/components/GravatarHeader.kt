@@ -34,8 +34,7 @@ import androidx.constraintlayout.compose.layoutId
 import com.gravatar.app.homeUi.R
 import com.gravatar.app.homeUi.presentation.home.components.AsyncImageWithCachePlaceholder
 import com.gravatar.app.homeUi.presentation.home.components.GravatarAvatarWithShadow
-import com.gravatar.app.homeUi.presentation.home.components.TopBarOption
-import com.gravatar.app.homeUi.presentation.home.components.TopBarPickerPopup
+import com.gravatar.app.homeUi.presentation.home.components.topbar.TopBarPickerPopup
 
 val GRAVATAR_HEADER_COLLAPSED_HEIGHT = 2 * 16.dp + 44.dp
 private val CIRCLE_AVATAR_SIZE_EXPANDED = 105.dp
@@ -47,7 +46,6 @@ internal fun GravatarHeader(
     avatarUrl: String?,
     progress: Float,
     modifier: Modifier = Modifier,
-    onTopBarOptionClicked: (TopBarOption) -> Unit = {},
 ) {
     val context = LocalContext.current
     val avatarUrl = avatarUrl.orEmpty()
@@ -117,10 +115,6 @@ internal fun GravatarHeader(
                     TopBarPickerPopup(
                         anchorAlignment = Alignment.End,
                         onDismissRequest = { topBarMenuVisible = false },
-                        onTopBarOptionClicked = { option ->
-                            topBarMenuVisible = false
-                            onTopBarOptionClicked(option)
-                        }
                     )
                 }
             }

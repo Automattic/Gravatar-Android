@@ -10,12 +10,10 @@ import com.gravatar.app.testUtils.CoroutineTestRule
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import com.gravatar.app.usercomponent.domain.usecase.DeleteUserAvatar
 import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrl
-import com.gravatar.app.usercomponent.domain.usecase.Logout
 import com.gravatar.app.usercomponent.domain.usecase.SelectUserAvatar
 import com.gravatar.app.usercomponent.domain.usecase.UploadUserAvatar
 import com.gravatar.restapi.models.Avatar
 import com.gravatar.restapi.models.Profile
-import com.gravatar.restapi.models.ProfileContactInfo
 import com.gravatar.services.ErrorType
 import com.gravatar.services.GravatarResult
 import com.gravatar.types.Hash
@@ -53,7 +51,6 @@ class GravatarViewModelTest {
     private val selectUserAvatar: SelectUserAvatar = mockk()
     private val deleteUserAvatar: DeleteUserAvatar = mockk()
     private val uploadUserAvatar: UploadUserAvatar = mockk()
-    private val logout: Logout = mockk()
     private val fileUtils: FileUtils = mockk()
     private val imageDownloader: ImageDownloader = mockk()
     private lateinit var viewModel: GravatarViewModel
@@ -873,75 +870,6 @@ class GravatarViewModelTest {
         }
     }
 
-    @Test
-    fun `onEvent OnLogoutSelected should invoke logout usecase`() = runTest {
-        // Given
-        coEvery { userRepository.getAvatars() } returns Result.success(emptyList())
-        coEvery { logout.invoke() } returns Unit
-        initViewModel()
-
-        // When
-        viewModel.onEvent(GravatarEvent.OnLogoutSelected)
-        advanceUntilIdle()
-
-        // Then
-        coVerify { logout.invoke() }
-    }
-
-    @Test
-    fun `onEvent OnProfileLinkClicked should emit OpenProfileUrl action with correct URL`() = runTest {
-        // Given
-        coEvery { userRepository.getAvatars() } returns Result.success(emptyList())
-        initViewModel()
-        advanceUntilIdle()
-
-        val testProfile = createProfile()
-        profileFlow.emit(testProfile)
-
-        // When
-        viewModel.onEvent(GravatarEvent.OnProfileLinkClicked)
-
-        // Then
-        viewModel.actions.test {
-            assertEquals(GravatarAction.OpenExternalUrl(testProfile.profileUrl.toString()), awaitItem())
-        }
-    }
-
-    @Test
-    fun `onEvent OnGravatarLinkClicked should emit OpenProfileUrl action with Gravatar URL`() = runTest {
-        // Given
-        coEvery { userRepository.getAvatars() } returns Result.success(emptyList())
-        initViewModel()
-        advanceUntilIdle()
-
-        // When
-        viewModel.onEvent(GravatarEvent.OnGravatarLinkClicked)
-
-        // Then
-        viewModel.actions.test {
-            assertEquals(GravatarAction.OpenExternalUrl("https://www.gravatar.com"), awaitItem())
-        }
-    }
-
-    @Test
-    fun `onEvent OnShareProfileClicked should emit ShareProfileUrl action with correct URL`() = runTest {
-        // Given
-        coEvery { userRepository.getAvatars() } returns Result.success(emptyList())
-        initViewModel()
-        advanceUntilIdle()
-
-        val testProfile = createProfile()
-        profileFlow.emit(testProfile)
-
-        // When
-        viewModel.onEvent(GravatarEvent.OnShareProfileClicked)
-
-        // Then
-        viewModel.actions.test {
-            assertEquals(GravatarAction.ShareProfileUrl(testProfile.profileUrl.toString()), awaitItem())
-        }
-    }
-
     private fun initViewModel() {
         every { userRepository.getProfile() } returns profileFlow
 
@@ -950,7 +878,6 @@ class GravatarViewModelTest {
             selectUserAvatar = selectUserAvatar,
             deleteUserAvatar = deleteUserAvatar,
             uploadUserAvatar = uploadUserAvatar,
-            logout = logout,
             userRepository = userRepository,
             fileUtils = fileUtils,
             imageDownloader = imageDownloader,
@@ -970,26 +897,5 @@ class GravatarViewModelTest {
         altText = "alt$id"
         updatedDate = ""
         selected = isSelected
-    }
-
-    private fun createProfile(): Profile = Profile {
-        hash = "test-hash"
-        displayName = "Test User"
-        profileUrl = URI.create("https://gravatar.com/test-hash")
-        avatarUrl = URI.create("https://gravatar.com/avatar/test-hash")
-        avatarAltText = "Avatar for Test User"
-        description = "Test description"
-        pronouns = "They/Them"
-        pronunciation = "Test pronunciation"
-        location = "Test location"
-        jobTitle = "Test job title"
-        company = "Test company"
-        firstName = "Test"
-        lastName = "User"
-        verifiedAccounts = emptyList()
-        contactInfo = ProfileContactInfo {
-            cellPhone = "123-456-7890"
-            email = "test@example.com"
-        }
     }
 }

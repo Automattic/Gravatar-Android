@@ -10,10 +10,8 @@ import com.gravatar.app.homeUi.presentation.FileUtils
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import com.gravatar.app.usercomponent.domain.usecase.DeleteUserAvatar
 import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrl
-import com.gravatar.app.usercomponent.domain.usecase.Logout
 import com.gravatar.app.usercomponent.domain.usecase.SelectUserAvatar
 import com.gravatar.app.usercomponent.domain.usecase.UploadUserAvatar
-import com.gravatar.restapi.models.Profile
 import com.gravatar.services.GravatarResult
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +30,6 @@ internal class GravatarViewModel(
     private val selectUserAvatar: SelectUserAvatar,
     private val deleteUserAvatar: DeleteUserAvatar,
     private val uploadUserAvatar: UploadUserAvatar,
-    private val logout: Logout,
     private val userRepository: UserRepository,
     private val fileUtils: FileUtils,
     private val imageDownloader: ImageDownloader,
@@ -45,7 +42,6 @@ internal class GravatarViewModel(
     val actions = _actions.receiveAsFlow()
 
     private val avatarSelectionQueue = Channel<String>(Channel.CONFLATED)
-    private var profile: Profile? = null
 
     init {
         fetchAvatars(isRefreshing = false)
@@ -57,15 +53,6 @@ internal class GravatarViewModel(
                 }
         }
         collectUserAvatar()
-        collectUserProfile()
-    }
-
-    private fun collectUserProfile() {
-        userRepository.getProfile()
-            .onEach { newProfile ->
-                profile = newProfile
-            }
-            .launchIn(viewModelScope)
     }
 
     fun onEvent(event: GravatarEvent) {
@@ -81,42 +68,6 @@ internal class GravatarViewModel(
             is GravatarEvent.OnDownloadAvatar -> downloadAvatar(event.avatarId)
             is GravatarEvent.OnShowDeleteConfirmation -> showDeleteConfirmation(event.avatarId)
             GravatarEvent.OnDismissDeleteConfirmation -> dismissDeleteConfirmation()
-            GravatarEvent.OnLogoutSelected -> logoutUser()
-            GravatarEvent.OnProfileLinkClicked -> openProfileUrl()
-            GravatarEvent.OnGravatarLinkClicked -> openGravatarWebsite()
-            GravatarEvent.OnShareProfileClicked -> shareProfileUrl()
-        }
-    }
-
-    private fun openUrl(url: String) {
-        viewModelScope.launch {
-            _actions.send(GravatarAction.OpenExternalUrl(url))
-        }
-    }
-
-    private fun openProfileUrl() {
-        getProfileUrl()?.let { url ->
-            openUrl(url)
-        }
-    }
-
-    private fun shareProfileUrl() {
-        viewModelScope.launch {
-            getProfileUrl()?.let { url ->
-                _actions.send(GravatarAction.ShareProfileUrl(url))
-            }
-        }
-    }
-
-    private fun getProfileUrl(): String? = profile?.profileUrl?.toString()
-
-    private fun openGravatarWebsite() {
-        openUrl("https://www.gravatar.com")
-    }
-
-    private fun logoutUser() {
-        viewModelScope.launch {
-            logout()
         }
     }
 

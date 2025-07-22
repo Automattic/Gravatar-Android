@@ -54,7 +54,6 @@ import com.gravatar.app.homeUi.GravatarFileProvider
 import com.gravatar.app.homeUi.R
 import com.gravatar.app.homeUi.presentation.home.components.ErrorViewWithRetry
 import com.gravatar.app.homeUi.presentation.home.components.PermissionRationaleDialog
-import com.gravatar.app.homeUi.presentation.home.components.TopBarOption
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.AvatarDeletionConfirmationDialog
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.AvatarOption
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.CollapsibleTopAppBar
@@ -175,15 +174,6 @@ internal fun GravatarScreen(
         avatarToDownload = null
     }
 
-    val onTopBarOptionClicked: (TopBarOption) -> Unit = { option ->
-        when (option) {
-            TopBarOption.Logout -> onEvent(GravatarEvent.OnLogoutSelected)
-            TopBarOption.Gravatar -> onEvent(GravatarEvent.OnGravatarLinkClicked)
-            TopBarOption.Profile -> onEvent(GravatarEvent.OnProfileLinkClicked)
-            TopBarOption.Share -> onEvent(GravatarEvent.OnShareProfileClicked)
-        }
-    }
-
     val permissionAwareDownloadImageCallback: (Avatar) -> Unit = { avatar ->
         if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q) {
             context.withPermission(
@@ -222,7 +212,6 @@ internal fun GravatarScreen(
                         uiState.avatarUrl,
                         modifier = Modifier.fillMaxWidth(),
                         progress = expansionProgress,
-                        onTopBarOptionClicked = onTopBarOptionClicked,
                     )
                 }
             }
