@@ -72,7 +72,7 @@ private val PROFILE_INFO_START_PADDING = 16.dp
 private val PROFILE_INFO_TOP_PADDING = 16.dp
 private val LINK_TOP_PADDING = 16.dp
 private val LINK_INTERNAL_PADDING = 8.dp
-private val MENU_BUTTON_SIZE = 44.dp
+internal val MENU_BUTTON_SIZE = 44.dp
 private const val HEADER_STATE_TRANSITION_DURATION = 300
 
 @Composable
