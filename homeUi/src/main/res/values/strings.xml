@@ -67,5 +67,7 @@
     <string name="gravatar_tab_no_avatar_selected_info">No avatar selected. Showing the default avatar.</string>
     <string name="home_no_internet_available">No internet connection</string>
     <string name="share_tab_scan_qr_code">Let others scan this QR code to share your contact information.</string>
-
+    <string name="share_tab_private_contact_info_title">Share Private Contact Info</string>
+    <string name="share_tab_private_contact_email_placeholder">Email</string>
+    <string name="share_tab_private_contact_phone_number_placeholder">Phone Number</string>
 </resources>

@@ -24,8 +24,22 @@ internal class ShareViewModel(
         collectAvatarUrl()
     }
 
-    @Suppress("UnusedParameter")
-    fun onEvent(shareEvent: ShareEvent) = Unit
+    fun onEvent(shareEvent: ShareEvent) {
+        when (shareEvent) {
+            is ShareEvent.OnEmailValueChanged -> {
+                _uiState.update { it.copy(emailValue = shareEvent.value) }
+            }
+            is ShareEvent.OnEmailSharingChanged -> {
+                _uiState.update { it.copy(isEmailShared = shareEvent.isShared) }
+            }
+            is ShareEvent.OnPhoneValueChanged -> {
+                _uiState.update { it.copy(phoneValue = shareEvent.value) }
+            }
+            is ShareEvent.OnPhoneSharingChanged -> {
+                _uiState.update { it.copy(isPhoneShared = shareEvent.isShared) }
+            }
+        }
+    }
 
     private fun collectAvatarUrl() {
         getAvatarUrl()
