@@ -11,7 +11,9 @@ import coil.Coil
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.test.FakeImageLoaderEngine
+import com.dropbox.differ.SimpleImageComparator
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
+import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.RoborazziRule
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Before
@@ -37,6 +39,12 @@ abstract class RoborazziTest {
     val roborazziRule = RoborazziRule(
         options = RoborazziRule.Options(
             outputDirectoryPath = SCREENSHOTS_PATH,
+            roborazziOptions = RoborazziOptions(
+                compareOptions = RoborazziOptions.CompareOptions(
+                    imageComparator = SimpleImageComparator(maxDistance = 0.007F, hShift = 1),
+                    changeThreshold = 0.005f,
+                ),
+            ),
         ),
     )
 

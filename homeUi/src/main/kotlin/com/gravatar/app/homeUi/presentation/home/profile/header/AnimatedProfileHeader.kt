@@ -39,9 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -60,7 +58,7 @@ import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
 import com.gravatar.app.homeUi.R
-import com.gravatar.app.homeUi.presentation.home.components.AsyncImageWithCachePlaceholder
+import com.gravatar.app.homeUi.presentation.home.components.BlurredHeaderBackground
 import com.gravatar.app.homeUi.presentation.home.components.GravatarAvatarWithShadow
 import com.gravatar.app.homeUi.presentation.home.components.topbar.TopBarPickerPopup
 import com.gravatar.restapi.models.Profile
@@ -72,7 +70,7 @@ private val PROFILE_INFO_START_PADDING = 16.dp
 private val PROFILE_INFO_TOP_PADDING = 16.dp
 private val LINK_TOP_PADDING = 16.dp
 private val LINK_INTERNAL_PADDING = 8.dp
-private val MENU_BUTTON_SIZE = 44.dp
+internal val MENU_BUTTON_SIZE = 44.dp
 private const val HEADER_STATE_TRANSITION_DURATION = 300
 
 @Composable
@@ -258,19 +256,10 @@ private fun AnimatedProfileHeaderSavedState(
         label = "linkAlpha"
     )
 
-    Box(
-        modifier
-            .fillMaxWidth()
+    BlurredHeaderBackground(
+        avatarUrl = avatarUrl.orEmpty(),
+        modifier = modifier.fillMaxWidth(),
     ) {
-        // Background image with blur
-        AsyncImageWithCachePlaceholder(
-            avatarUrl.orEmpty(),
-            modifier = Modifier
-                .matchParentSize()
-                .blur(radius = 40.dp, edgeTreatment = BlurredEdgeTreatment.Rectangle)
-                .alpha(0.7f)
-        )
-
         // Content container with animated layout
         Box(
             modifier = Modifier

@@ -4,4 +4,5 @@ import com.gravatar.restapi.models.Profile
 
 internal data class ShareUiState(
     val profile: Profile? = null,
+    val avatarUrl: String? = null,
 )
