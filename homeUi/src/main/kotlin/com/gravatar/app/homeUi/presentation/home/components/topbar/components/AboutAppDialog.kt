@@ -27,7 +27,9 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.net.toUri
 import com.gravatar.app.design.theme.GravatarAppTheme
+import com.gravatar.app.homeUi.AppVersion
 import com.gravatar.app.homeUi.R
+import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,6 +38,7 @@ internal fun AboutAppDialog(
     onDismissRequest: () -> Unit,
 ) {
     if (visible) {
+        val appVersion: AppVersion = koinInject()
         Dialog(
             onDismissRequest = onDismissRequest,
             properties = DialogProperties(
@@ -43,7 +46,7 @@ internal fun AboutAppDialog(
             ),
             content = {
                 AboutAppDialogContent(
-                    appVersion = "0.0.1",
+                    appVersion = appVersion.value,
                     onDone = onDismissRequest,
                     modifier = Modifier
                 )
@@ -88,7 +91,7 @@ internal fun AboutAppDialogContent(
             }
             Column {
                 Text(
-                    text = stringResource(R.string.about_abb_dialog_get_help),
+                    text = stringResource(R.string.about_app_dialog_get_help),
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.SemiBold
                     ),

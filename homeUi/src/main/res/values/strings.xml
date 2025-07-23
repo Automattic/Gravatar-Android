@@ -56,7 +56,6 @@
     <string name="gravatar_tab_topbar_menu_gravatar" translatable="false">Gravatar.com</string>
     <string name="gravatar_tab_topbar_menu_sign_out">Sign out</string>
     <string name="gravatar_tab_topbar_menu_about">About this app</string>
-    <string name="about_app_description">Gravatar is a service for providing globally unique avatars. This app allows you to manage your Gravatar profile and avatars.</string>
     <string name="permission_required_alert_title">Permission required</string>
     <string name="permission_required_open_settings">Open settings</string>
     <string name="permission_required_dismiss">Dismiss</string>
@@ -73,7 +72,7 @@
     <string name="share_tab_private_contact_email_placeholder">Email</string>
     <string name="share_tab_private_contact_phone_number_placeholder">Phone Number</string>
     <string name="about_app_dialog_about_gravatar">About Gravatar</string>
-    <string name="about_abb_dialog_get_help">Get help</string>
+    <string name="about_app_dialog_get_help">Get help</string>
     <string name="about_app_dialog_legal">Legal</string>
     <string name="about_app_dialog_terms_of_service">Terms of Service</string>
     <string name="about_app_dialog_privacy_policy">Privacy Policy</string>
