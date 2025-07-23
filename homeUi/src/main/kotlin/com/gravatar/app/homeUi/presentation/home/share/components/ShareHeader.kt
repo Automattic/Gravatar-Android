@@ -23,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,14 +34,17 @@ import com.gravatar.app.homeUi.R
 import com.gravatar.app.homeUi.presentation.home.components.BlurredHeaderBackground
 import com.gravatar.app.homeUi.presentation.home.components.topbar.TopBarPickerPopup
 import com.gravatar.app.homeUi.presentation.home.profile.header.MENU_BUTTON_SIZE
+import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 
 @Composable
 internal fun ShareHeader(
     avatarUrl: String,
+    vCardQrCodeData: String,
     modifier: Modifier = Modifier,
     onAboutAppClicked: () -> Unit = {},
 ) {
     var topBarMenuVisible by remember { mutableStateOf(false) }
+    val qrcodePainter: Painter = rememberQrCodePainter(vCardQrCodeData)
 
     BlurredHeaderBackground(
         avatarUrl = avatarUrl,
@@ -59,7 +63,9 @@ internal fun ShareHeader(
                     .padding(top = 6.dp)
                     .weight(1f),
             ) {
-                Box(
+                Image(
+                    painter = qrcodePainter,
+                    contentDescription = null,
                     modifier = Modifier
                         .background(Color.White, RoundedCornerShape(4.dp))
                         .fillMaxWidth()
@@ -67,6 +73,7 @@ internal fun ShareHeader(
                             ratio = 1f,
                             matchHeightConstraintsFirst = false,
                         )
+                        .padding(6.dp)
                 )
                 Text(
                     text = stringResource(R.string.share_tab_scan_qr_code),
@@ -111,6 +118,7 @@ private fun ShareHeaderPreview() {
     GravatarAppTheme {
         ShareHeader(
             avatarUrl = "url",
+            vCardQrCodeData = "BEGIN:VCARD\nVERSION:3.0\nFN:Preview User\nEND:VCARD",
             modifier = Modifier
                 .fillMaxWidth()
         )

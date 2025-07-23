@@ -57,6 +57,7 @@ internal fun ShareScreen(uiState: ShareUiState, onEvent: (ShareEvent) -> Unit) {
                 onAboutAppClicked = {
                     onEvent(ShareEvent.OnAboutAppClicked)
                 },
+                vCardQrCodeData = uiState.vCardQrCodeData,
                 modifier = Modifier
                     .fillMaxWidth(),
             )
