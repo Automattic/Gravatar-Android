@@ -34,6 +34,10 @@ import com.gravatar.app.homeUi.R
 import com.gravatar.app.homeUi.presentation.home.components.BlurredHeaderBackground
 import com.gravatar.app.homeUi.presentation.home.components.topbar.TopBarPickerPopup
 import com.gravatar.app.homeUi.presentation.home.profile.header.MENU_BUTTON_SIZE
+import io.github.alexzhirkevich.qrose.options.QrBallShape
+import io.github.alexzhirkevich.qrose.options.QrFrameShape
+import io.github.alexzhirkevich.qrose.options.QrPixelShape
+import io.github.alexzhirkevich.qrose.options.roundCorners
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 
 @Composable
@@ -44,7 +48,13 @@ internal fun ShareHeader(
     onAboutAppClicked: () -> Unit = {},
 ) {
     var topBarMenuVisible by remember { mutableStateOf(false) }
-    val qrcodePainter: Painter = rememberQrCodePainter(vCardQrCodeData)
+    val qrcodePainter: Painter = rememberQrCodePainter(vCardQrCodeData) {
+        shapes {
+            ball = QrBallShape.roundCorners(.30f)
+            darkPixel = QrPixelShape.roundCorners()
+            frame = QrFrameShape.roundCorners(.15f)
+        }
+    }
 
     BlurredHeaderBackground(
         avatarUrl = avatarUrl,
