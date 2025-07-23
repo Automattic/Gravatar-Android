@@ -870,6 +870,56 @@ class GravatarViewModelTest {
         }
     }
 
+    @Test
+    fun `onEvent OnAboutAppClicked should show about app dialog`() = runTest {
+        // Given
+        val avatars = createAvatars()
+        coEvery { userRepository.getAvatars() } returns Result.success(avatars)
+        initViewModel()
+        advanceUntilIdle()
+
+        // When
+        viewModel.onEvent(GravatarEvent.OnAboutAppClicked)
+        advanceUntilIdle()
+
+        // Then
+        viewModel.uiState.test {
+            val expectedState = GravatarUiState(
+                isLoading = false,
+                avatars = avatars,
+                isAboutAppDialogVisible = true
+            )
+            assertEquals(expectedState, awaitItem())
+        }
+    }
+
+    @Test
+    fun `onEvent OnDismissAboutAppDialog should hide about app dialog`() = runTest {
+        // Given
+        val avatars = createAvatars()
+        coEvery { userRepository.getAvatars() } returns Result.success(avatars)
+        initViewModel()
+        advanceUntilIdle()
+
+        // First show the dialog
+        viewModel.onEvent(GravatarEvent.OnAboutAppClicked)
+        advanceUntilIdle()
+
+        // When
+        viewModel.onEvent(GravatarEvent.OnDismissAboutAppDialog)
+        advanceUntilIdle()
+
+        // Then
+        viewModel.uiState.test {
+            val expectedState = GravatarUiState(
+                isLoading = false,
+                avatars = avatars,
+                isAboutAppDialogVisible = false
+            )
+            assertEquals(expectedState, awaitItem())
+        }
+    }
+
     private fun initViewModel() {
         every { userRepository.getProfile() } returns profileFlow
 

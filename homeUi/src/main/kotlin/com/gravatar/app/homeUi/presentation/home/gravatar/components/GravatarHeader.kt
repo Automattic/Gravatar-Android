@@ -42,6 +42,7 @@ private val CONTAINER_PADDING = 16.dp
 internal fun GravatarHeader(
     avatarUrl: String?,
     progress: Float,
+    onAboutAppClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -105,6 +106,7 @@ internal fun GravatarHeader(
                     TopBarPickerPopup(
                         anchorAlignment = Alignment.End,
                         onDismissRequest = { topBarMenuVisible = false },
+                        onAboutAppClicked = onAboutAppClicked
                     )
                 }
             }
@@ -118,6 +120,7 @@ fun GravatarHeaderMotionCollapsedPreview() {
     GravatarHeader(
         avatarUrl = "https://gravatar.com/avatar/test",
         progress = 0f,
+        onAboutAppClicked = {},
         modifier = Modifier.fillMaxWidth(),
     )
 }
@@ -128,6 +131,7 @@ fun GravatarHeaderMotionHalfExpandedPreview() {
     GravatarHeader(
         avatarUrl = "https://gravatar.com/avatar/test",
         progress = 0.5f,
+        onAboutAppClicked = {},
         modifier = Modifier.fillMaxWidth(),
     )
 }
@@ -138,6 +142,7 @@ fun GravatarHeaderMotionPreview() {
     GravatarHeader(
         avatarUrl = "https://gravatar.com/avatar/test",
         progress = 1.0f,
+        onAboutAppClicked = {},
         modifier = Modifier.fillMaxWidth(),
     )
 }

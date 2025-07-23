@@ -9,7 +9,8 @@ class GravatarHeaderTest : RoborazziTest() {
     fun gravatarHeaderFullyExpanded() = screenshotTest {
         GravatarHeader(
             avatarUrl = "https://gravatar.com/avatar/test",
-            progress = 1.0f
+            progress = 1.0f,
+            onAboutAppClicked = {}
         )
     }
 
@@ -17,7 +18,8 @@ class GravatarHeaderTest : RoborazziTest() {
     fun gravatarHeaderFullyCollapsed() = screenshotTest {
         GravatarHeader(
             avatarUrl = "https://gravatar.com/avatar/test",
-            progress = 0.0f
+            progress = 0.0f,
+            onAboutAppClicked = {}
         )
     }
 
@@ -25,7 +27,8 @@ class GravatarHeaderTest : RoborazziTest() {
     fun gravatarHeaderPartiallyExpanded() = screenshotTest {
         GravatarHeader(
             avatarUrl = "https://gravatar.com/avatar/test",
-            progress = 0.5f
+            progress = 0.5f,
+            onAboutAppClicked = {}
         )
     }
 }
