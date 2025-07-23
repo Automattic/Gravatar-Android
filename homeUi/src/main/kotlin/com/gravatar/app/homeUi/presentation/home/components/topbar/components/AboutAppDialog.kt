@@ -144,11 +144,14 @@ internal fun AboutAppDialogContent(
                 modifier = Modifier
                     .fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    contentColor = MaterialTheme.colorScheme.onSurface
+                    containerColor = MaterialTheme.colorScheme.onSurface,
+                    contentColor = MaterialTheme.colorScheme.surface
                 )
             ) {
-                Text(stringResource(R.string.done_button_cta))
+                Text(
+                    text = stringResource(R.string.done_button_cta),
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
             }
         }
     }
