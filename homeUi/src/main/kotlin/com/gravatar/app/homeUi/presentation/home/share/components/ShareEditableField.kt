@@ -2,6 +2,7 @@ package com.gravatar.app.homeUi.presentation.home.share.components
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,7 +32,8 @@ internal fun ShareEditableField(
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         BasicTextField(
             value = value,
@@ -61,7 +63,6 @@ internal fun ShareEditableField(
         Switch(
             checked = switchChecked,
             onCheckedChange = onSwitchCheckedChange,
-            modifier = Modifier.padding(start = 8.dp)
         )
     }
 }

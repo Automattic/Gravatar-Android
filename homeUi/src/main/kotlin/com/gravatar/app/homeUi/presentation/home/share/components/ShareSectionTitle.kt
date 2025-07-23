@@ -42,8 +42,7 @@ internal fun ShareSectionTitle(
         }
         BasicText(
             text = stringResource(title),
-            style = MaterialTheme.typography.bodyMedium.copy(
-                fontSize = 12.sp,
+            style = MaterialTheme.typography.bodySmall.copy(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             ),
             overflow = TextOverflow.Ellipsis,
@@ -56,7 +55,8 @@ internal fun ShareSectionTitle(
         rightIcon?.let {
             Icon(
                 painter = painterResource(id = it),
-                contentDescription = null
+                contentDescription = null,
+                modifier = Modifier.padding(end = 12.dp),
             )
         }
     }

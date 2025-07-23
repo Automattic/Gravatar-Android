@@ -3,12 +3,14 @@ package com.gravatar.app.homeUi.presentation.home.share
 import app.cash.turbine.test
 import com.gravatar.app.testUtils.CoroutineTestRule
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
+import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrl
 import com.gravatar.restapi.models.Profile
 import com.gravatar.restapi.models.ProfileContactInfo
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -29,11 +31,13 @@ class ShareViewModelTest {
     private lateinit var viewModel: ShareViewModel
 
     private val profileFlow: MutableSharedFlow<Profile?> = MutableSharedFlow()
+    private val getAvatarUrl = mockk<GetAvatarUrl>()
 
     @Before
     fun setup() {
         every { userRepository.getProfile() } returns profileFlow
-        viewModel = ShareViewModel(userRepository)
+        every { getAvatarUrl.invoke() } returns flowOf(null)
+        viewModel = ShareViewModel(userRepository, getAvatarUrl)
     }
 
     @Test
