@@ -42,6 +42,8 @@ internal class ProfileViewModel(
             ProfileEvent.OnCancelClicked -> cancelChanges()
             ProfileEvent.OnRefreshProfile -> refreshProfile(pullToRefresh = true)
             ProfileEvent.OnProfileLinkClicked -> openProfileUrl()
+            ProfileEvent.OnAboutAppClicked -> showAboutAppDialog()
+            ProfileEvent.OnDismissAboutAppDialog -> dismissAboutAppDialog()
         }
     }
 
@@ -145,6 +147,18 @@ internal class ProfileViewModel(
                 }
             }
             .launchIn(viewModelScope)
+    }
+
+    private fun showAboutAppDialog() {
+        _uiState.update { currentState ->
+            currentState.copy(isAboutAppDialogVisible = true)
+        }
+    }
+
+    private fun dismissAboutAppDialog() {
+        _uiState.update { currentState ->
+            currentState.copy(isAboutAppDialogVisible = false)
+        }
     }
 }
 

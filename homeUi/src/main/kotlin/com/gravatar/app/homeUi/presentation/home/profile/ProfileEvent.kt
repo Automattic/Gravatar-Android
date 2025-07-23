@@ -14,4 +14,8 @@ internal sealed class ProfileEvent {
     object OnRefreshProfile : ProfileEvent()
 
     object OnProfileLinkClicked : ProfileEvent()
+
+    object OnAboutAppClicked : ProfileEvent()
+
+    object OnDismissAboutAppDialog : ProfileEvent()
 }

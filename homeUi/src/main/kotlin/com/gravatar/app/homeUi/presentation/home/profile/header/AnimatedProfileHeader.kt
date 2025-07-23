@@ -81,6 +81,7 @@ internal fun AnimatedProfileHeader(
     onCancelProfile: () -> Unit,
     headerState: AnimatedProfileHeaderState,
     onProfileLinkClicked: () -> Unit,
+    onAboutAppClicked: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var measuredHeight by remember { mutableStateOf(0.dp) }
@@ -129,7 +130,8 @@ internal fun AnimatedProfileHeader(
                     modifier = modifier.heightIn(min = measuredHeight),
                     avatarUrl = avatarUrl,
                     profile = profile,
-                    onProfileLinkClicked = onProfileLinkClicked
+                    onProfileLinkClicked = onProfileLinkClicked,
+                    onAboutAppClicked = onAboutAppClicked
                 )
             }
 
@@ -160,7 +162,8 @@ private fun AnimatedProfileHeaderSavedState(
     modifier: Modifier,
     avatarUrl: String?,
     profile: Profile,
-    onProfileLinkClicked: () -> Unit = {}
+    onProfileLinkClicked: () -> Unit = {},
+    onAboutAppClicked: () -> Unit = {}
 ) {
     val density = LocalDensity.current
 
@@ -320,6 +323,7 @@ private fun AnimatedProfileHeaderSavedState(
                     TopBarPickerPopup(
                         anchorAlignment = Alignment.End,
                         offset = DpOffset(0.dp, 6.dp),
+                        onAboutAppClicked = onAboutAppClicked,
                         onDismissRequest = { topBarMenuVisible = false },
                     )
                 }

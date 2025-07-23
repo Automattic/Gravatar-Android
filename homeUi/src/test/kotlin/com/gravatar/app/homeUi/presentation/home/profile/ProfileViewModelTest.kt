@@ -384,6 +384,46 @@ class ProfileViewModelTest {
         }
     }
 
+    @Test
+    fun `when OnAboutAppClicked event is triggered then isAboutAppDialogVisible is set to true`() = runTest {
+        // Given
+        val originalProfile = profile()
+        viewModel = initViewModel()
+        advanceUntilIdle()
+        profileFlow.emit(originalProfile)
+
+        // When
+        viewModel.onEvent(ProfileEvent.OnAboutAppClicked)
+        advanceUntilIdle()
+
+        // Then
+        viewModel.uiState.test {
+            val state = awaitItem()
+            assertTrue(state.isAboutAppDialogVisible)
+        }
+    }
+
+    @Test
+    fun `when OnDismissAboutAppDialog event is triggered then isAboutAppDialogVisible is set to false`() = runTest {
+        // Given
+        val originalProfile = profile()
+        viewModel = initViewModel()
+        advanceUntilIdle()
+        profileFlow.emit(originalProfile)
+
+        // First show the dialog
+        viewModel.onEvent(ProfileEvent.OnAboutAppClicked)
+        advanceUntilIdle()
+
+        // Verify dialog is visible
+        viewModel.uiState.test {
+            assertTrue(awaitItem().isAboutAppDialogVisible)
+
+            viewModel.onEvent(ProfileEvent.OnDismissAboutAppDialog)
+            assertFalse(awaitItem().isAboutAppDialogVisible)
+        }
+    }
+
     private fun profile(displayName: String = "John Doe") = Profile {
         hash = "mock-hash"
         this.displayName = displayName
