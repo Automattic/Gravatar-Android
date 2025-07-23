@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.gravatar.app.design.theme.GravatarAppTheme
+import com.gravatar.app.homeUi.presentation.home.share.PrivateContactInfo
 import com.gravatar.app.testUtils.roborazzi.RoborazziTest
 import org.junit.Test
 
@@ -14,13 +15,15 @@ class SharePrivateContactInfoTest : RoborazziTest() {
     fun sharePrivateContactInfo_bothSwitchesOn() = screenshotTest {
         GravatarAppTheme {
             SharePrivateContactInfo(
-                emailValue = "example@email.com",
+                privateContactInfo = PrivateContactInfo(
+                    emailValue = "example@email.com",
+                    isEmailShared = true,
+                    phoneValue = "123-456-7890",
+                    isPhoneShared = true
+                ),
                 onEmailValueChange = {},
-                emailSwitchChecked = true,
                 onEmailSwitchCheckedChange = {},
-                phoneValue = "123-456-7890",
                 onPhoneValueChange = {},
-                phoneSwitchChecked = true,
                 onPhoneSwitchCheckedChange = {},
                 modifier = Modifier
                     .fillMaxWidth()
@@ -33,13 +36,15 @@ class SharePrivateContactInfoTest : RoborazziTest() {
     fun sharePrivateContactInfo_bothSwitchesOff() = screenshotTest {
         GravatarAppTheme {
             SharePrivateContactInfo(
-                emailValue = "example@email.com",
+                privateContactInfo = PrivateContactInfo(
+                    emailValue = "example@email.com",
+                    isEmailShared = false,
+                    phoneValue = "123-456-7890",
+                    isPhoneShared = false
+                ),
                 onEmailValueChange = {},
-                emailSwitchChecked = false,
                 onEmailSwitchCheckedChange = {},
-                phoneValue = "123-456-7890",
                 onPhoneValueChange = {},
-                phoneSwitchChecked = false,
                 onPhoneSwitchCheckedChange = {},
                 modifier = Modifier
                     .fillMaxWidth()
@@ -52,13 +57,15 @@ class SharePrivateContactInfoTest : RoborazziTest() {
     fun sharePrivateContactInfo_emptyValues() = screenshotTest {
         GravatarAppTheme {
             SharePrivateContactInfo(
-                emailValue = "",
+                privateContactInfo = PrivateContactInfo(
+                    emailValue = "",
+                    isEmailShared = true,
+                    phoneValue = "",
+                    isPhoneShared = true
+                ),
                 onEmailValueChange = {},
-                emailSwitchChecked = true,
                 onEmailSwitchCheckedChange = {},
-                phoneValue = "",
                 onPhoneValueChange = {},
-                phoneSwitchChecked = true,
                 onPhoneSwitchCheckedChange = {},
                 modifier = Modifier
                     .fillMaxWidth()

@@ -70,7 +70,7 @@ class ShareViewModelTest {
 
         // Then
         viewModel.uiState.test {
-            assertEquals(newEmailValue, awaitItem().emailValue)
+            assertEquals(newEmailValue, awaitItem().privateContactInfo.emailValue)
         }
     }
 
@@ -84,7 +84,7 @@ class ShareViewModelTest {
 
         // Then
         viewModel.uiState.test {
-            assertEquals(isShared, awaitItem().isEmailShared)
+            assertEquals(isShared, awaitItem().privateContactInfo.isEmailShared)
         }
     }
 
@@ -98,7 +98,7 @@ class ShareViewModelTest {
 
         // Then
         viewModel.uiState.test {
-            assertEquals(newPhoneValue, awaitItem().phoneValue)
+            assertEquals(newPhoneValue, awaitItem().privateContactInfo.phoneValue)
         }
     }
 
@@ -112,7 +112,7 @@ class ShareViewModelTest {
 
         // Then
         viewModel.uiState.test {
-            assertEquals(isShared, awaitItem().isPhoneShared)
+            assertEquals(isShared, awaitItem().privateContactInfo.isPhoneShared)
         }
     }
 

@@ -50,13 +50,10 @@ internal fun ShareScreen(uiState: ShareUiState, onEvent: (ShareEvent) -> Unit) {
         )
 
         SharePrivateContactInfo(
-            emailValue = uiState.emailValue,
+            privateContactInfo = uiState.privateContactInfo,
             onEmailValueChange = { onEvent(ShareEvent.OnEmailValueChanged(it)) },
-            emailSwitchChecked = uiState.isEmailShared,
             onEmailSwitchCheckedChange = { onEvent(ShareEvent.OnEmailSharingChanged(it)) },
-            phoneValue = uiState.phoneValue,
             onPhoneValueChange = { onEvent(ShareEvent.OnPhoneValueChanged(it)) },
-            phoneSwitchChecked = uiState.isPhoneShared,
             onPhoneSwitchCheckedChange = { onEvent(ShareEvent.OnPhoneSharingChanged(it)) },
             modifier = Modifier.padding(16.dp),
         )

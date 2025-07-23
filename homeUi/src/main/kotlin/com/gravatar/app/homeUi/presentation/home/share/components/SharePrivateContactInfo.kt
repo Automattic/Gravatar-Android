@@ -8,18 +8,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gravatar.app.homeUi.R
+import com.gravatar.app.homeUi.presentation.home.share.PrivateContactInfo
 
 @Composable
 internal fun SharePrivateContactInfo(
-    // Email state and callbacks
-    emailValue: String,
+    privateContactInfo: PrivateContactInfo,
     onEmailValueChange: (String) -> Unit,
-    emailSwitchChecked: Boolean,
     onEmailSwitchCheckedChange: (Boolean) -> Unit,
-    // Phone number state and callbacks
-    phoneValue: String,
     onPhoneValueChange: (String) -> Unit,
-    phoneSwitchChecked: Boolean,
     onPhoneSwitchCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -32,16 +28,16 @@ internal fun SharePrivateContactInfo(
         )
         ShareEditableField(
             placeholder = R.string.share_tab_private_contact_email_placeholder,
-            value = emailValue,
+            value = privateContactInfo.emailValue,
             onValueChange = onEmailValueChange,
-            switchChecked = emailSwitchChecked,
+            switchChecked = privateContactInfo.isEmailShared,
             onSwitchCheckedChange = onEmailSwitchCheckedChange,
         )
         ShareEditableField(
             placeholder = R.string.share_tab_private_contact_phone_number_placeholder,
-            value = phoneValue,
+            value = privateContactInfo.phoneValue,
             onValueChange = onPhoneValueChange,
-            switchChecked = phoneSwitchChecked,
+            switchChecked = privateContactInfo.isPhoneShared,
             onSwitchCheckedChange = onPhoneSwitchCheckedChange,
         )
     }
@@ -51,13 +47,15 @@ internal fun SharePrivateContactInfo(
 @Composable
 private fun SharePrivateContactInfoPreview() {
     SharePrivateContactInfo(
-        emailValue = "example@email.com",
+        privateContactInfo = PrivateContactInfo(
+            emailValue = "example@email.com",
+            isEmailShared = true,
+            phoneValue = "123-456-7890",
+            isPhoneShared = false
+        ),
         onEmailValueChange = {},
-        emailSwitchChecked = true,
         onEmailSwitchCheckedChange = {},
-        phoneValue = "123-456-7890",
         onPhoneValueChange = {},
-        phoneSwitchChecked = false,
         onPhoneSwitchCheckedChange = {}
     )
 }

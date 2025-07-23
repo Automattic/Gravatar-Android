@@ -27,16 +27,40 @@ internal class ShareViewModel(
     fun onEvent(shareEvent: ShareEvent) {
         when (shareEvent) {
             is ShareEvent.OnEmailValueChanged -> {
-                _uiState.update { it.copy(emailValue = shareEvent.value) }
+                _uiState.update {
+                    it.copy(
+                        privateContactInfo = it.privateContactInfo.copy(
+                            emailValue = shareEvent.value
+                        )
+                    )
+                }
             }
             is ShareEvent.OnEmailSharingChanged -> {
-                _uiState.update { it.copy(isEmailShared = shareEvent.isShared) }
+                _uiState.update {
+                    it.copy(
+                        privateContactInfo = it.privateContactInfo.copy(
+                            isEmailShared = shareEvent.isShared
+                        )
+                    )
+                }
             }
             is ShareEvent.OnPhoneValueChanged -> {
-                _uiState.update { it.copy(phoneValue = shareEvent.value) }
+                _uiState.update {
+                    it.copy(
+                        privateContactInfo = it.privateContactInfo.copy(
+                            phoneValue = shareEvent.value
+                        )
+                    )
+                }
             }
             is ShareEvent.OnPhoneSharingChanged -> {
-                _uiState.update { it.copy(isPhoneShared = shareEvent.isShared) }
+                _uiState.update {
+                    it.copy(
+                        privateContactInfo = it.privateContactInfo.copy(
+                            isPhoneShared = shareEvent.isShared
+                        )
+                    )
+                }
             }
         }
     }
