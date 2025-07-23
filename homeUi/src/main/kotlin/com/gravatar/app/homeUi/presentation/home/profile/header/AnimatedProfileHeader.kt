@@ -61,6 +61,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
 import com.gravatar.app.homeUi.R
 import com.gravatar.app.homeUi.presentation.home.components.AsyncImageWithCachePlaceholder
+import com.gravatar.app.homeUi.presentation.home.components.BlurredHeaderBackground
 import com.gravatar.app.homeUi.presentation.home.components.GravatarAvatarWithShadow
 import com.gravatar.app.homeUi.presentation.home.components.topbar.TopBarPickerPopup
 import com.gravatar.restapi.models.Profile
@@ -258,19 +259,10 @@ private fun AnimatedProfileHeaderSavedState(
         label = "linkAlpha"
     )
 
-    Box(
-        modifier
-            .fillMaxWidth()
+    BlurredHeaderBackground(
+        avatarUrl = avatarUrl.orEmpty(),
+        modifier = modifier.fillMaxWidth(),
     ) {
-        // Background image with blur
-        AsyncImageWithCachePlaceholder(
-            avatarUrl.orEmpty(),
-            modifier = Modifier
-                .matchParentSize()
-                .blur(radius = 40.dp, edgeTreatment = BlurredEdgeTreatment.Rectangle)
-                .alpha(0.7f)
-        )
-
         // Content container with animated layout
         Box(
             modifier = Modifier

@@ -17,9 +17,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.BlurredEdgeTreatment
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -32,7 +29,7 @@ import androidx.constraintlayout.compose.MotionLayout
 import androidx.constraintlayout.compose.MotionScene
 import androidx.constraintlayout.compose.layoutId
 import com.gravatar.app.homeUi.R
-import com.gravatar.app.homeUi.presentation.home.components.AsyncImageWithCachePlaceholder
+import com.gravatar.app.homeUi.presentation.home.components.BlurredHeaderBackground
 import com.gravatar.app.homeUi.presentation.home.components.GravatarAvatarWithShadow
 import com.gravatar.app.homeUi.presentation.home.components.topbar.TopBarPickerPopup
 
@@ -61,17 +58,10 @@ internal fun GravatarHeader(
             .decodeToString()
     }
 
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
+    BlurredHeaderBackground(
+        avatarUrl = avatarUrl,
+        modifier = modifier.fillMaxWidth(),
     ) {
-        AsyncImageWithCachePlaceholder(
-            avatarUrl,
-            modifier = Modifier
-                .matchParentSize()
-                .blur(radius = 40.dp, edgeTreatment = BlurredEdgeTreatment.Rectangle)
-                .alpha(0.7f)
-        )
         MotionLayout(
             motionScene = MotionScene(content = motionScene),
             progress = progress,
