@@ -24,7 +24,7 @@
     <string name="picker_submenu_icon_description">Expand</string>
     <string name="profile_screen_save_button">Save</string>
     <string name="profile_screen_cancel_button">Cancel</string>
-    <string name="profile_screen_saving">Saving...</string>
+    <string name="profile_screen_saving">Saving…</string>
     <string name="profile_screen_save_fail_try_again">Unable to save your profile. Try again.</string>
     <string name="profile_screen_saved_successfully">Profile saved.</string>
     <string name="gravatar_tab_get_a_new_look">Get a new look</string>
@@ -53,8 +53,9 @@
     <string name="gravatar_tab_avatar_deletion_failed">Couldn\'t delete the image. Try again.</string>
     <string name="gravatar_tab_topbar_menu_visit_profile">Visit your profile</string>
     <string name="gravatar_tab_topbar_menu_share">Share</string>
-    <string name="gravatar_tab_topbar_menu_gravatar">Gravatar.com</string>
+    <string name="gravatar_tab_topbar_menu_gravatar" translatable="false">Gravatar.com</string>
     <string name="gravatar_tab_topbar_menu_sign_out">Sign out</string>
+    <string name="gravatar_tab_topbar_menu_about">About this app</string>
     <string name="permission_required_alert_title">Permission required</string>
     <string name="permission_required_open_settings">Open settings</string>
     <string name="permission_required_dismiss">Dismiss</string>
