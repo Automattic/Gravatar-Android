@@ -62,6 +62,20 @@ internal class ShareViewModel(
                     )
                 }
             }
+            is ShareEvent.OnAboutAppClicked -> showAboutAppDialog()
+            is ShareEvent.OnDismissAboutAppDialog -> hideAboutAppDialog()
+        }
+    }
+
+    private fun showAboutAppDialog() {
+        _uiState.update { currentState ->
+            currentState.copy(isAboutAppDialogVisible = true)
+        }
+    }
+
+    private fun hideAboutAppDialog() {
+        _uiState.update { currentState ->
+            currentState.copy(isAboutAppDialogVisible = false)
         }
     }
 

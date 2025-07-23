@@ -5,12 +5,13 @@ import com.gravatar.restapi.models.Profile
 internal data class ShareUiState(
     val profile: Profile? = null,
     val avatarUrl: String? = null,
-    val privateContactInfo: PrivateContactInfo = PrivateContactInfo()
+    val isAboutAppDialogVisible: Boolean = false,
+    val privateContactInfo: PrivateContactInfo = PrivateContactInfo(),
 )
 
 internal data class PrivateContactInfo(
     val emailValue: String = "",
     val isEmailShared: Boolean = false,
     val phoneValue: String = "",
-    val isPhoneShared: Boolean = false
+    val isPhoneShared: Boolean = false,
 )

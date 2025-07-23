@@ -15,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStoreOwner
 import com.gravatar.app.design.theme.GravatarAppTheme
+import com.gravatar.app.homeUi.presentation.home.components.topbar.components.AboutAppDialog
 import com.gravatar.app.homeUi.presentation.home.share.components.ShareHeader
 import com.gravatar.app.homeUi.presentation.home.share.components.SharePrivateContactInfo
 import org.koin.androidx.compose.koinViewModel
@@ -46,7 +47,10 @@ internal fun ShareScreen(uiState: ShareUiState, onEvent: (ShareEvent) -> Unit) {
         ShareHeader(
             avatarUrl = uiState.avatarUrl.orEmpty(),
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            onAboutAppClicked = {
+                onEvent(ShareEvent.OnAboutAppClicked)
+            }
         )
 
         SharePrivateContactInfo(
@@ -58,6 +62,13 @@ internal fun ShareScreen(uiState: ShareUiState, onEvent: (ShareEvent) -> Unit) {
             modifier = Modifier.padding(16.dp),
         )
     }
+
+    AboutAppDialog(
+        visible = uiState.isAboutAppDialogVisible,
+        onDismissRequest = {
+            onEvent(ShareEvent.OnDismissAboutAppDialog)
+        }
+    )
 }
 
 @Preview
@@ -65,7 +76,7 @@ internal fun ShareScreen(uiState: ShareUiState, onEvent: (ShareEvent) -> Unit) {
 private fun ShareScreenPreview() {
     GravatarAppTheme {
         ShareScreen(
-            uiState = ShareUiState(),
+            uiState = ShareUiState(isAboutAppDialogVisible = false),
             onEvent = { }
         )
     }
