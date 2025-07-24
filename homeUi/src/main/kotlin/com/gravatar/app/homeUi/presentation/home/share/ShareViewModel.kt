@@ -35,6 +35,7 @@ internal class ShareViewModel(
                     )
                 }
             }
+
             is ShareEvent.OnEmailSharingChanged -> {
                 _uiState.update {
                     it.copy(
@@ -44,6 +45,7 @@ internal class ShareViewModel(
                     )
                 }
             }
+
             is ShareEvent.OnPhoneValueChanged -> {
                 _uiState.update {
                     it.copy(
@@ -53,6 +55,7 @@ internal class ShareViewModel(
                     )
                 }
             }
+
             is ShareEvent.OnPhoneSharingChanged -> {
                 _uiState.update {
                     it.copy(
@@ -62,8 +65,16 @@ internal class ShareViewModel(
                     )
                 }
             }
+
             is ShareEvent.OnAboutAppClicked -> showAboutAppDialog()
             is ShareEvent.OnDismissAboutAppDialog -> hideAboutAppDialog()
+            is ShareEvent.OnUserSharePreferencesChanged -> updateUserSharePreferences(shareEvent.shareFieldType)
+        }
+    }
+
+    private fun updateUserSharePreferences(shareFieldType: ShareFieldType) {
+        _uiState.update { currentState ->
+            currentState.copyWithUserSharePreferences(shareFieldType)
         }
     }
 

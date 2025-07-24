@@ -5,6 +5,7 @@ internal sealed class ShareEvent {
     data class OnEmailSharingChanged(val isShared: Boolean) : ShareEvent()
     data class OnPhoneValueChanged(val value: String) : ShareEvent()
     data class OnPhoneSharingChanged(val isShared: Boolean) : ShareEvent()
+    data class OnUserSharePreferencesChanged(val shareFieldType: ShareFieldType) : ShareEvent()
     data object OnAboutAppClicked : ShareEvent()
     data object OnDismissAboutAppDialog : ShareEvent()
 }

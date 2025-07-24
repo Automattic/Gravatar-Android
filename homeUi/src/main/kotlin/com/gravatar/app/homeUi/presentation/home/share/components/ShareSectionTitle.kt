@@ -8,10 +8,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -23,10 +25,11 @@ import com.gravatar.app.homeUi.R
 
 @Composable
 internal fun ShareSectionTitle(
-    @DrawableRes leftIcon: Int?,
     @StringRes title: Int,
     @DrawableRes rightIcon: Int?,
-    modifier: Modifier = Modifier
+    rightIconTint: Color = LocalContentColor.current,
+    modifier: Modifier = Modifier,
+    @DrawableRes leftIcon: Int? = null,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -56,6 +59,7 @@ internal fun ShareSectionTitle(
             Icon(
                 painter = painterResource(id = it),
                 contentDescription = null,
+                tint = rightIconTint,
                 modifier = Modifier.padding(end = 12.dp),
             )
         }
