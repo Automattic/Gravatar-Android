@@ -21,22 +21,27 @@ internal class VCard private constructor(
         val lastName = lastName.orEmpty()
         val nickname = nickname.orEmpty()
         if (firstName.isNotEmpty() || lastName.isNotEmpty()) {
-            contentBuilder.append("N:$lastName;$firstName;;;\n")
-                .append("FN:${("$firstName $lastName".trim()).ifEmpty { nickname }}\n")
+            contentBuilder.append("N:${lastName.escaped()};${firstName.escaped()};;;\n")
+                .append(
+                    "FN:${("${firstName.escaped()} ${lastName.escaped()}".trim()).ifEmpty { nickname.escaped() }}\n"
+                )
         }
-        val calculatedNickname = nickname.ifEmpty { "$firstName $lastName".trim() }
+        val calculatedNickname = nickname.ifEmpty { "$firstName $lastName".trim() }.escaped()
 
-        calculatedNickname.takeIf { it.isNotEmpty() }?.let { contentBuilder.append("NICKNAME:$it\n") }
-        organization?.takeIf { it.isNotEmpty() }?.let { contentBuilder.append("ORG:$it\n") }
-        title?.takeIf { it.isNotEmpty() }?.let { contentBuilder.append("TITLE:$it\n") }
-        profileUrl?.takeIf { it.isNotEmpty() }?.let { contentBuilder.append("URL:$it\n") }
-        note?.takeIf { it.isNotEmpty() }?.let { contentBuilder.append("NOTE:$it\n") }
-        phoneNumber?.takeIf { it.isNotEmpty() }?.let { contentBuilder.append("TEL;TYPE=cell:$it\n") }
-        email?.takeIf { it.isNotEmpty() }?.let { contentBuilder.append("EMAIL:$it\n") }
+        calculatedNickname.takeIf { it.isNotEmpty() }?.let { contentBuilder.append("NICKNAME:${it.escaped()}\n") }
+        organization?.takeIf { it.isNotEmpty() }?.let { contentBuilder.append("ORG:${it.escaped()}\n") }
+        title?.takeIf { it.isNotEmpty() }?.let { contentBuilder.append("TITLE:${it.escaped()}\n") }
+        profileUrl?.takeIf { it.isNotEmpty() }?.let { contentBuilder.append("URL:${it.escaped()}\n") }
+        note?.takeIf { it.isNotEmpty() }?.let { contentBuilder.append("NOTE:${it.escaped()}\n") }
+        phoneNumber?.takeIf { it.isNotEmpty() }?.let { contentBuilder.append("TEL;TYPE=cell:${it.escaped()}\n") }
+        email?.takeIf { it.isNotEmpty() }?.let { contentBuilder.append("EMAIL:${it.escaped()}\n") }
 
         contentBuilder.append("END:VCARD")
         return contentBuilder.toString()
     }
+
+    // We've seen issues with newlines in the vCard content causing problems when importing the contact so removing them
+    private fun String.escaped() = this.replace("\n", " ")
 
     class Builder(
         private var firstName: String? = null,

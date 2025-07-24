@@ -168,4 +168,31 @@ class VCardTest {
             vCardString
         )
     }
+
+    @Test
+    fun `builder replaces newlines with spaces in field values`() {
+        val vCard = VCard.Builder()
+            .firstName("First\nName")
+            .lastName("Last\nName")
+            .nickname("Nick\nName")
+            .organization("Org\nName")
+            .title("Job\nTitle")
+            .profileUrl("http://example.com/profile\nurl")
+            .note("This is a\nnote with\nnewlines.")
+            .phoneNumber("123\n456\n7890")
+            .email("user\nname@example.com")
+            .build()
+
+        val vCardString = vCard.toString()
+
+        assertTrue(vCardString.contains("N:Last Name;First Name;;;"))
+        assertTrue(vCardString.contains("FN:First Name Last Name"))
+        assertTrue(vCardString.contains("NICKNAME:Nick Name"))
+        assertTrue(vCardString.contains("ORG:Org Name"))
+        assertTrue(vCardString.contains("TITLE:Job Title"))
+        assertTrue(vCardString.contains("URL:http://example.com/profile url"))
+        assertTrue(vCardString.contains("NOTE:This is a note with newlines."))
+        assertTrue(vCardString.contains("TEL;TYPE=cell:123 456 7890"))
+        assertTrue(vCardString.contains("EMAIL:user name@example.com"))
+    }
 }
