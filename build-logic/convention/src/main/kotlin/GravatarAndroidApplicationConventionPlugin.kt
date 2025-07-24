@@ -28,6 +28,7 @@ class GravatarAndroidApplicationConventionPlugin : Plugin<Project> {
                     versionCode = 1
                     versionName = "1.0"
                 }
+                buildFeatures.buildConfig = true
                 configureBuildTypes()
                 lint {
                     sarifReport = true

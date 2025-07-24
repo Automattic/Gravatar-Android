@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,6 +32,7 @@ import org.koin.androidx.compose.koinViewModel
 internal fun TopBarPickerPopup(
     anchorAlignment: Alignment.Horizontal,
     offset: DpOffset = DpOffset(0.dp, 0.dp),
+    onAboutAppClicked: () -> Unit,
     onDismissRequest: () -> Unit,
     viewModel: TopBarPickerPopupViewModel = koinViewModel()
 ) {
@@ -53,15 +55,18 @@ internal fun TopBarPickerPopup(
     TopBarPickerPopup(
         anchorAlignment = anchorAlignment,
         offset = offset,
+        onAboutAppClicked = onAboutAppClicked,
         onDismissRequest = onDismissRequest,
         onEvent = viewModel::onEvent
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun TopBarPickerPopup(
     anchorAlignment: Alignment.Horizontal,
     offset: DpOffset = DpOffset(0.dp, 0.dp),
+    onAboutAppClicked: () -> Unit,
     onDismissRequest: () -> Unit,
     onEvent: (TopBarPickerPopupEvent) -> Unit,
 ) {
@@ -99,6 +104,17 @@ internal fun TopBarPickerPopup(
                     ),
                     onClick = {
                         onEvent(TopBarPickerPopupEvent.OnGravatarLinkClicked)
+                    },
+                ),
+                PickerPopupItem(
+                    text = stringResource(R.string.gravatar_tab_topbar_menu_about),
+                    iconRes = R.drawable.top_bar_menu_about,
+                    contentDescription = stringResource(
+                        R.string.gravatar_tab_topbar_menu_about
+                    ),
+                    onClick = {
+                        onAboutAppClicked()
+                        onDismissRequest()
                     },
                 ),
                 PickerPopupItem(
@@ -153,6 +169,7 @@ private fun TopBarPickerPopupPreview() {
             TopBarPickerPopup(
                 anchorAlignment = Alignment.End,
                 onDismissRequest = {},
+                onAboutAppClicked = {},
             )
         }
     }

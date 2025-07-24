@@ -38,6 +38,7 @@ import com.gravatar.app.homeUi.presentation.home.profile.header.MENU_BUTTON_SIZE
 internal fun ShareHeader(
     avatarUrl: String,
     modifier: Modifier = Modifier,
+    onAboutAppClicked: () -> Unit = {},
 ) {
     var topBarMenuVisible by remember { mutableStateOf(false) }
 
@@ -92,6 +93,10 @@ internal fun ShareHeader(
                             anchorAlignment = Alignment.End,
                             offset = DpOffset(0.dp, 6.dp),
                             onDismissRequest = { topBarMenuVisible = false },
+                            onAboutAppClicked = {
+                                topBarMenuVisible = false
+                                onAboutAppClicked()
+                            }
                         )
                     }
                 }

@@ -68,6 +68,20 @@ internal class GravatarViewModel(
             is GravatarEvent.OnDownloadAvatar -> downloadAvatar(event.avatarId)
             is GravatarEvent.OnShowDeleteConfirmation -> showDeleteConfirmation(event.avatarId)
             GravatarEvent.OnDismissDeleteConfirmation -> dismissDeleteConfirmation()
+            GravatarEvent.OnAboutAppClicked -> showAboutAppDialog()
+            GravatarEvent.OnDismissAboutAppDialog -> dismissAboutAppDialog()
+        }
+    }
+
+    private fun showAboutAppDialog() {
+        _uiState.update { currentState ->
+            currentState.copy(isAboutAppDialogVisible = true)
+        }
+    }
+
+    private fun dismissAboutAppDialog() {
+        _uiState.update { currentState ->
+            currentState.copy(isAboutAppDialogVisible = false)
         }
     }
 

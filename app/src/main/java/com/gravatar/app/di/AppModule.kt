@@ -15,5 +15,6 @@ val appModule = module {
         dispatcherModule,
         clockModule,
         networkMonitorModule,
+        buildConfigModule,
     )
 }

@@ -54,6 +54,7 @@ import com.gravatar.app.homeUi.GravatarFileProvider
 import com.gravatar.app.homeUi.R
 import com.gravatar.app.homeUi.presentation.home.components.ErrorViewWithRetry
 import com.gravatar.app.homeUi.presentation.home.components.PermissionRationaleDialog
+import com.gravatar.app.homeUi.presentation.home.components.topbar.components.AboutAppDialog
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.AvatarDeletionConfirmationDialog
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.AvatarOption
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.CollapsibleTopAppBar
@@ -212,6 +213,9 @@ internal fun GravatarScreen(
                         uiState.avatarUrl,
                         modifier = Modifier.fillMaxWidth(),
                         progress = expansionProgress,
+                        onAboutAppClicked = {
+                            onEvent(GravatarEvent.OnAboutAppClicked)
+                        }
                     )
                 }
             }
@@ -321,6 +325,11 @@ internal fun GravatarScreen(
                     onDismiss = { onEvent(GravatarEvent.OnDismissDeleteConfirmation) },
                 )
             }
+        }
+        if (uiState.isAboutAppDialogVisible) {
+            AboutAppDialog(
+                onDismissRequest = { onEvent(GravatarEvent.OnDismissAboutAppDialog) },
+            )
         }
     }
 }

@@ -39,6 +39,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.gravatar.app.design.components.snackbar.SnackbarType
 import com.gravatar.app.design.components.snackbar.showGravatarSnackbar
 import com.gravatar.app.homeUi.R
+import com.gravatar.app.homeUi.presentation.home.components.topbar.components.AboutAppDialog
 import com.gravatar.app.homeUi.presentation.home.profile.about.AboutInputField
 import com.gravatar.app.homeUi.presentation.home.profile.about.AboutSection
 import com.gravatar.app.homeUi.presentation.home.profile.header.AnimatedProfileHeader
@@ -139,6 +140,7 @@ internal fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> U
                             onCancelProfile = { onEvent(ProfileEvent.OnCancelClicked) },
                             headerState = headerState,
                             onProfileLinkClicked = { onEvent(ProfileEvent.OnProfileLinkClicked) },
+                            onAboutAppClicked = { onEvent(ProfileEvent.OnAboutAppClicked) },
                         )
                         Column(
                             Modifier
@@ -160,6 +162,12 @@ internal fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> U
                 }
             }
         }
+    }
+
+    if (uiState.isAboutAppDialogVisible) {
+        AboutAppDialog(
+            onDismissRequest = { onEvent(ProfileEvent.OnDismissAboutAppDialog) },
+        )
     }
 }
 
@@ -260,7 +268,8 @@ private fun AnimatedProfileHeaderExpandedPreview() {
         onSaveProfile = {},
         onCancelProfile = {},
         headerState = AnimatedProfileHeaderState.EXPANDED,
-        onProfileLinkClicked = {}
+        onProfileLinkClicked = {},
+        onAboutAppClicked = {}
     )
 }
 
@@ -278,7 +287,8 @@ private fun AnimatedProfileHeaderCollapsedPreview() {
         onSaveProfile = {},
         onCancelProfile = {},
         headerState = AnimatedProfileHeaderState.COLLAPSED,
-        onProfileLinkClicked = {}
+        onProfileLinkClicked = {},
+        onAboutAppClicked = {}
     )
 }
 
@@ -296,6 +306,7 @@ private fun AnimatedProfileHeaderTransitionPreview() {
         onSaveProfile = {},
         onCancelProfile = {},
         headerState = AnimatedProfileHeaderState(0.5f, AnimatedProfileHeaderSavingState.SAVED),
-        onProfileLinkClicked = {}
+        onProfileLinkClicked = {},
+        onAboutAppClicked = {}
     )
 }
