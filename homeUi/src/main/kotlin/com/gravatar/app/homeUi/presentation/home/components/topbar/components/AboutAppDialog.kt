@@ -34,25 +34,22 @@ import org.koin.compose.koinInject
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun AboutAppDialog(
-    visible: Boolean,
     onDismissRequest: () -> Unit,
 ) {
-    if (visible) {
-        val appVersion: AppVersion = koinInject()
-        Dialog(
-            onDismissRequest = onDismissRequest,
-            properties = DialogProperties(
-                usePlatformDefaultWidth = false,
-            ),
-            content = {
-                AboutAppDialogContent(
-                    appVersion = appVersion.value,
-                    onDone = onDismissRequest,
-                    modifier = Modifier
-                )
-            }
-        )
-    }
+    val appVersion: AppVersion = koinInject()
+    Dialog(
+        onDismissRequest = onDismissRequest,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+        ),
+        content = {
+            AboutAppDialogContent(
+                appVersion = appVersion.value,
+                onDone = onDismissRequest,
+                modifier = Modifier
+            )
+        }
+    )
 }
 
 @Composable

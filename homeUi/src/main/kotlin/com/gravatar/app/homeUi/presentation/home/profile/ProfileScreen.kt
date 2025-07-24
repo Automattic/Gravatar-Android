@@ -164,10 +164,11 @@ internal fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> U
         }
     }
 
-    AboutAppDialog(
-        visible = uiState.isAboutAppDialogVisible,
-        onDismissRequest = { onEvent(ProfileEvent.OnDismissAboutAppDialog) },
-    )
+    if (uiState.isAboutAppDialogVisible) {
+        AboutAppDialog(
+            onDismissRequest = { onEvent(ProfileEvent.OnDismissAboutAppDialog) },
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -63,12 +63,13 @@ internal fun ShareScreen(uiState: ShareUiState, onEvent: (ShareEvent) -> Unit) {
         )
     }
 
-    AboutAppDialog(
-        visible = uiState.isAboutAppDialogVisible,
-        onDismissRequest = {
-            onEvent(ShareEvent.OnDismissAboutAppDialog)
-        }
-    )
+    if (uiState.isAboutAppDialogVisible) {
+        AboutAppDialog(
+            onDismissRequest = {
+                onEvent(ShareEvent.OnDismissAboutAppDialog)
+            }
+        )
+    }
 }
 
 @Preview

@@ -326,10 +326,11 @@ internal fun GravatarScreen(
                 )
             }
         }
-        AboutAppDialog(
-            visible = uiState.isAboutAppDialogVisible,
-            onDismissRequest = { onEvent(GravatarEvent.OnDismissAboutAppDialog) },
-        )
+        if (uiState.isAboutAppDialogVisible) {
+            AboutAppDialog(
+                onDismissRequest = { onEvent(GravatarEvent.OnDismissAboutAppDialog) },
+            )
+        }
     }
 }
 
