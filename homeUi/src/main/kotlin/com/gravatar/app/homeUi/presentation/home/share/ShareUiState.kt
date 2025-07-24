@@ -1,5 +1,6 @@
 package com.gravatar.app.homeUi.presentation.home.share
 
+import com.gravatar.app.homeUi.presentation.home.share.model.VCard
 import com.gravatar.app.usercomponent.domain.model.PrivateContactInfo
 import com.gravatar.app.usercomponent.domain.model.UserSharePreferences
 import com.gravatar.restapi.models.Profile
@@ -19,8 +20,6 @@ internal data class ShareUiState(
         isPhoneShared = userSharePreferences.privatePhone,
     )
 
-    val vCardQrCodeData: String = generateVCardData(profile, privateContactState)
-
     fun copyWithUserSharePreferences(
         shareFieldType: ShareFieldType,
     ): ShareUiState = this.copy(
@@ -35,6 +34,18 @@ internal data class ShareUiState(
             profileUrl = if (shareFieldType is ShareFieldType.ProfileUrl) shareFieldType.checked else userSharePreferences.profileUrl,
         )
     )
+
+    val vCardQrCodeData: VCard = VCard.Builder()
+        .firstName(profile?.firstName.takeIf { userSharePreferences.name })
+        .lastName(profile?.lastName.takeIf { userSharePreferences.name })
+        .nickname(profile?.displayName.takeIf { userSharePreferences.description })
+        .organization(profile?.company.takeIf { userSharePreferences.organization })
+        .title(profile?.jobTitle.takeIf { userSharePreferences.title })
+        .profileUrl(profile?.profileUrl.toString().takeIf { userSharePreferences.profileUrl })
+        .note(profile?.description.takeIf { userSharePreferences.description })
+        .phoneNumber(privateContactState.phoneValue.takeIf { privateContactState.isPhoneShared })
+        .email(privateContactState.emailValue.takeIf { privateContactState.isEmailShared })
+        .build()
 }
 
 internal data class PrivateContactState(
@@ -78,52 +89,4 @@ internal sealed class ShareFieldType {
     data class PrivatePhone(
         override val checked: Boolean
     ) : ShareFieldType()
-}
-
-private fun generateVCardData(profile: Profile?, privateContactInfo: PrivateContactState): String {
-    val vCardBuilder = StringBuilder()
-        .append("BEGIN:VCARD\n")
-        .append("VERSION:3.0\n")
-        .append("PRODID:Gravatar Android\n")
-
-    // Add name information if available
-    if (profile != null) {
-        val firstName = profile.firstName.orEmpty()
-        val lastName = profile.lastName.orEmpty()
-        if (firstName.isNotEmpty() || lastName.isNotEmpty()) {
-            vCardBuilder.append("N:$lastName;$firstName;;;\n")
-                .append("FN:${("$firstName $lastName".trim()).ifEmpty { profile.displayName }}\n")
-                .append("NICKNAME:${profile.displayName.ifEmpty { "$firstName $lastName".trim() }}\n")
-        }
-
-        // Add organization information if available
-        if (profile.company.isNotEmpty()) {
-            vCardBuilder.append("ORG:${profile.company}\n")
-        }
-
-        // Add job title if available
-        if (profile.jobTitle.isNotEmpty()) {
-            vCardBuilder.append("TITLE:${profile.jobTitle}\n")
-        }
-
-        // Add URL
-        vCardBuilder.append("URL:${profile.profileUrl}\n")
-
-        // Add Note
-        if (profile.description.isNotEmpty()) {
-            vCardBuilder.append("NOTE:${profile.description}\n")
-        }
-    }
-
-    // Add private contact info if shared
-    if (privateContactInfo.isPhoneShared && privateContactInfo.phoneValue.isNotEmpty()) {
-        vCardBuilder.append("TEL;TYPE=cell:${privateContactInfo.phoneValue}\n")
-    }
-
-    if (privateContactInfo.isEmailShared && privateContactInfo.emailValue.isNotEmpty()) {
-        vCardBuilder.append("EMAIL:${privateContactInfo.emailValue}\n")
-    }
-
-    vCardBuilder.append("END:VCARD")
-    return vCardBuilder.toString()
 }

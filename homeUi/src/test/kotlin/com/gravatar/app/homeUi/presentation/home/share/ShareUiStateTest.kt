@@ -1,123 +1,339 @@
 package com.gravatar.app.homeUi.presentation.home.share
 
+import com.gravatar.app.usercomponent.domain.model.PrivateContactInfo
+import com.gravatar.app.usercomponent.domain.model.UserSharePreferences
 import com.gravatar.restapi.models.Profile
 import com.gravatar.restapi.models.ProfileContactInfo
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Test
 import java.net.URI
 
 class ShareUiStateTest {
 
     @Test
-    fun `when ShareUiState has complete profile and shared contact info then vCardQrCodeData contains all information`() {
+    fun `when all preferences are enabled then all fields are included in vCard`() {
         // Given
-        val profile = createCompleteProfile()
+        val profile = createTestProfile()
         val privateContactInfo = PrivateContactInfo(
-            emailValue = "test@example.com",
-            isEmailShared = true,
-            phoneValue = "123-456-7890",
-            isPhoneShared = true
+            privateEmail = "private@example.com",
+            privatePhone = "987-654-3210"
         )
+        val userSharePreferences = UserSharePreferences.Default // All preferences are true by default
 
         // When
         val shareUiState = ShareUiState(
             profile = profile,
-            avatarUrl = "https://www.gravatar.com/avatar/test-hash",
-            privateContactInfo = privateContactInfo
+            privateContactInfo = privateContactInfo,
+            userSharePreferences = userSharePreferences
         )
 
         // Then
-        val vCardData = shareUiState.vCardQrCodeData
-
-        // Verify vCard structure
-        assertTrue(vCardData.startsWith("BEGIN:VCARD"))
-        assertTrue(vCardData.endsWith("END:VCARD"))
-        assertTrue(vCardData.contains("VERSION:3.0"))
-
-        // Verify profile information
-        assertTrue(vCardData.contains("N:User;Test;;;"))
-        assertTrue(vCardData.contains("FN:Test User"))
-        assertTrue(vCardData.contains("NICKNAME:Test User"))
-        assertTrue(vCardData.contains("ORG:Test Company"))
-        assertTrue(vCardData.contains("TITLE:Software Engineer"))
-        assertTrue(vCardData.contains("URL:https://www.gravatar.com/test-hash"))
-        assertTrue(vCardData.contains("NOTE:Test description"))
-
-        // Verify contact information
-        assertTrue(vCardData.contains("TEL;TYPE=cell:123-456-7890"))
-        assertTrue(vCardData.contains("EMAIL:test@example.com"))
+        with(shareUiState.vCardQrCodeData) {
+            assertEquals("Test", firstName)
+            assertEquals("User", lastName)
+            assertEquals("Test User", nickname)
+            assertEquals("Test Company", organization)
+            assertEquals("Software Engineer", title)
+            assertEquals("https://www.gravatar.com/test-hash", profileUrl)
+            assertEquals("Test description", note)
+            assertEquals("private@example.com", email)
+            assertEquals("987-654-3210", phoneNumber)
+        }
     }
 
     @Test
-    fun `when ShareUiState has minimal profile data then vCardQrCodeData contains only available information`() {
+    fun `when all preferences are disabled then no fields are included in vCard`() {
         // Given
-        val profile = createMinimalProfile()
+        val profile = createTestProfile()
+        val privateContactInfo = PrivateContactInfo(
+            privateEmail = "private@example.com",
+            privatePhone = "987-654-3210"
+        )
+        val userSharePreferences = UserSharePreferences(
+            privateEmail = false,
+            privatePhone = false,
+            name = false,
+            location = false,
+            title = false,
+            organization = false,
+            description = false,
+            profileUrl = false
+        )
 
         // When
         val shareUiState = ShareUiState(
             profile = profile,
-            avatarUrl = null,
-            privateContactInfo = PrivateContactInfo()
+            privateContactInfo = privateContactInfo,
+            userSharePreferences = userSharePreferences
         )
 
         // Then
-        var vCardData = shareUiState.vCardQrCodeData
-
-        // Verify vCard structure
-        assertTrue(vCardData.startsWith("BEGIN:VCARD"))
-        assertTrue(vCardData.endsWith("END:VCARD"))
-
-        // Remove BEGIN:VCARD and VERSION lines for easier verification
-        vCardData = vCardData.replace("BEGIN:VCARD\n", "")
-            .replace("END:VCARD\n", "")
-            .replace("VERSION:3.0\n", "")
-
-        // Verify minimal profile information is included
-        assertTrue(vCardData.contains("URL:https://www.gravatar.com/minimal-hash"))
-
-        // Verify that optional fields are not included
-        assertFalse("vCard should not contain N:", vCardData.contains("N:"))
-        assertFalse("vCard should not contain FN:", vCardData.contains("FN:"))
-        assertFalse("vCard should not contain NICKNAME:", vCardData.contains("NICKNAME:"))
-        assertFalse("vCard should not contain ORG:", vCardData.contains("ORG:"))
-        assertFalse("vCard should not contain TITLE:", vCardData.contains("TITLE:"))
-        assertFalse("vCard should not contain NOTE:", vCardData.contains("NOTE:"))
-        assertFalse("vCard should not contain TEL;", vCardData.contains("TEL;"))
-        assertFalse("vCard should not contain EMAIL:", vCardData.contains("EMAIL:"))
+        with(shareUiState.vCardQrCodeData) {
+            assertNull(firstName)
+            assertNull(lastName)
+            assertNull(nickname)
+            assertNull(organization)
+            assertNull(title)
+            assertNull(profileUrl)
+            assertNull(note)
+            assertNull(email)
+            assertNull(phoneNumber)
+        }
     }
 
     @Test
-    fun `when ShareUiState has unshared contact info then vCardQrCodeData does not include private contact info`() {
+    fun `when only name preference is enabled then only name fields are included in vCard`() {
         // Given
-        val profile = createCompleteProfile()
-        val privateContactInfo = PrivateContactInfo(
-            emailValue = "test@example.com",
-            isEmailShared = false,
-            phoneValue = "123-456-7890",
-            isPhoneShared = false
+        val profile = createTestProfile()
+        val userSharePreferences = UserSharePreferences(
+            privateEmail = false,
+            privatePhone = false,
+            name = true,
+            location = false,
+            title = false,
+            organization = false,
+            description = false,
+            profileUrl = false
         )
 
         // When
         val shareUiState = ShareUiState(
             profile = profile,
-            avatarUrl = "https://www.gravatar.com/avatar/test-hash",
-            privateContactInfo = privateContactInfo
+            userSharePreferences = userSharePreferences
         )
 
         // Then
-        val vCardData = shareUiState.vCardQrCodeData
-
-        // Verify profile information is included
-        assertTrue(vCardData.contains("N:User;Test;;;"))
-        assertTrue(vCardData.contains("FN:Test User"))
-
-        // Verify private contact info is not included
-        assertFalse("vCard should not contain TEL;", vCardData.contains("TEL;"))
-        assertFalse("vCard should not contain EMAIL:", vCardData.contains("EMAIL:"))
+        with(shareUiState.vCardQrCodeData) {
+            assertEquals("Test", firstName)
+            assertEquals("User", lastName)
+            assertNull(nickname)
+            assertNull(organization)
+            assertNull(title)
+            assertNull(profileUrl)
+            assertNull(note)
+            assertNull(email)
+            assertNull(phoneNumber)
+        }
     }
 
-    private fun createCompleteProfile() = Profile {
+    @Test
+    fun `when only description preference is enabled then only description fields are included in vCard`() {
+        // Given
+        val profile = createTestProfile()
+        val userSharePreferences = UserSharePreferences(
+            privateEmail = false,
+            privatePhone = false,
+            name = false,
+            location = false,
+            title = false,
+            organization = false,
+            description = true,
+            profileUrl = false
+        )
+
+        // When
+        val shareUiState = ShareUiState(
+            profile = profile,
+            userSharePreferences = userSharePreferences
+        )
+
+        // Then
+        with(shareUiState.vCardQrCodeData) {
+            assertNull(firstName)
+            assertNull(lastName)
+            assertEquals("Test User", nickname)
+            assertNull(organization)
+            assertNull(title)
+            assertNull(profileUrl)
+            assertEquals("Test description", note)
+            assertNull(email)
+            assertNull(phoneNumber)
+        }
+    }
+
+    @Test
+    fun `when only organization preference is enabled then only organization field is included in vCard`() {
+        // Given
+        val profile = createTestProfile()
+        val userSharePreferences = UserSharePreferences(
+            privateEmail = false,
+            privatePhone = false,
+            name = false,
+            location = false,
+            title = false,
+            organization = true,
+            description = false,
+            profileUrl = false
+        )
+
+        // When
+        val shareUiState = ShareUiState(
+            profile = profile,
+            userSharePreferences = userSharePreferences
+        )
+
+        // Then
+        with(shareUiState.vCardQrCodeData) {
+            assertNull(firstName)
+            assertNull(lastName)
+            assertNull(nickname)
+            assertEquals("Test Company", organization)
+            assertNull(title)
+            assertNull(profileUrl)
+            assertNull(note)
+            assertNull(email)
+            assertNull(phoneNumber)
+        }
+    }
+
+    @Test
+    fun `when only title preference is enabled then only title field is included in vCard`() {
+        // Given
+        val profile = createTestProfile()
+        val userSharePreferences = UserSharePreferences(
+            privateEmail = false,
+            privatePhone = false,
+            name = false,
+            location = false,
+            title = true,
+            organization = false,
+            description = false,
+            profileUrl = false
+        )
+
+        // When
+        val shareUiState = ShareUiState(
+            profile = profile,
+            userSharePreferences = userSharePreferences
+        )
+
+        // Then
+        with(shareUiState.vCardQrCodeData) {
+            assertNull(firstName)
+            assertNull(lastName)
+            assertNull(nickname)
+            assertNull(organization)
+            assertEquals("Software Engineer", title)
+            assertNull(profileUrl)
+            assertNull(note)
+            assertNull(email)
+            assertNull(phoneNumber)
+        }
+    }
+
+    @Test
+    fun `when only profileUrl preference is enabled then only profileUrl field is included in vCard`() {
+        // Given
+        val profile = createTestProfile()
+        val userSharePreferences = UserSharePreferences(
+            privateEmail = false,
+            privatePhone = false,
+            name = false,
+            location = false,
+            title = false,
+            organization = false,
+            description = false,
+            profileUrl = true
+        )
+
+        // When
+        val shareUiState = ShareUiState(
+            profile = profile,
+            userSharePreferences = userSharePreferences
+        )
+
+        // Then
+        with(shareUiState.vCardQrCodeData) {
+            assertNull(firstName)
+            assertNull(lastName)
+            assertNull(nickname)
+            assertNull(organization)
+            assertNull(title)
+            assertEquals("https://www.gravatar.com/test-hash", profileUrl)
+            assertNull(note)
+            assertNull(email)
+            assertNull(phoneNumber)
+        }
+    }
+
+    @Test
+    fun `when only privateEmail preference is enabled then only email field is included in vCard`() {
+        // Given
+        val privateContactInfo = PrivateContactInfo(
+            privateEmail = "private@example.com",
+            privatePhone = "987-654-3210"
+        )
+        val userSharePreferences = UserSharePreferences(
+            privateEmail = true,
+            privatePhone = false,
+            name = false,
+            location = false,
+            title = false,
+            organization = false,
+            description = false,
+            profileUrl = false
+        )
+
+        // When
+        val shareUiState = ShareUiState(
+            privateContactInfo = privateContactInfo,
+            userSharePreferences = userSharePreferences
+        )
+
+        // Then
+        with(shareUiState.vCardQrCodeData) {
+            assertNull(firstName)
+            assertNull(lastName)
+            assertNull(nickname)
+            assertNull(organization)
+            assertNull(title)
+            assertNull(profileUrl)
+            assertNull(note)
+            assertEquals("private@example.com", email)
+            assertNull(phoneNumber)
+        }
+    }
+
+    @Test
+    fun `when only privatePhone preference is enabled then only phoneNumber field is included in vCard`() {
+        // Given
+        val privateContactInfo = PrivateContactInfo(
+            privateEmail = "private@example.com",
+            privatePhone = "987-654-3210"
+        )
+        val userSharePreferences = UserSharePreferences(
+            privateEmail = false,
+            privatePhone = true,
+            name = false,
+            location = false,
+            title = false,
+            organization = false,
+            description = false,
+            profileUrl = false
+        )
+
+        // When
+        val shareUiState = ShareUiState(
+            privateContactInfo = privateContactInfo,
+            userSharePreferences = userSharePreferences
+        )
+
+        // Then
+        with(shareUiState.vCardQrCodeData) {
+            assertNull(firstName)
+            assertNull(lastName)
+            assertNull(nickname)
+            assertNull(organization)
+            assertNull(title)
+            assertNull(profileUrl)
+            assertNull(note)
+            assertNull(email)
+            assertEquals("987-654-3210", phoneNumber)
+        }
+    }
+
+    private fun createTestProfile() = Profile {
         hash = "test-hash"
         displayName = "Test User"
         profileUrl = URI("https://www.gravatar.com/test-hash")
@@ -135,27 +351,6 @@ class ShareUiStateTest {
         contactInfo = ProfileContactInfo {
             cellPhone = "123-456-7890"
             email = "test@example.com"
-        }
-    }
-
-    private fun createMinimalProfile() = Profile {
-        hash = "minimal-hash"
-        displayName = ""
-        profileUrl = URI("https://www.gravatar.com/minimal-hash")
-        avatarUrl = URI("https://www.gravatar.com/avatar/minimal-hash")
-        avatarAltText = ""
-        description = ""
-        pronouns = ""
-        pronunciation = ""
-        location = ""
-        jobTitle = ""
-        company = ""
-        firstName = ""
-        lastName = ""
-        verifiedAccounts = emptyList()
-        contactInfo = ProfileContactInfo {
-            cellPhone = ""
-            email = ""
         }
     }
 }
