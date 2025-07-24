@@ -19,16 +19,21 @@ internal class VCard private constructor(
 
         val firstName = firstName.orEmpty()
         val lastName = lastName.orEmpty()
-        val nickname = nickname.orEmpty()
         if (firstName.isNotEmpty() || lastName.isNotEmpty()) {
             contentBuilder.append("N:${lastName.escaped()};${firstName.escaped()};;;\n")
-                .append(
-                    "FN:${("${firstName.escaped()} ${lastName.escaped()}".trim()).ifEmpty { nickname.escaped() }}\n"
-                )
+        } else {
+            nickname?.takeIf { it.isNotEmpty() }?.let {
+                contentBuilder.append("N:;${nickname.escaped()};;;\n")
+            }
         }
-        val calculatedNickname = nickname.ifEmpty { "$firstName $lastName".trim() }.escaped()
 
-        calculatedNickname.takeIf { it.isNotEmpty() }?.let { contentBuilder.append("NICKNAME:${it.escaped()}\n") }
+        // Providing an empty FN as it is required for vCard 3.0.
+        contentBuilder.append("FN:\n")
+
+        nickname?.takeIf { it.isNotEmpty() }?.let {
+            contentBuilder
+                .append("NICKNAME:${it.escaped()}\n")
+        }
         organization?.takeIf { it.isNotEmpty() }?.let { contentBuilder.append("ORG:${it.escaped()}\n") }
         title?.takeIf { it.isNotEmpty() }?.let { contentBuilder.append("TITLE:${it.escaped()}\n") }
         profileUrl?.takeIf { it.isNotEmpty() }?.let { contentBuilder.append("URL:${it.escaped()}\n") }

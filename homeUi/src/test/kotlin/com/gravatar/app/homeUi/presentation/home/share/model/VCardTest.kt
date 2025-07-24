@@ -26,7 +26,7 @@ class VCardTest {
         assertTrue(vCardString.contains("VERSION:3.0"))
         assertTrue(vCardString.contains("PRODID:Gravatar Android"))
         assertTrue(vCardString.contains("N:Doe;John;;;"))
-        assertTrue(vCardString.contains("FN:John Doe"))
+        assertTrue(vCardString.contains("FN:"))
         assertTrue(vCardString.contains("NICKNAME:Johnny"))
         assertTrue(vCardString.contains("ORG:Gravatar"))
         assertTrue(vCardString.contains("TITLE:Developer"))
@@ -51,8 +51,7 @@ class VCardTest {
         assertTrue(vCardString.contains("VERSION:3.0"))
         assertTrue(vCardString.contains("PRODID:Gravatar Android"))
         assertTrue(vCardString.contains("N:;Jane;;;")) // Last name is empty
-        assertTrue(vCardString.contains("FN:Jane")) // FN falls back to first name
-        assertTrue(vCardString.contains("NICKNAME:Jane")) // Nickname falls back to FN
+        assertTrue(vCardString.contains("FN:"))
         assertTrue(vCardString.contains("ORG:Automattic"))
         assertTrue(vCardString.contains("EMAIL:jane.doe@example.com"))
         assertTrue(vCardString.endsWith("END:VCARD"))
@@ -73,52 +72,10 @@ class VCardTest {
             "BEGIN:VCARD\n" +
                 "VERSION:3.0\n" +
                 "PRODID:Gravatar Android\n" +
+                "FN:\n" + // FN is required but empty
                 "END:VCARD",
             vCardString
         )
-    }
-
-    @Test
-    fun `FN and NICKNAME fall back correctly when names or nickname are empty`() {
-        // Case 1: Only first name
-        var vCard = VCard.Builder().firstName("Solo").build()
-        var vCardString = vCard.toString()
-        assertTrue(vCardString.contains("N:;Solo;;;"))
-        assertTrue(vCardString.contains("FN:Solo"))
-        assertTrue(vCardString.contains("NICKNAME:Solo"))
-
-        // Case 2: Only last name
-        vCard = VCard.Builder().lastName("OnlyLastName").build()
-        vCardString = vCard.toString()
-        assertTrue(vCardString.contains("N:OnlyLastName;;;;"))
-        assertTrue(vCardString.contains("FN:OnlyLastName"))
-        assertTrue(vCardString.contains("NICKNAME:OnlyLastName"))
-
-        // Case 3: First name, last name, but empty nickname
-        vCard = VCard.Builder().firstName("First").lastName("Last").nickname("").build()
-        vCardString = vCard.toString()
-        assertTrue(vCardString.contains("N:Last;First;;;"))
-        assertTrue(vCardString.contains("FN:First Last"))
-        assertTrue(vCardString.contains("NICKNAME:First Last")) // Falls back to FN
-
-        // Case 4: Only nickname
-        vCard = VCard.Builder().nickname("JustNickname").build()
-        vCardString = vCard.toString()
-        assertEquals(
-            "BEGIN:VCARD\n" +
-                "VERSION:3.0\n" +
-                "PRODID:Gravatar Android\n" +
-                "NICKNAME:JustNickname\n" +
-                "END:VCARD",
-            vCardString
-        )
-
-        // Case 5: First name, last name, and nickname (nickname should take precedence for NICKNAME field)
-        vCard = VCard.Builder().firstName("Official").lastName("Name").nickname("PreferredNick").build()
-        vCardString = vCard.toString()
-        assertTrue(vCardString.contains("N:Name;Official;;;"))
-        assertTrue(vCardString.contains("FN:Official Name"))
-        assertTrue(vCardString.contains("NICKNAME:PreferredNick"))
     }
 
     @Test
@@ -140,6 +97,7 @@ class VCardTest {
             "BEGIN:VCARD\n" +
                 "VERSION:3.0\n" +
                 "PRODID:Gravatar Android\n" +
+                "FN:\n" + // FN is required but empty
                 "END:VCARD",
             vCardString
         )
@@ -164,6 +122,7 @@ class VCardTest {
             "BEGIN:VCARD\n" +
                 "VERSION:3.0\n" +
                 "PRODID:Gravatar Android\n" +
+                "FN:\n" + // FN is required but empty
                 "END:VCARD",
             vCardString
         )
@@ -186,7 +145,7 @@ class VCardTest {
         val vCardString = vCard.toString()
 
         assertTrue(vCardString.contains("N:Last Name;First Name;;;"))
-        assertTrue(vCardString.contains("FN:First Name Last Name"))
+        assertTrue(vCardString.contains("FN:"))
         assertTrue(vCardString.contains("NICKNAME:Nick Name"))
         assertTrue(vCardString.contains("ORG:Org Name"))
         assertTrue(vCardString.contains("TITLE:Job Title"))
@@ -194,5 +153,25 @@ class VCardTest {
         assertTrue(vCardString.contains("NOTE:This is a note with newlines."))
         assertTrue(vCardString.contains("TEL;TYPE=cell:123 456 7890"))
         assertTrue(vCardString.contains("EMAIL:user name@example.com"))
+    }
+
+    @Test
+    fun `when no firstName and lastName but nickname exists, N field uses nickname`() {
+        val vCard = VCard.Builder()
+            .nickname("JohnDoe")
+            .organization("Gravatar")
+            .email("john.doe@example.com")
+            .build()
+
+        val vCardString = vCard.toString()
+
+        assertTrue(vCardString.contains("BEGIN:VCARD"))
+        assertTrue(vCardString.contains("VERSION:3.0"))
+        assertTrue(vCardString.contains("PRODID:Gravatar Android"))
+        assertTrue(vCardString.contains("N:;JohnDoe;;;")) // N field should use nickname
+        assertTrue(vCardString.contains("NICKNAME:JohnDoe"))
+        assertTrue(vCardString.contains("ORG:Gravatar"))
+        assertTrue(vCardString.contains("EMAIL:john.doe@example.com"))
+        assertTrue(vCardString.endsWith("END:VCARD"))
     }
 }
