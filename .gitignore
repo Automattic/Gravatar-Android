@@ -10,8 +10,12 @@ secrets.properties
 *.iml
 
 # generated files
+app/release/
 build/
-/captures
+build-logic/convention/bin
+captures/
+clock/bin/
+foundations/bin/
 .kotlin/
 
 # Fastlane
