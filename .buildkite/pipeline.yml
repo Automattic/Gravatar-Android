@@ -32,7 +32,7 @@ steps:
           context: Danger - PR Check
 
   - label: ⚒️ Build
-    command: ./gradlew assembleDebug
+    command: ./gradlew assembleDebug --stacktrace
     notify:
       - github_commit_status:
           context: Build
@@ -47,7 +47,7 @@ steps:
 
   - label: 🕵️‍♂️ Lint
     command: |
-      ./gradlew :app:lintDebug
+      ./gradlew :app:lintDebug --stacktrace
       
       upload_sarif_to_github 'app/build/reports/lint-results-debug.sarif'
     plugins: [ $CI_TOOLKIT ]
@@ -59,7 +59,7 @@ steps:
 
   - label: 🕵️ Detekt
     command: |
-      ./gradlew detekt
+      ./gradlew detekt --stacktrace
       
       upload_sarif_to_github 'app/build/reports/detekt/detekt.sarif'
     plugins: [ $CI_TOOLKIT ]
@@ -72,7 +72,7 @@ steps:
   - label: 🧪📸 Screenshot tests
     command: |
       echo "--- 🧪📸 Screenshot Testing"
-      ./gradlew verifyRoborazziDebug -Pscreenshot
+      ./gradlew verifyRoborazziDebug -Pscreenshot --stacktrace
     artifact_paths:
       - "**/build/test-results/*/*.xml"
     notify:
