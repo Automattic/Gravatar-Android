@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -20,6 +18,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import com.gravatar.app.design.components.button.PrimaryButton
+import com.gravatar.app.design.components.dialog.DialogText
+import com.gravatar.app.design.components.dialog.DialogTitle
 import com.gravatar.app.design.components.dialog.GravatarDialog
 import com.gravatar.app.design.theme.GravatarAppTheme
 import com.gravatar.app.homeUi.AppVersion
@@ -57,17 +58,12 @@ internal fun AboutAppDialogContent(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Column {
-            Text(
-                text = stringResource(R.string.about_app_dialog_about_gravatar),
-                style = MaterialTheme.typography.titleLarge.copy(
-                    fontWeight = FontWeight.SemiBold,
-                ),
+            DialogTitle(
+                title = stringResource(R.string.about_app_dialog_about_gravatar),
                 modifier = modifier.padding(top = 4.dp)
             )
-            Text(
+            DialogText(
                 text = "v$appVersion",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
         Column {
@@ -78,18 +74,14 @@ internal fun AboutAppDialogContent(
                 ),
                 modifier = modifier.padding(top = 4.dp),
             )
-            Text(
+            DialogText(
                 text = SUPPORT_URL,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.clickable {
                     context.openSupportPage()
                 }
             )
-            Text(
+            DialogText(
                 text = SUPPORT_EMAIL,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.clickable {
                     context.sendSupportEmail()
                 }
@@ -103,37 +95,24 @@ internal fun AboutAppDialogContent(
                 ),
                 modifier = modifier.padding(top = 4.dp),
             )
-            Text(
+            DialogText(
                 text = stringResource(R.string.about_app_dialog_terms_of_service),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.clickable {
                     context.openTermsOfService()
                 }
             )
-            Text(
+            DialogText(
                 text = stringResource(R.string.about_app_dialog_privacy_policy),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.clickable {
                     context.openPrivacyPolicy()
                 }
             )
         }
-        Button(
+        PrimaryButton(
+            text = stringResource(R.string.done_button_cta),
             onClick = onDone,
-            modifier = Modifier
-                .fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.onSurface,
-                contentColor = MaterialTheme.colorScheme.surface
-            )
-        ) {
-            Text(
-                text = stringResource(R.string.done_button_cta),
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-        }
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
