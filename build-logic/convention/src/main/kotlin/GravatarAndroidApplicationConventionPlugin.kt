@@ -40,25 +40,32 @@ class GravatarAndroidApplicationConventionPlugin : Plugin<Project> {
     }
 
     private fun ApplicationExtension.configureBuildTypes(project: Project) {
+        val secretsProperties = project.property("secretsProperties") as java.util.Properties
+        val secretsPath = project.property("secretsPath") as String
+        val canSignRelease = secretsProperties.isNotEmpty()
+
+        if (!canSignRelease) {
+            project.logger.warn("Release signing configuration skipped: no secrets properties found")
+        }
+
         signingConfigs {
-            getByName("debug") {
+            maybeCreate("debug").apply {
                 storeFile = project.rootProject.file("debug.keystore")
                 storePassword = "android"
                 keyAlias = "androiddebugkey"
                 keyPassword = "android"
             }
-            create("release") {
-                val secretsProperties = project.property("secretsProperties") as java.util.Properties
-                val secretsPath = project.property("secretsPath") as String
-                val storeFileName = secretsProperties.getProperty("uploadStoreFile") as String
 
-                storeFile = project.file("$secretsPath/$storeFileName")
-                storePassword = secretsProperties.getProperty("uploadStorePassword")
-                keyAlias = secretsProperties.getProperty("uploadKeyAlias")
-                keyPassword = secretsProperties.getProperty("uploadKeyPassword")
+            if (canSignRelease) {
+                maybeCreate("release").apply {
+                    storeFile = project.file("$secretsPath/${secretsProperties.getProperty("uploadStoreFile")}")
+                    storePassword = secretsProperties.getProperty("uploadStorePassword")
+                    keyAlias = secretsProperties.getProperty("uploadKeyAlias")
+                    keyPassword = secretsProperties.getProperty("uploadKeyPassword")
+                }
             }
         }
-        
+
         buildTypes {
             getByName("debug") {
                 signingConfig = signingConfigs.getByName("debug")
@@ -69,7 +76,10 @@ class GravatarAndroidApplicationConventionPlugin : Plugin<Project> {
                     getDefaultProguardFile("proguard-android-optimize.txt"),
                     "proguard-rules.pro",
                 )
-                signingConfig = signingConfigs.getByName("release")
+                // Only set release signing config if it was created
+                signingConfigs.findByName("release")?.let { releaseSigningConfig ->
+                    signingConfig = releaseSigningConfig
+                }
             }
         }
     }
