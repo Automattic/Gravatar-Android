@@ -25,8 +25,8 @@ class GravatarAndroidApplicationConventionPlugin : Plugin<Project> {
                 defaultConfig.apply {
                     applicationId = APP_ID
                     targetSdk = TARGET_SDK
-                    versionCode = 1
-                    versionName = "1.0"
+                    versionCode = project.property("versionCode") as Int
+                    versionName = project.property("versionName") as String
                 }
                 buildFeatures.buildConfig = true
                 configureBuildTypes()
