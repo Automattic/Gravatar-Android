@@ -14,6 +14,7 @@ plugins {
 }
 
 val versionProperties = loadPropertiesFromFile(file("version.properties"))
+val secretsProperties = loadPropertiesFromFile(file("~/.configure/gravatar-android/secrets/secrets.properties"))
 
 project.apply {
     extra.apply {
