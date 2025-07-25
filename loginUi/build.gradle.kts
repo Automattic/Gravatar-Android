@@ -9,7 +9,7 @@ plugins {
 
 fun localProperties(): Properties {
     val properties = Properties()
-    rootProject.file("secrets.properties")
+    rootProject.file("~/.configure/gravatar-android/secrets/secrets.properties")
         .takeIf { it.exists() }
         ?.let { properties.load(FileInputStream(it)) }
         ?: logger.warn("Secrets properties file not found. Gravatar app won't work properly.")
