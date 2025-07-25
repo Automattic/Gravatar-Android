@@ -47,6 +47,16 @@ class GravatarAndroidApplicationConventionPlugin : Plugin<Project> {
                 keyAlias = "androiddebugkey"
                 keyPassword = "android"
             }
+            create("release") {
+                val secretsProperties = project.property("secretsProperties") as java.util.Properties
+                val secretsPath = project.property("secretsPath") as String
+                val storeFileName = secretsProperties.getProperty("uploadStoreFile") as String
+
+                storeFile = project.file("$secretsPath/$storeFileName")
+                storePassword = secretsProperties.getProperty("uploadStorePassword")
+                keyAlias = secretsProperties.getProperty("uploadKeyAlias")
+                keyPassword = secretsProperties.getProperty("uploadKeyPassword")
+            }
         }
         
         buildTypes {
@@ -59,7 +69,7 @@ class GravatarAndroidApplicationConventionPlugin : Plugin<Project> {
                     getDefaultProguardFile("proguard-android-optimize.txt"),
                     "proguard-rules.pro",
                 )
-                signingConfig = signingConfigs.getByName("debug")
+                signingConfig = signingConfigs.getByName("release")
             }
         }
     }
