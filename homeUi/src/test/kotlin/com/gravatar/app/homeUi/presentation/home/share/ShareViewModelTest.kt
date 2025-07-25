@@ -2,10 +2,13 @@ package com.gravatar.app.homeUi.presentation.home.share
 
 import app.cash.turbine.test
 import com.gravatar.app.testUtils.CoroutineTestRule
+import com.gravatar.app.usercomponent.domain.model.PrivateContactInfo
 import com.gravatar.app.usercomponent.domain.model.UserSharePreferences
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrl
+import com.gravatar.app.usercomponent.domain.usecase.GetPrivateContactInfo
 import com.gravatar.app.usercomponent.domain.usecase.GetUserSharePreferences
+import com.gravatar.app.usercomponent.domain.usecase.UpdatePrivateContactInfo
 import com.gravatar.app.usercomponent.domain.usecase.UpdateUserSharePreferences
 import com.gravatar.restapi.models.Profile
 import com.gravatar.restapi.models.ProfileContactInfo
@@ -14,6 +17,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -43,6 +47,14 @@ class ShareViewModelTest {
             userSharePreferencesFlow.emit(userSharePreferences)
         }
     }
+    private val getPrivateContactInfo: GetPrivateContactInfo = object : GetPrivateContactInfo {
+        override fun invoke() = privateContactInfoFlow
+    }
+    private val updatePrivateContactInfo = object : UpdatePrivateContactInfo {
+        override suspend fun invoke(privateContactInfo: PrivateContactInfo) {
+            privateContactInfoFlow.emit(privateContactInfo)
+        }
+    }
     private val userRepository = mockk<UserRepository>()
 
     private lateinit var viewModel: ShareViewModel
@@ -50,11 +62,19 @@ class ShareViewModelTest {
     private val avatarUrlFlow: MutableSharedFlow<URL?> = MutableSharedFlow()
     private val profileFlow: MutableSharedFlow<Profile?> = MutableSharedFlow()
     private val userSharePreferencesFlow: MutableSharedFlow<UserSharePreferences> = MutableSharedFlow()
+    private val privateContactInfoFlow: MutableSharedFlow<PrivateContactInfo> = MutableSharedFlow()
 
     @Before
     fun setup() {
         every { userRepository.getProfile() } returns profileFlow
-        viewModel = ShareViewModel(userRepository, getAvatarUrl, getUserSharePreferences, updateUserSharePreferences)
+        viewModel = ShareViewModel(
+            userRepository,
+            getAvatarUrl,
+            getUserSharePreferences,
+            updateUserSharePreferences,
+            getPrivateContactInfo,
+            updatePrivateContactInfo
+        )
     }
 
     @Test
@@ -322,6 +342,25 @@ class ShareViewModelTest {
     }
 
     @Test
+    fun `when private contact info is emitted then uiState is updated with private contact info`() = runTest {
+        // Given
+        val testPrivateContactInfo = PrivateContactInfo(
+            privateEmail = "test@example.com",
+            privatePhone = "123-456-7890"
+        )
+
+        // When
+        privateContactInfoFlow.emit(testPrivateContactInfo)
+        advanceUntilIdle()
+
+        // Then
+        viewModel.uiState.test {
+            val state = awaitItem()
+            assertEquals(testPrivateContactInfo, state.privateContactInfo)
+        }
+    }
+
+    @Test
     fun `when OnPrivateInformationClicked event is triggered then isPrivateInformationDialogVisible is set to true`() = runTest {
         // When
         viewModel.onEvent(ShareEvent.OnPrivateInformationClicked)
@@ -349,6 +388,109 @@ class ShareViewModelTest {
 
             // Then
             assertFalse(awaitItem().isPrivateInformationDialogVisible)
+        }
+    }
+
+    @Test
+    fun `when OnEmailValueChanged event is triggered then updatePrivateContactInfo is called`() = runTest {
+        // Given
+        val newEmailValue = "test@example.com"
+
+        privateContactInfoFlow.test {
+            // When
+            viewModel.onEvent(ShareEvent.OnEmailValueChanged(newEmailValue))
+
+            // Then
+            val expectedPrivateContactInfo = PrivateContactInfo.Default.copy(
+                privateEmail = newEmailValue
+            )
+            assertEquals(expectedPrivateContactInfo, awaitItem())
+        }
+    }
+
+    @Test
+    fun `when OnPhoneValueChanged event is triggered then updatePrivateContactInfo is called`() = runTest {
+        // Given
+        val newPhoneValue = "123-456-7890"
+
+        privateContactInfoFlow.test {
+            // When
+            viewModel.onEvent(ShareEvent.OnPhoneValueChanged(newPhoneValue))
+
+            // Then
+            val expectedPrivateContactInfo = PrivateContactInfo.Default.copy(
+                privatePhone = newPhoneValue
+            )
+            assertEquals(expectedPrivateContactInfo, awaitItem())
+        }
+    }
+
+    @Test
+    fun `when email value is changed then updatePrivateContactInfo is not called immediately`() = runTest {
+        // Given
+        val newEmailValue = "test@example.com"
+
+        privateContactInfoFlow.test {
+            // When
+            viewModel.onEvent(ShareEvent.OnEmailValueChanged(newEmailValue))
+
+            // Advance time by just under the debounce delay
+            advanceTimeBy(499) // Just under the 500ms debounce delay
+
+            // Then - no emissions yet because of debounce
+            expectNoEvents()
+            cancel()
+        }
+    }
+
+    @Test
+    fun `when email value is changed then updatePrivateContactInfo is called after debounce delay`() = runTest {
+        // Given
+        val newEmailValue = "test@example.com"
+
+        privateContactInfoFlow.test {
+            // When
+            viewModel.onEvent(ShareEvent.OnEmailValueChanged(newEmailValue))
+
+            // Advance time past the debounce delay
+            advanceTimeBy(501) // Just past the 500ms debounce delay
+
+            // Then
+            val expectedPrivateContactInfo = PrivateContactInfo.Default.copy(
+                privateEmail = newEmailValue
+            )
+            assertEquals(expectedPrivateContactInfo, expectMostRecentItem())
+            cancel()
+        }
+    }
+
+    @Test
+    fun `when multiple rapid email value changes occur then only the last one triggers updatePrivateContactInfo`() = runTest {
+        // Given
+        val firstEmailValue = "first@example.com"
+        val secondEmailValue = "second@example.com"
+        val thirdEmailValue = "third@example.com"
+
+        privateContactInfoFlow.test {
+            // When - rapid changes
+            viewModel.onEvent(ShareEvent.OnEmailValueChanged(firstEmailValue))
+            advanceTimeBy(100) // Not enough time for debounce
+
+            viewModel.onEvent(ShareEvent.OnEmailValueChanged(secondEmailValue))
+            advanceTimeBy(100) // Not enough time for debounce
+
+            viewModel.onEvent(ShareEvent.OnEmailValueChanged(thirdEmailValue))
+
+            // Advance time past the debounce delay
+            advanceTimeBy(501) // Just past the 500ms debounce delay
+
+            // Then - only the last value should be emitted
+            val expectedPrivateContactInfo = PrivateContactInfo.Default.copy(
+                privateEmail = thirdEmailValue
+            )
+            assertEquals(expectedPrivateContactInfo, expectMostRecentItem())
+
+            cancel()
         }
     }
 

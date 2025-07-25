@@ -13,6 +13,8 @@ import com.gravatar.app.usercomponent.domain.usecase.DeleteUserAvatar
 import com.gravatar.app.usercomponent.domain.usecase.DeleteUserAvatarUseCase
 import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrl
 import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrlUseCase
+import com.gravatar.app.usercomponent.domain.usecase.GetPrivateContactInfo
+import com.gravatar.app.usercomponent.domain.usecase.GetPrivateContactInfoUseCase
 import com.gravatar.app.usercomponent.domain.usecase.GetUserSharePreferences
 import com.gravatar.app.usercomponent.domain.usecase.GetUserSharePreferencesUseCase
 import com.gravatar.app.usercomponent.domain.usecase.IsUserLoggedIn
@@ -23,6 +25,8 @@ import com.gravatar.app.usercomponent.domain.usecase.Logout
 import com.gravatar.app.usercomponent.domain.usecase.LogoutUseCase
 import com.gravatar.app.usercomponent.domain.usecase.SelectAvatarUseCase
 import com.gravatar.app.usercomponent.domain.usecase.SelectUserAvatar
+import com.gravatar.app.usercomponent.domain.usecase.UpdatePrivateContactInfo
+import com.gravatar.app.usercomponent.domain.usecase.UpdatePrivateContactInfoUseCase
 import com.gravatar.app.usercomponent.domain.usecase.UpdateUserSharePreferences
 import com.gravatar.app.usercomponent.domain.usecase.UpdateUserSharePreferencesUseCase
 import com.gravatar.app.usercomponent.domain.usecase.UploadAvatarUseCase
@@ -45,6 +49,8 @@ val userComponentModule = module {
     factoryOf(::UploadAvatarUseCase) { bind<UploadUserAvatar>() }
     factoryOf(::GetUserSharePreferencesUseCase) { bind<GetUserSharePreferences>() }
     factoryOf(::UpdateUserSharePreferencesUseCase) { bind<UpdateUserSharePreferences>() }
+    factoryOf(::GetPrivateContactInfoUseCase) { bind<GetPrivateContactInfo>() }
+    factoryOf(::UpdatePrivateContactInfoUseCase) { bind<UpdatePrivateContactInfo>() }
     factoryOf(::WordPressClient)
     singleOf(::InMemoryUserSessionPersistence) { bind<UserSessionPersistence>() }
     includes(httpClientModule)
