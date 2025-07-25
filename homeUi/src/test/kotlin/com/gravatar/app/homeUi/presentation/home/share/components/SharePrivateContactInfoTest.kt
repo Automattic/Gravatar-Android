@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.gravatar.app.design.theme.GravatarAppTheme
-import com.gravatar.app.homeUi.presentation.home.share.PrivateContactInfo
+import com.gravatar.app.homeUi.presentation.home.share.PrivateContactState
 import com.gravatar.app.testUtils.roborazzi.RoborazziTest
 import org.junit.Test
 
@@ -15,7 +15,7 @@ class SharePrivateContactInfoTest : RoborazziTest() {
     fun sharePrivateContactInfo_bothSwitchesOn() = screenshotTest {
         GravatarAppTheme {
             SharePrivateContactInfo(
-                privateContactInfo = PrivateContactInfo(
+                privateContactState = PrivateContactState(
                     emailValue = "example@email.com",
                     isEmailShared = true,
                     phoneValue = "123-456-7890",
@@ -36,7 +36,7 @@ class SharePrivateContactInfoTest : RoborazziTest() {
     fun sharePrivateContactInfo_bothSwitchesOff() = screenshotTest {
         GravatarAppTheme {
             SharePrivateContactInfo(
-                privateContactInfo = PrivateContactInfo(
+                privateContactState = PrivateContactState(
                     emailValue = "example@email.com",
                     isEmailShared = false,
                     phoneValue = "123-456-7890",
@@ -57,7 +57,7 @@ class SharePrivateContactInfoTest : RoborazziTest() {
     fun sharePrivateContactInfo_emptyValues() = screenshotTest {
         GravatarAppTheme {
             SharePrivateContactInfo(
-                privateContactInfo = PrivateContactInfo(
+                privateContactState = PrivateContactState(
                     emailValue = "",
                     isEmailShared = true,
                     phoneValue = "",

@@ -58,6 +58,8 @@ internal class DatastoreUserPrefsStorage(
         private const val USER_SHARE_ORGANIZATION_KEY = "share_organization"
         private const val USER_SHARE_DESCRIPTION_KEY = "share_description"
         private const val USER_SHARE_PROFILE_URL_KEY = "share_profile_url"
+        private const val USER_SHARE_PRIVATE_EMAIL_KEY = "share_private_email"
+        private const val USER_SHARE_PRIVATE_PHONE_KEY = "share_private_phone"
     }
 
     private val tokenKey = stringPreferencesKey(AUTH_TOKEN_KEY)
@@ -68,6 +70,8 @@ internal class DatastoreUserPrefsStorage(
     private val userShareOrganizationKey = booleanPreferencesKey(USER_SHARE_ORGANIZATION_KEY)
     private val userShareDescriptionKey = booleanPreferencesKey(USER_SHARE_DESCRIPTION_KEY)
     private val userShareProfileUrlKey = booleanPreferencesKey(USER_SHARE_PROFILE_URL_KEY)
+    private val userSharePrivateEmailKey = booleanPreferencesKey(USER_SHARE_PRIVATE_EMAIL_KEY)
+    private val userSharePrivatePhoneKey = booleanPreferencesKey(USER_SHARE_PRIVATE_PHONE_KEY)
 
     override suspend fun getToken(): String? {
         return try {
@@ -119,6 +123,8 @@ internal class DatastoreUserPrefsStorage(
         return dataStore.data
             .map { preferences ->
                 UserSharePreferences(
+                    privateEmail = preferences[userSharePrivateEmailKey] ?: true,
+                    privatePhone = preferences[userSharePrivatePhoneKey] ?: true,
                     name = preferences[userShareNameKey] ?: true,
                     location = preferences[userShareLocationKey] ?: true,
                     title = preferences[userShareTitleKey] ?: true,
@@ -135,6 +141,8 @@ internal class DatastoreUserPrefsStorage(
         userSharePreferences: UserSharePreferences
     ): Unit = withContext(dispatcherProvider.io) {
         dataStore.edit { preferences ->
+            preferences[userSharePrivateEmailKey] = userSharePreferences.privateEmail
+            preferences[userSharePrivatePhoneKey] = userSharePreferences.privatePhone
             preferences[userShareNameKey] = userSharePreferences.name
             preferences[userShareLocationKey] = userSharePreferences.location
             preferences[userShareTitleKey] = userSharePreferences.title

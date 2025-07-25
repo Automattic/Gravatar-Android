@@ -1,6 +1,8 @@
 package com.gravatar.app.usercomponent.domain.model
 
 data class UserSharePreferences(
+    val privateEmail: Boolean,
+    val privatePhone: Boolean,
     val name: Boolean,
     val location: Boolean,
     val title: Boolean,
@@ -10,6 +12,8 @@ data class UserSharePreferences(
 ) {
     companion object {
         val Default = UserSharePreferences(
+            privateEmail = true,
+            privatePhone = true,
             name = true,
             location = true,
             title = true,

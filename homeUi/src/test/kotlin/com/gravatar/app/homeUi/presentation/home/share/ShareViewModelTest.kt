@@ -91,21 +91,7 @@ class ShareViewModelTest {
 
         // Then
         viewModel.uiState.test {
-            assertEquals(newEmailValue, awaitItem().privateContactInfo.emailValue)
-        }
-    }
-
-    @Test
-    fun `when OnEmailSharingChanged event is triggered then isEmailShared is updated`() = runTest {
-        // Given
-        val isShared = true
-
-        // When
-        viewModel.onEvent(ShareEvent.OnEmailSharingChanged(isShared))
-
-        // Then
-        viewModel.uiState.test {
-            assertEquals(isShared, awaitItem().privateContactInfo.isEmailShared)
+            assertEquals(newEmailValue, awaitItem().privateContactState.emailValue)
         }
     }
 
@@ -119,21 +105,7 @@ class ShareViewModelTest {
 
         // Then
         viewModel.uiState.test {
-            assertEquals(newPhoneValue, awaitItem().privateContactInfo.phoneValue)
-        }
-    }
-
-    @Test
-    fun `when OnPhoneSharingChanged event is triggered then isPhoneShared is updated`() = runTest {
-        // Given
-        val isShared = true
-
-        // When
-        viewModel.onEvent(ShareEvent.OnPhoneSharingChanged(isShared))
-
-        // Then
-        viewModel.uiState.test {
-            assertEquals(isShared, awaitItem().privateContactInfo.isPhoneShared)
+            assertEquals(newPhoneValue, awaitItem().privateContactState.phoneValue)
         }
     }
 
@@ -313,13 +285,10 @@ class ShareViewModelTest {
     @Test
     fun `when user share preferences are emitted then uiState is updated with preferences`() = runTest {
         // Given
-        val testPreferences = UserSharePreferences(
+        val testPreferences = UserSharePreferences.Default.copy(
             name = false,
-            location = true,
             title = false,
-            organization = true,
             description = false,
-            profileUrl = true
         )
 
         // When
@@ -345,13 +314,8 @@ class ShareViewModelTest {
             viewModel.onEvent(ShareEvent.OnUserSharePreferencesChanged(shareFieldType))
 
             // Then
-            val expectedSharePreferences = UserSharePreferences(
+            val expectedSharePreferences = initialState.userSharePreferences.copy(
                 name = newNamePreference,
-                location = initialState.userSharePreferences.location,
-                title = initialState.userSharePreferences.title,
-                organization = initialState.userSharePreferences.organization,
-                description = initialState.userSharePreferences.description,
-                profileUrl = initialState.userSharePreferences.profileUrl
             )
             assertEquals(expectedSharePreferences, awaitItem())
         }

@@ -9,11 +9,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gravatar.app.homeUi.R
-import com.gravatar.app.homeUi.presentation.home.share.PrivateContactInfo
+import com.gravatar.app.homeUi.presentation.home.share.PrivateContactState
 
 @Composable
 internal fun SharePrivateContactInfo(
-    privateContactInfo: PrivateContactInfo,
+    privateContactState: PrivateContactState,
     onEmailValueChange: (String) -> Unit,
     onEmailSwitchCheckedChange: (Boolean) -> Unit,
     onPhoneValueChange: (String) -> Unit,
@@ -29,17 +29,17 @@ internal fun SharePrivateContactInfo(
         )
         ShareEditableField(
             placeholder = R.string.share_tab_private_contact_email_placeholder,
-            value = privateContactInfo.emailValue,
+            value = privateContactState.emailValue,
             onValueChange = onEmailValueChange,
-            switchChecked = privateContactInfo.isEmailShared,
+            switchChecked = privateContactState.isEmailShared,
             keyboardType = KeyboardType.Email,
             onSwitchCheckedChange = onEmailSwitchCheckedChange,
         )
         ShareEditableField(
             placeholder = R.string.share_tab_private_contact_phone_number_placeholder,
-            value = privateContactInfo.phoneValue,
+            value = privateContactState.phoneValue,
             onValueChange = onPhoneValueChange,
-            switchChecked = privateContactInfo.isPhoneShared,
+            switchChecked = privateContactState.isPhoneShared,
             keyboardType = KeyboardType.Phone,
             onSwitchCheckedChange = onPhoneSwitchCheckedChange,
         )
@@ -50,7 +50,7 @@ internal fun SharePrivateContactInfo(
 @Composable
 private fun SharePrivateContactInfoPreview() {
     SharePrivateContactInfo(
-        privateContactInfo = PrivateContactInfo(
+        privateContactState = PrivateContactState(
             emailValue = "example@email.com",
             isEmailShared = true,
             phoneValue = "123-456-7890",

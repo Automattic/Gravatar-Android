@@ -111,14 +111,7 @@ private fun SharePublicContactInfoPreview() {
     GravatarAppTheme {
         SharePublicContactInfo(
             profile = defaultProfile(hash = "hash"),
-            userSharePreferences = UserSharePreferences(
-                name = true,
-                location = true,
-                title = true,
-                organization = true,
-                description = true,
-                profileUrl = true
-            ),
+            userSharePreferences = UserSharePreferences.Default,
             onUserPreferenceChanged = {},
         )
     }
