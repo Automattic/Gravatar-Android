@@ -6,4 +6,6 @@ internal sealed class ShareEvent {
     data class OnUserSharePreferencesChanged(val shareFieldType: ShareFieldType) : ShareEvent()
     data object OnAboutAppClicked : ShareEvent()
     data object OnDismissAboutAppDialog : ShareEvent()
+    data object OnPrivateInformationClicked : ShareEvent()
+    data object OnDismissPrivateInformationDialog : ShareEvent()
 }

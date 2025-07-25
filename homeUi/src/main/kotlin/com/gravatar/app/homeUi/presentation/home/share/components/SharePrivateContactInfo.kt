@@ -1,5 +1,6 @@
 package com.gravatar.app.homeUi.presentation.home.share.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +19,7 @@ internal fun SharePrivateContactInfo(
     onEmailSwitchCheckedChange: (Boolean) -> Unit,
     onPhoneValueChange: (String) -> Unit,
     onPhoneSwitchCheckedChange: (Boolean) -> Unit,
+    onTitleClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp), modifier = modifier) {
@@ -25,7 +27,11 @@ internal fun SharePrivateContactInfo(
             leftIcon = R.drawable.share_section_title_warning,
             title = R.string.share_tab_private_contact_info_title,
             rightIcon = R.drawable.share_section_title_lock,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    onTitleClicked()
+                },
         )
         ShareEditableField(
             placeholder = R.string.share_tab_private_contact_email_placeholder,
@@ -59,6 +65,7 @@ private fun SharePrivateContactInfoPreview() {
         onEmailValueChange = {},
         onEmailSwitchCheckedChange = {},
         onPhoneValueChange = {},
-        onPhoneSwitchCheckedChange = {}
+        onPhoneSwitchCheckedChange = {},
+        onTitleClicked = {},
     )
 }

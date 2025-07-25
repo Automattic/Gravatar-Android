@@ -55,6 +55,8 @@ internal class ShareViewModel(
             is ShareEvent.OnAboutAppClicked -> showAboutAppDialog()
             is ShareEvent.OnDismissAboutAppDialog -> hideAboutAppDialog()
             is ShareEvent.OnUserSharePreferencesChanged -> handleUserSharePreferencesChange(shareEvent.shareFieldType)
+            is ShareEvent.OnPrivateInformationClicked -> showPrivateInformationDialog()
+            is ShareEvent.OnDismissPrivateInformationDialog -> hidePrivateInformationDialog()
         }
     }
 
@@ -78,6 +80,18 @@ internal class ShareViewModel(
     private fun hideAboutAppDialog() {
         _uiState.update { currentState ->
             currentState.copy(isAboutAppDialogVisible = false)
+        }
+    }
+
+    private fun showPrivateInformationDialog() {
+        _uiState.update { currentState ->
+            currentState.copy(isPrivateInformationDialogVisible = true)
+        }
+    }
+
+    private fun hidePrivateInformationDialog() {
+        _uiState.update { currentState ->
+            currentState.copy(isPrivateInformationDialogVisible = false)
         }
     }
 

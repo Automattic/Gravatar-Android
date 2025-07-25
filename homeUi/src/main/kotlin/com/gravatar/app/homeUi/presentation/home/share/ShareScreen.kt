@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModelStoreOwner
 import com.gravatar.app.design.theme.GravatarAppTheme
 import com.gravatar.app.homeUi.presentation.home.components.topbar.components.AboutAppDialog
 import com.gravatar.app.homeUi.presentation.home.share.components.ItemDivider
+import com.gravatar.app.homeUi.presentation.home.share.components.PrivateInformationDialog
 import com.gravatar.app.homeUi.presentation.home.share.components.ShareHeader
 import com.gravatar.app.homeUi.presentation.home.share.components.SharePrivateContactInfo
 import com.gravatar.app.homeUi.presentation.home.share.components.SharePublicContactInfo
@@ -69,6 +70,7 @@ internal fun ShareScreen(uiState: ShareUiState, onEvent: (ShareEvent) -> Unit) {
                 onPhoneSwitchCheckedChange = {
                     onEvent(ShareEvent.OnUserSharePreferencesChanged(ShareFieldType.PrivatePhone(it)))
                 },
+                onTitleClicked = { onEvent(ShareEvent.OnPrivateInformationClicked) },
                 modifier = Modifier.padding(16.dp),
             )
             ItemDivider()
@@ -94,6 +96,14 @@ internal fun ShareScreen(uiState: ShareUiState, onEvent: (ShareEvent) -> Unit) {
             }
         )
     }
+
+    if (uiState.isPrivateInformationDialogVisible) {
+        PrivateInformationDialog(
+            onDismissRequest = {
+                onEvent(ShareEvent.OnDismissPrivateInformationDialog)
+            }
+        )
+    }
 }
 
 @Preview
@@ -105,7 +115,8 @@ private fun ShareScreenPreview() {
                 profile = defaultProfile(
                     hash = ""
                 ),
-                isAboutAppDialogVisible = false
+                isAboutAppDialogVisible = false,
+                isPrivateInformationDialogVisible = false
             ),
             onEvent = { }
         )
