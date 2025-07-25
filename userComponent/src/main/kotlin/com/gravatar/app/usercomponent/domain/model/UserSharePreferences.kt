@@ -7,4 +7,15 @@ data class UserSharePreferences(
     val organization: Boolean,
     val description: Boolean,
     val profileUrl: Boolean,
-)
+) {
+    companion object {
+        val Default = UserSharePreferences(
+            name = true,
+            location = true,
+            title = true,
+            organization = true,
+            description = true,
+            profileUrl = true
+        )
+    }
+}

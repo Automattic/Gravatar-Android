@@ -13,6 +13,8 @@ import com.gravatar.app.usercomponent.domain.usecase.DeleteUserAvatar
 import com.gravatar.app.usercomponent.domain.usecase.DeleteUserAvatarUseCase
 import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrl
 import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrlUseCase
+import com.gravatar.app.usercomponent.domain.usecase.GetUserSharePreferences
+import com.gravatar.app.usercomponent.domain.usecase.GetUserSharePreferencesUseCase
 import com.gravatar.app.usercomponent.domain.usecase.IsUserLoggedIn
 import com.gravatar.app.usercomponent.domain.usecase.IsUserLoggedInUseCase
 import com.gravatar.app.usercomponent.domain.usecase.Login
@@ -21,6 +23,8 @@ import com.gravatar.app.usercomponent.domain.usecase.Logout
 import com.gravatar.app.usercomponent.domain.usecase.LogoutUseCase
 import com.gravatar.app.usercomponent.domain.usecase.SelectAvatarUseCase
 import com.gravatar.app.usercomponent.domain.usecase.SelectUserAvatar
+import com.gravatar.app.usercomponent.domain.usecase.UpdateUserSharePreferences
+import com.gravatar.app.usercomponent.domain.usecase.UpdateUserSharePreferencesUseCase
 import com.gravatar.app.usercomponent.domain.usecase.UploadAvatarUseCase
 import com.gravatar.app.usercomponent.domain.usecase.UploadUserAvatar
 import org.koin.core.module.dsl.bind
@@ -39,6 +43,8 @@ val userComponentModule = module {
     factoryOf(::SelectAvatarUseCase) { bind<SelectUserAvatar>() }
     factoryOf(::DeleteUserAvatarUseCase) { bind<DeleteUserAvatar>() }
     factoryOf(::UploadAvatarUseCase) { bind<UploadUserAvatar>() }
+    factoryOf(::GetUserSharePreferencesUseCase) { bind<GetUserSharePreferences>() }
+    factoryOf(::UpdateUserSharePreferencesUseCase) { bind<UpdateUserSharePreferences>() }
     factoryOf(::WordPressClient)
     singleOf(::InMemoryUserSessionPersistence) { bind<UserSessionPersistence>() }
     includes(httpClientModule)
