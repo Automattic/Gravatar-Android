@@ -29,7 +29,7 @@ class GravatarAndroidApplicationConventionPlugin : Plugin<Project> {
                     versionName = project.property("versionName") as String
                 }
                 buildFeatures.buildConfig = true
-                configureBuildTypes()
+                configureBuildTypes(this@with)
                 lint {
                     sarifReport = true
                     checkDependencies = true
@@ -39,8 +39,20 @@ class GravatarAndroidApplicationConventionPlugin : Plugin<Project> {
         }
     }
 
-    private fun ApplicationExtension.configureBuildTypes() {
+    private fun ApplicationExtension.configureBuildTypes(project: Project) {
+        signingConfigs {
+            getByName("debug") {
+                storeFile = project.rootProject.file("debug.keystore")
+                storePassword = "android"
+                keyAlias = "androiddebugkey"
+                keyPassword = "android"
+            }
+        }
+        
         buildTypes {
+            getByName("debug") {
+                signingConfig = signingConfigs.getByName("debug")
+            }
             getByName("release") {
                 isMinifyEnabled = true
                 proguardFiles(
