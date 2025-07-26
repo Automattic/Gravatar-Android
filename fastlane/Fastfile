@@ -21,6 +21,41 @@ PROTOTYPE_BUILD_DOMAIN = 'https://cdn.a8c-ci.services'
 PROTOTYPE_BUILD_TYPE = 'release'
 
 platform :android do
+  # Builds a release app bundle .aab
+  #
+  lane :build_bundle do
+    gradle(task: 'clean')
+
+    gradle(
+      task: 'bundle',
+      build_type: 'Release'
+    )
+  end
+
+  # Uploads the app bundle to the Google Play Store
+  #
+  # @param track [String] The track to upload to. One of: 'internal', 'alpha', 'beta', 'production'. Defaults to 'internal'
+  # @param release_status [String] The release status. One of: 'completed', 'draft', 'halted', 'inProgress'. Defaults to 'completed'
+  # @param rollout [String] The percentage of users who should get the update, as a string between '0' and '1'. Defaults to '1'
+  # @env [String] PLAY_STORE_RAW_JSON_KEY The Google Play Store service account JSON key data
+  #
+  lane :upload_to_store do |track: 'internal', release_status: 'completed', rollout: '1'|
+    require_env_vars!('PLAY_STORE_RAW_JSON_KEY')
+
+    upload_to_play_store(
+      package_name: 'com.gravatar.app',
+      aab: File.join(PROJECT_ROOT_FOLDER, 'app', 'build', 'outputs', 'bundle', 'release', 'app-release.aab'),
+      track: track,
+      release_status: release_status,
+      rollout: rollout,
+      skip_upload_metadata: (track != 'production'),
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      json_key_data: get_required_env!('PLAY_STORE_RAW_JSON_KEY')
+    )
+  end
+
   # Builds the Gravatar Demo app prototype APK, uploads it to S3, and posts a download link as a comment on the associated pull request.
   #
   # Intended for use in CI to provide reviewers with an installable build for testing.
