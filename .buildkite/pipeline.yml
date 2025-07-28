@@ -97,6 +97,3 @@ steps:
     plugins: [$CI_TOOLKIT]
     artifact_paths:
       - "**/build/outputs/apk/**/*"
-    notify:
-      - github_commit_status:
-          context: Prototype Build
