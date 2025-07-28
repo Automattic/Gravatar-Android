@@ -156,6 +156,148 @@ class ShareViewModelTest {
         }
     }
 
+    @Test
+    fun `when OnUserSharePreferencesChanged event is triggered with Name field then name preference is updated`() = runTest {
+        // Given
+        val initialState = viewModel.uiState.value
+        val newNamePreference = !initialState.userSharePreferences.name
+        val shareFieldType = ShareFieldType.Name(checked = newNamePreference)
+
+        // When
+        viewModel.onEvent(ShareEvent.OnUserSharePreferencesChanged(shareFieldType))
+
+        // Then
+        viewModel.uiState.test {
+            val updatedState = awaitItem()
+            assertEquals(newNamePreference, updatedState.userSharePreferences.name)
+            // Verify other preferences remain unchanged
+            assertEquals(initialState.userSharePreferences.location, updatedState.userSharePreferences.location)
+            assertEquals(initialState.userSharePreferences.title, updatedState.userSharePreferences.title)
+            assertEquals(initialState.userSharePreferences.organization, updatedState.userSharePreferences.organization)
+            assertEquals(initialState.userSharePreferences.description, updatedState.userSharePreferences.description)
+            assertEquals(initialState.userSharePreferences.profileUrl, updatedState.userSharePreferences.profileUrl)
+        }
+    }
+
+    @Test
+    fun `when OnUserSharePreferencesChanged event is triggered with Location field then location preference is updated`() = runTest {
+        // Given
+        val initialState = viewModel.uiState.value
+        val newLocationPreference = !initialState.userSharePreferences.location
+        val shareFieldType = ShareFieldType.Location(checked = newLocationPreference)
+
+        // When
+        viewModel.onEvent(ShareEvent.OnUserSharePreferencesChanged(shareFieldType))
+
+        // Then
+        viewModel.uiState.test {
+            val updatedState = awaitItem()
+            assertEquals(newLocationPreference, updatedState.userSharePreferences.location)
+            // Verify other preferences remain unchanged
+            assertEquals(initialState.userSharePreferences.name, updatedState.userSharePreferences.name)
+            assertEquals(initialState.userSharePreferences.title, updatedState.userSharePreferences.title)
+            assertEquals(initialState.userSharePreferences.organization, updatedState.userSharePreferences.organization)
+            assertEquals(initialState.userSharePreferences.description, updatedState.userSharePreferences.description)
+            assertEquals(initialState.userSharePreferences.profileUrl, updatedState.userSharePreferences.profileUrl)
+        }
+    }
+
+    @Test
+    fun `when OnUserSharePreferencesChanged event is triggered with Title field then title preference is updated`() = runTest {
+        // Given
+        val initialState = viewModel.uiState.value
+        val newTitlePreference = !initialState.userSharePreferences.title
+        val shareFieldType = ShareFieldType.Title(checked = newTitlePreference)
+
+        // When
+        viewModel.onEvent(ShareEvent.OnUserSharePreferencesChanged(shareFieldType))
+
+        // Then
+        viewModel.uiState.test {
+            val updatedState = awaitItem()
+            assertEquals(newTitlePreference, updatedState.userSharePreferences.title)
+            // Verify other preferences remain unchanged
+            assertEquals(initialState.userSharePreferences.name, updatedState.userSharePreferences.name)
+            assertEquals(initialState.userSharePreferences.location, updatedState.userSharePreferences.location)
+            assertEquals(initialState.userSharePreferences.organization, updatedState.userSharePreferences.organization)
+            assertEquals(initialState.userSharePreferences.description, updatedState.userSharePreferences.description)
+            assertEquals(initialState.userSharePreferences.profileUrl, updatedState.userSharePreferences.profileUrl)
+        }
+    }
+
+    @Test
+    fun `when OnUserSharePreferencesChanged event is triggered with Organization field then organization preference is updated`() =
+        runTest {
+            // Given
+            val initialState = viewModel.uiState.value
+            val newOrganizationPreference = !initialState.userSharePreferences.organization
+            val shareFieldType = ShareFieldType.Organization(checked = newOrganizationPreference)
+
+            // When
+            viewModel.onEvent(ShareEvent.OnUserSharePreferencesChanged(shareFieldType))
+
+            // Then
+            viewModel.uiState.test {
+                val updatedState = awaitItem()
+                assertEquals(newOrganizationPreference, updatedState.userSharePreferences.organization)
+                // Verify other preferences remain unchanged
+                assertEquals(initialState.userSharePreferences.name, updatedState.userSharePreferences.name)
+                assertEquals(initialState.userSharePreferences.location, updatedState.userSharePreferences.location)
+                assertEquals(initialState.userSharePreferences.title, updatedState.userSharePreferences.title)
+                assertEquals(
+                    initialState.userSharePreferences.description,
+                    updatedState.userSharePreferences.description
+                )
+                assertEquals(initialState.userSharePreferences.profileUrl, updatedState.userSharePreferences.profileUrl)
+            }
+        }
+
+    @Test
+    fun `when OnUserSharePreferencesChanged event is triggered with Description field then description preference is updated`() = runTest {
+        // Given
+        val initialState = viewModel.uiState.value
+        val newDescriptionPreference = !initialState.userSharePreferences.description
+        val shareFieldType = ShareFieldType.Description(checked = newDescriptionPreference)
+
+        // When
+        viewModel.onEvent(ShareEvent.OnUserSharePreferencesChanged(shareFieldType))
+
+        // Then
+        viewModel.uiState.test {
+            val updatedState = awaitItem()
+            assertEquals(newDescriptionPreference, updatedState.userSharePreferences.description)
+            // Verify other preferences remain unchanged
+            assertEquals(initialState.userSharePreferences.name, updatedState.userSharePreferences.name)
+            assertEquals(initialState.userSharePreferences.location, updatedState.userSharePreferences.location)
+            assertEquals(initialState.userSharePreferences.title, updatedState.userSharePreferences.title)
+            assertEquals(initialState.userSharePreferences.organization, updatedState.userSharePreferences.organization)
+            assertEquals(initialState.userSharePreferences.profileUrl, updatedState.userSharePreferences.profileUrl)
+        }
+    }
+
+    @Test
+    fun `when OnUserSharePreferencesChanged event is triggered with ProfileUrl field then profileUrl preference is updated`() = runTest {
+        // Given
+        val initialState = viewModel.uiState.value
+        val newProfileUrlPreference = !initialState.userSharePreferences.profileUrl
+        val shareFieldType = ShareFieldType.ProfileUrl(checked = newProfileUrlPreference)
+
+        // When
+        viewModel.onEvent(ShareEvent.OnUserSharePreferencesChanged(shareFieldType))
+
+        // Then
+        viewModel.uiState.test {
+            val updatedState = awaitItem()
+            assertEquals(newProfileUrlPreference, updatedState.userSharePreferences.profileUrl)
+            // Verify other preferences remain unchanged
+            assertEquals(initialState.userSharePreferences.name, updatedState.userSharePreferences.name)
+            assertEquals(initialState.userSharePreferences.location, updatedState.userSharePreferences.location)
+            assertEquals(initialState.userSharePreferences.title, updatedState.userSharePreferences.title)
+            assertEquals(initialState.userSharePreferences.organization, updatedState.userSharePreferences.organization)
+            assertEquals(initialState.userSharePreferences.description, updatedState.userSharePreferences.description)
+        }
+    }
+
     private fun createTestProfile() = Profile {
         hash = "test-hash"
         displayName = "Test User"

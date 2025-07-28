@@ -77,4 +77,7 @@
     <string name="about_app_dialog_terms_of_service">Terms of Service</string>
     <string name="about_app_dialog_privacy_policy">Privacy Policy</string>
     <string name="done_button_cta">Done</string>
+    <string name="share_tab_public_info_title">Share info from your Gravatar profile.</string>
+    <string name="share_tab_name_label">Name</string>
+    <string name="share_tab_profile_url_label">Profile URL</string>
 </resources>
