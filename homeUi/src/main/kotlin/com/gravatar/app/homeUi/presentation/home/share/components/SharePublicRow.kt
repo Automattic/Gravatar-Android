@@ -48,7 +48,7 @@ internal fun SharePublicRow(
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = if (singleLineValue) 1 else Int.MAX_VALUE,
-                overflow = if (singleLineValue) TextOverflow.Ellipsis else TextOverflow.Visible,
+                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.fillMaxWidth(),
             )
         }
