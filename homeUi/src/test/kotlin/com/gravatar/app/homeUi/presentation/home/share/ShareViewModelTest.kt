@@ -2,8 +2,11 @@ package com.gravatar.app.homeUi.presentation.home.share
 
 import app.cash.turbine.test
 import com.gravatar.app.testUtils.CoroutineTestRule
+import com.gravatar.app.usercomponent.domain.model.UserSharePreferences
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrl
+import com.gravatar.app.usercomponent.domain.usecase.GetUserSharePreferences
+import com.gravatar.app.usercomponent.domain.usecase.UpdateUserSharePreferences
 import com.gravatar.restapi.models.Profile
 import com.gravatar.restapi.models.ProfileContactInfo
 import io.mockk.every
@@ -32,17 +35,26 @@ class ShareViewModelTest {
     private val getAvatarUrl: GetAvatarUrl = object : GetAvatarUrl {
         override fun invoke() = avatarUrlFlow
     }
+    private val getUserSharePreferences: GetUserSharePreferences = object : GetUserSharePreferences {
+        override fun invoke() = userSharePreferencesFlow
+    }
+    private val updateUserSharePreferences = object : UpdateUserSharePreferences {
+        override suspend fun invoke(userSharePreferences: UserSharePreferences) {
+            userSharePreferencesFlow.emit(userSharePreferences)
+        }
+    }
     private val userRepository = mockk<UserRepository>()
 
     private lateinit var viewModel: ShareViewModel
 
     private val avatarUrlFlow: MutableSharedFlow<URL?> = MutableSharedFlow()
     private val profileFlow: MutableSharedFlow<Profile?> = MutableSharedFlow()
+    private val userSharePreferencesFlow: MutableSharedFlow<UserSharePreferences> = MutableSharedFlow()
 
     @Before
     fun setup() {
         every { userRepository.getProfile() } returns profileFlow
-        viewModel = ShareViewModel(userRepository, getAvatarUrl)
+        viewModel = ShareViewModel(userRepository, getAvatarUrl, getUserSharePreferences, updateUserSharePreferences)
     }
 
     @Test
@@ -79,21 +91,7 @@ class ShareViewModelTest {
 
         // Then
         viewModel.uiState.test {
-            assertEquals(newEmailValue, awaitItem().privateContactInfo.emailValue)
-        }
-    }
-
-    @Test
-    fun `when OnEmailSharingChanged event is triggered then isEmailShared is updated`() = runTest {
-        // Given
-        val isShared = true
-
-        // When
-        viewModel.onEvent(ShareEvent.OnEmailSharingChanged(isShared))
-
-        // Then
-        viewModel.uiState.test {
-            assertEquals(isShared, awaitItem().privateContactInfo.isEmailShared)
+            assertEquals(newEmailValue, awaitItem().privateContactState.emailValue)
         }
     }
 
@@ -107,21 +105,7 @@ class ShareViewModelTest {
 
         // Then
         viewModel.uiState.test {
-            assertEquals(newPhoneValue, awaitItem().privateContactInfo.phoneValue)
-        }
-    }
-
-    @Test
-    fun `when OnPhoneSharingChanged event is triggered then isPhoneShared is updated`() = runTest {
-        // Given
-        val isShared = true
-
-        // When
-        viewModel.onEvent(ShareEvent.OnPhoneSharingChanged(isShared))
-
-        // Then
-        viewModel.uiState.test {
-            assertEquals(isShared, awaitItem().privateContactInfo.isPhoneShared)
+            assertEquals(newPhoneValue, awaitItem().privateContactState.phoneValue)
         }
     }
 
@@ -295,6 +279,45 @@ class ShareViewModelTest {
             assertEquals(initialState.userSharePreferences.title, updatedState.userSharePreferences.title)
             assertEquals(initialState.userSharePreferences.organization, updatedState.userSharePreferences.organization)
             assertEquals(initialState.userSharePreferences.description, updatedState.userSharePreferences.description)
+        }
+    }
+
+    @Test
+    fun `when user share preferences are emitted then uiState is updated with preferences`() = runTest {
+        // Given
+        val testPreferences = UserSharePreferences.Default.copy(
+            name = false,
+            title = false,
+            description = false,
+        )
+
+        // When
+        userSharePreferencesFlow.emit(testPreferences)
+        advanceUntilIdle()
+
+        // Then
+        viewModel.uiState.test {
+            val state = awaitItem()
+            assertEquals(testPreferences, state.userSharePreferences)
+        }
+    }
+
+    @Test
+    fun `when user share preferences are changed then updateUserSharePreferences is called`() = runTest {
+        // Given
+        val initialState = viewModel.uiState.value
+        val newNamePreference = !initialState.userSharePreferences.name
+        val shareFieldType = ShareFieldType.Name(checked = newNamePreference)
+
+        userSharePreferencesFlow.test {
+            // When
+            viewModel.onEvent(ShareEvent.OnUserSharePreferencesChanged(shareFieldType))
+
+            // Then
+            val expectedSharePreferences = initialState.userSharePreferences.copy(
+                name = newNamePreference,
+            )
+            assertEquals(expectedSharePreferences, awaitItem())
         }
     }
 

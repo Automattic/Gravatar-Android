@@ -60,11 +60,15 @@ internal fun ShareScreen(uiState: ShareUiState, onEvent: (ShareEvent) -> Unit) {
                     .fillMaxWidth(),
             )
             SharePrivateContactInfo(
-                privateContactInfo = uiState.privateContactInfo,
+                privateContactState = uiState.privateContactState,
                 onEmailValueChange = { onEvent(ShareEvent.OnEmailValueChanged(it)) },
-                onEmailSwitchCheckedChange = { onEvent(ShareEvent.OnEmailSharingChanged(it)) },
+                onEmailSwitchCheckedChange = {
+                    onEvent(ShareEvent.OnUserSharePreferencesChanged(ShareFieldType.PrivateEmail(it)))
+                },
                 onPhoneValueChange = { onEvent(ShareEvent.OnPhoneValueChanged(it)) },
-                onPhoneSwitchCheckedChange = { onEvent(ShareEvent.OnPhoneSharingChanged(it)) },
+                onPhoneSwitchCheckedChange = {
+                    onEvent(ShareEvent.OnUserSharePreferencesChanged(ShareFieldType.PrivatePhone(it)))
+                },
                 modifier = Modifier.padding(16.dp),
             )
             ItemDivider()

@@ -34,14 +34,7 @@ class SharePublicContactInfoTest : RoborazziTest() {
         GravatarAppTheme {
             SharePublicContactInfo(
                 profile = fullProfile,
-                userSharePreferences = UserSharePreferences(
-                    name = true,
-                    location = true,
-                    title = true,
-                    organization = true,
-                    description = true,
-                    profileUrl = true
-                ),
+                userSharePreferences = UserSharePreferences.Default,
                 onUserPreferenceChanged = {},
                 modifier = Modifier.fillMaxWidth()
             )
@@ -59,7 +52,9 @@ class SharePublicContactInfoTest : RoborazziTest() {
                     title = false,
                     organization = false,
                     description = false,
-                    profileUrl = false
+                    profileUrl = false,
+                    privateEmail = false,
+                    privatePhone = false,
                 ),
                 onUserPreferenceChanged = {},
                 modifier = Modifier.fillMaxWidth()
@@ -72,14 +67,7 @@ class SharePublicContactInfoTest : RoborazziTest() {
         GravatarAppTheme {
             SharePublicContactInfo(
                 profile = defaultProfile(hash = "hash"),
-                userSharePreferences = UserSharePreferences(
-                    name = true,
-                    location = true,
-                    title = true,
-                    organization = true,
-                    description = true,
-                    profileUrl = true
-                ),
+                userSharePreferences = UserSharePreferences.Default,
                 onUserPreferenceChanged = {},
                 modifier = Modifier.fillMaxWidth()
             )

@@ -4,16 +4,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrl
+import com.gravatar.app.usercomponent.domain.usecase.GetUserSharePreferences
+import com.gravatar.app.usercomponent.domain.usecase.UpdateUserSharePreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 internal class ShareViewModel(
     private val userRepository: UserRepository,
     private val getAvatarUrl: GetAvatarUrl,
+    private val getUserSharePreferences: GetUserSharePreferences,
+    private val updateUserSharePreferences: UpdateUserSharePreferences,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ShareUiState())
@@ -22,6 +27,7 @@ internal class ShareViewModel(
     init {
         collectProfile()
         collectAvatarUrl()
+        collectUserSharePreferences()
     }
 
     fun onEvent(shareEvent: ShareEvent) {
@@ -30,17 +36,7 @@ internal class ShareViewModel(
                 _uiState.update {
                     it.copy(
                         privateContactInfo = it.privateContactInfo.copy(
-                            emailValue = shareEvent.value
-                        )
-                    )
-                }
-            }
-
-            is ShareEvent.OnEmailSharingChanged -> {
-                _uiState.update {
-                    it.copy(
-                        privateContactInfo = it.privateContactInfo.copy(
-                            isEmailShared = shareEvent.isShared
+                            privateEmail = shareEvent.value
                         )
                     )
                 }
@@ -50,17 +46,7 @@ internal class ShareViewModel(
                 _uiState.update {
                     it.copy(
                         privateContactInfo = it.privateContactInfo.copy(
-                            phoneValue = shareEvent.value
-                        )
-                    )
-                }
-            }
-
-            is ShareEvent.OnPhoneSharingChanged -> {
-                _uiState.update {
-                    it.copy(
-                        privateContactInfo = it.privateContactInfo.copy(
-                            isPhoneShared = shareEvent.isShared
+                            privatePhone = shareEvent.value
                         )
                     )
                 }
@@ -68,13 +54,18 @@ internal class ShareViewModel(
 
             is ShareEvent.OnAboutAppClicked -> showAboutAppDialog()
             is ShareEvent.OnDismissAboutAppDialog -> hideAboutAppDialog()
-            is ShareEvent.OnUserSharePreferencesChanged -> updateUserSharePreferences(shareEvent.shareFieldType)
+            is ShareEvent.OnUserSharePreferencesChanged -> handleUserSharePreferencesChange(shareEvent.shareFieldType)
         }
     }
 
-    private fun updateUserSharePreferences(shareFieldType: ShareFieldType) {
-        _uiState.update { currentState ->
-            currentState.copyWithUserSharePreferences(shareFieldType)
+    private fun handleUserSharePreferencesChange(shareFieldType: ShareFieldType) {
+        with(_uiState.value.copyWithUserSharePreferences(shareFieldType)) {
+            // update the UI state with the new preferences
+            _uiState.value = this
+            // Save the updated preferences
+            viewModelScope.launch {
+                updateUserSharePreferences(this@with.userSharePreferences)
+            }
         }
     }
 
@@ -108,6 +99,18 @@ internal class ShareViewModel(
                 _uiState.update { currentState ->
                     currentState.copy(
                         profile = profile,
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun collectUserSharePreferences() {
+        getUserSharePreferences()
+            .onEach { preferences ->
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        userSharePreferences = preferences
                     )
                 }
             }
