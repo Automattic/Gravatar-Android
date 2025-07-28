@@ -7,6 +7,11 @@ UI.user_error!('Please run fastlane via `bundle exec`') unless FastlaneCore::Hel
 ########################################################################
 # Constants
 ########################################################################
+DEFAULT_BRANCH = 'trunk'
+
+BUILDKITE_ORG_NAME = 'automattic'
+BUILDKITE_PIPELINE = 'gravatar-android'
+
 PROJECT_ROOT_FOLDER = File.dirname(File.expand_path(__dir__))
 
 VERSION_PROPERTIES_PATH = File.join(PROJECT_ROOT_FOLDER, 'version.properties')
@@ -18,7 +23,7 @@ BUILD_CODE_CALCULATOR = Fastlane::Wpmreleasetoolkit::Versioning::SimpleBuildCode
 BUILD_CODE_FORMATTER = Fastlane::Wpmreleasetoolkit::Versioning::SimpleBuildCodeFormatter.new
 
 PROTOTYPE_BUILD_DOMAIN = 'https://cdn.a8c-ci.services'
-PROTOTYPE_BUILD_TYPE = 'release'
+RELEASE_BUILD_TYPE = 'Release'
 
 platform :android do
   # Builds a release app bundle .aab
@@ -28,7 +33,7 @@ platform :android do
 
     gradle(
       task: 'bundle',
-      build_type: 'Release'
+      build_type: RELEASE_BUILD_TYPE
     )
   end
 
@@ -52,7 +57,7 @@ platform :android do
       skip_upload_changelogs: true,
       skip_upload_images: true,
       skip_upload_screenshots: true,
-      json_key_data: get_required_env!('PLAY_STORE_RAW_JSON_KEY')
+      json_key_data: ENV.fetch('PLAY_STORE_RAW_JSON_KEY', nil)
     )
   end
 
@@ -78,7 +83,7 @@ platform :android do
 
     gradle(
       task: 'assemble',
-      build_type: PROTOTYPE_BUILD_TYPE
+      build_type: RELEASE_BUILD_TYPE
     )
 
     upload_path = upload_to_s3(
@@ -94,7 +99,7 @@ platform :android do
       app_display_name: 'Gravatar Android',
       download_url: install_url,
       metadata: {
-        'Build Type': PROTOTYPE_BUILD_TYPE
+        'Build Type': RELEASE_BUILD_TYPE
       },
       fold: true
     )
@@ -105,24 +110,73 @@ platform :android do
     )
   end
 
-  def generate_prototype_build_number
-    if ENV['BUILDKITE']
-      commit = ENV.fetch('BUILDKITE_COMMIT', nil)[0, 7]
-      branch = ENV['BUILDKITE_BRANCH'].parameterize
-      pr_num = ENV.fetch('BUILDKITE_PULL_REQUEST', nil)
+  lane :build_and_upload_to_play_store do |track: 'internal'|
+    build_bundle
+    upload_to_store(track: track)
+  end
 
-      pr_num == 'false' ? "#{branch}-#{commit}" : "pr#{pr_num}-#{commit}"
+  #####################################################################################
+  # Release lanes & utils
+  #####################################################################################
+  lane :new_alpha_release do |skip_confirm: false|
+    require_env_vars!('BUILDKITE_TOKEN')
+    ensure_git_status_clean
+
+    Fastlane::Helper::GitHelper.checkout_and_pull(DEFAULT_BRANCH)
+
+    UI.important <<~PROMPT
+      Initiating a new alpha release.
+      This will:
+      - Bump the build code from #{build_code_current} to #{build_code_next}
+      - Trigger a new alpha build in Buildkite
+    PROMPT
+    next unless skip_confirm || UI.confirm('Continue?')
+
+    bump_build_code
+
+    push_to_git_remote
+
+    trigger_alpha_build
+  end
+
+  # Trigger a new alpha build on CI
+  #
+  lane :trigger_alpha_build do
+    require_env_vars!('BUILDKITE_TOKEN')
+
+    trigger_buildkite_build(
+      branch: DEFAULT_BRANCH,
+      pipeline: 'release-builds.yml',
+      message: "Alpha Build (#{build_code_current})"
+    )
+  end
+
+  def trigger_buildkite_build(branch:, pipeline:, message: nil)
+    environment = {
+      'RELEASE_VERSION' => release_version_current
+    }
+
+    common_args = {
+      pipeline_file: pipeline,
+      branch: branch,
+      message: message || "Build #{pipeline.sub('.yml', '')}",
+      environment: environment
+    }
+
+    if is_ci?
+      buildkite_add_trigger_step(**common_args)
     else
-      repo = Git.open(PROJECT_ROOT_FOLDER)
-      commit = repo.current_branch.parameterize
-      branch = repo.revparse('HEAD')[0, 7]
-
-      "#{branch}-#{commit}"
+      # For local development, call Buildkite API to start a new build
+      buildkite_trigger_build(
+        buildkite_organization: BUILDKITE_ORG_NAME,
+        buildkite_pipeline: BUILDKITE_PIPELINE,
+        **common_args
+      )
     end
   end
 
   #####################################################################################
-  # Version Methods
+  # Versioning utils
   #####################################################################################
 
   # Updates the build code in version.properties to the next build code and commits the change
@@ -132,7 +186,7 @@ platform :android do
       version_name: release_version_current,
       version_code: build_code_next
     )
-    commit_version_bump
+    commit_version_update(message: '[skip ci] Bump build code')
   end
 
   # Updates the version name in version.properties to the next release version and commits the change
@@ -141,14 +195,14 @@ platform :android do
     VERSION_FILE.write_version(
       version_name: release_version_next
     )
-    commit_version_bump
+    commit_version_update(message: '[skip ci] Bump app version')
   end
 
-  # Commits the version bump to the version.properties file
+  # Commits the version update to the version.properties file
   #
-  def commit_version_bump
+  def commit_version_update(message:)
     Fastlane::Helper::GitHelper.commit(
-      message: 'Bump version number',
+      message: message,
       files: VERSION_PROPERTIES_PATH
     )
   end
@@ -187,5 +241,33 @@ platform :android do
     build_code_current = VERSION_FILE.read_version_code
     build_code_next = BUILD_CODE_CALCULATOR.next_build_code(build_code: build_code_current)
     BUILD_CODE_FORMATTER.build_code(build_code: build_code_next)
+  end
+
+  # Generates a build number for the prototype build
+  #
+  def generate_prototype_build_number
+    if ENV['BUILDKITE']
+      commit = ENV.fetch('BUILDKITE_COMMIT', nil)[0, 7]
+      branch = ENV['BUILDKITE_BRANCH'].parameterize
+      pr_num = ENV.fetch('BUILDKITE_PULL_REQUEST', nil)
+
+      pr_num == 'false' ? "#{branch}-#{commit}" : "pr#{pr_num}-#{commit}"
+    else
+      repo = Git.open(PROJECT_ROOT_FOLDER)
+      commit = repo.current_branch.parameterize
+      branch = repo.revparse('HEAD')[0, 7]
+
+      "#{branch}-#{commit}"
+    end
+  end
+
+  #####################################################################################
+  # Other utils
+  #####################################################################################
+
+  def require_env_vars!(*keys)
+    keys.each do |key|
+      UI.user_error!("Environment variable '#{key}' is not set.") unless ENV.key?(key)
+    end
   end
 end
