@@ -29,7 +29,7 @@ class GravatarAndroidApplicationConventionPlugin : Plugin<Project> {
                     versionName = project.property("versionName") as String
                 }
                 buildFeatures.buildConfig = true
-                configureBuildTypes()
+                configureBuildTypes(this@with)
                 lint {
                     sarifReport = true
                     checkDependencies = true
@@ -39,15 +39,40 @@ class GravatarAndroidApplicationConventionPlugin : Plugin<Project> {
         }
     }
 
-    private fun ApplicationExtension.configureBuildTypes() {
+    private fun ApplicationExtension.configureBuildTypes(project: Project) {
+        val secretsProperties = project.property("secretsProperties") as java.util.Properties
+        val secretsPath = project.property("secretsPath") as String
+        val canSignRelease = secretsProperties.isNotEmpty()
+
+        if (!canSignRelease) {
+            project.logger.warn("Release signing configuration skipped: no secrets properties found")
+        }
+
+        signingConfigs {
+            if (canSignRelease) {
+                maybeCreate("release").apply {
+                    storeFile = project.file("$secretsPath/${secretsProperties.getProperty("uploadStoreFile")}")
+                    storePassword = secretsProperties.getProperty("uploadStorePassword")
+                    keyAlias = secretsProperties.getProperty("uploadKeyAlias")
+                    keyPassword = secretsProperties.getProperty("uploadKeyPassword")
+                }
+            }
+        }
+
         buildTypes {
+            getByName("debug") {
+                signingConfig = signingConfigs.getByName("debug")
+            }
             getByName("release") {
                 isMinifyEnabled = true
                 proguardFiles(
                     getDefaultProguardFile("proguard-android-optimize.txt"),
                     "proguard-rules.pro",
                 )
-                signingConfig = signingConfigs.getByName("debug")
+                // Only set release signing config if it was created
+                signingConfigs.findByName("release")?.let { releaseSigningConfig ->
+                    signingConfig = releaseSigningConfig
+                }
             }
         }
     }

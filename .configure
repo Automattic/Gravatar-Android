@@ -1,11 +1,16 @@
 {
   "project_name": "Gravatar-Android",
   "branch": "trunk",
-  "pinned_hash": "fe34f2310411aa1e10f2f536b7be1377338973fe",
+  "pinned_hash": "8045b892223ecaf5d62dd0cd2dc3165c6ffd44d7",
   "files_to_copy": [
     {
       "file": "android/Gravatar-Android/secrets.properties",
-      "destination": "secrets.properties",
+      "destination": "~/.configure/gravatar-android/secrets/secrets.properties",
+      "encrypt": true
+    },
+    {
+      "file": "android/Gravatar-Android/gravatar-upload.jks",
+      "destination": "~/.configure/gravatar-android/secrets/gravatar-upload.jks",
       "encrypt": true
     }
   ],

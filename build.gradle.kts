@@ -14,12 +14,16 @@ plugins {
 }
 
 val versionProperties = loadPropertiesFromFile(file("version.properties"))
+val secretsPath = "${System.getProperty("user.home")}/.configure/gravatar-android/secrets"
+val secretsProperties = loadPropertiesFromFile(file("$secretsPath/secrets.properties"))
 
 project.apply {
     extra.apply {
         set("versionName", versionProperties.getProperty("versionName", null))
         set("versionCode", versionProperties.getProperty("versionCode", null).toInt())
         set("isCi", System.getenv("CI")?.toBoolean() ?: false)
+        set("secretsProperties", secretsProperties)
+        set("secretsPath", secretsPath)
     }
 }
 
