@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -17,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gravatar.app.homeUi.R
@@ -28,6 +30,7 @@ internal fun ShareEditableField(
     onValueChange: (String) -> Unit,
     switchChecked: Boolean,
     onSwitchCheckedChange: (Boolean) -> Unit,
+    keyboardType: KeyboardType = KeyboardType.Unspecified,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -42,6 +45,9 @@ internal fun ShareEditableField(
             singleLine = true,
             cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
             modifier = Modifier.weight(1f),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = keyboardType,
+            ),
             decorationBox = { innerTextField ->
                 Box(
                     modifier = Modifier
