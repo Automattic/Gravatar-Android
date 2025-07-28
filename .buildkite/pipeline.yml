@@ -91,6 +91,7 @@ steps:
     blocked_state: passed
 
   - label: 🏗️ Prototype Build
+    if: build.pull_request.id != null
     depends_on:
       - run-on-demand-prototype-build
     command: .buildkite/commands/prototype-build.sh
