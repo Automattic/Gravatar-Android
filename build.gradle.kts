@@ -17,8 +17,8 @@ val versionProperties = loadPropertiesFromFile(file("version.properties"))
 
 project.apply {
     extra.apply {
-        set("versionName", versionProperties.getProperty("versionName", "0.1"))
-        set("versionCode", versionProperties.getProperty("versionCode", "1").toInt())
+        set("versionName", versionProperties.getProperty("versionName", null))
+        set("versionCode", versionProperties.getProperty("versionCode", null).toInt())
         set("isCi", System.getenv("CI")?.toBoolean() ?: false)
     }
 }
