@@ -25,39 +25,37 @@ internal fun SharePublicRow(
     modifier: Modifier = Modifier,
     singleLineValue: Boolean = true,
 ) {
-    Column {
-        Row(
-            verticalAlignment = Alignment.Top,
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = modifier,
+    Row(
+        verticalAlignment = Alignment.Top,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier,
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(top = 8.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(top = 8.dp)
-            ) {
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                        alpha = 0.6f
-                    ),
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                Text(
-                    text = value,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = if (singleLineValue) 1 else Int.MAX_VALUE,
-                    overflow = if (singleLineValue) TextOverflow.Ellipsis else TextOverflow.Visible,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
-            Switch(
-                checked = checked,
-                onCheckedChange = onCheckedChange,
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                    alpha = 0.6f
+                ),
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Text(
+                text = value,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = if (singleLineValue) 1 else Int.MAX_VALUE,
+                overflow = if (singleLineValue) TextOverflow.Ellipsis else TextOverflow.Visible,
+                modifier = Modifier.fillMaxWidth(),
             )
         }
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+        )
     }
 }
 
