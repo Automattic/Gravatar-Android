@@ -29,6 +29,7 @@ dependencies {
     implementation(libs.gravatar.core)
     implementation(libs.gravatar.ui)
     implementation(libs.ucrop)
+    implementation(libs.qrose)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

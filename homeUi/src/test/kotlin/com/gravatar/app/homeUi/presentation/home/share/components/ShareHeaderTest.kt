@@ -13,6 +13,7 @@ class ShareHeaderTest : RoborazziTest() {
         GravatarAppTheme {
             ShareHeader(
                 avatarUrl = "url",
+                vCardQrCodeData = "BEGIN:VCARD\nVERSION:3.0\nFN:Test User\nEND:VCARD",
                 modifier = Modifier.fillMaxWidth()
             )
         }
