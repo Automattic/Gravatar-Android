@@ -68,7 +68,7 @@ platform :android do
   # @env [String] BUILDKITE_PULL_REQUEST The pull request number.
   #
   lane :build_and_upload_prototype_build do
-    UI.user_error!("'BUILDKITE_ARTIFACTS_S3_BUCKET' must be defined as an environment variable.") unless ENV['BUILDKITE_ARTIFACTS_S3_BUCKET']
+    require_env_vars!('BUILDKITE_ARTIFACTS_S3_BUCKET')
 
     comment_params = {
       project: 'Automattic/Gravatar-Android',
