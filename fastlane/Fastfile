@@ -111,7 +111,7 @@ platform :android do
   end
 
   lane :build_and_upload_to_play_store do |track: 'internal', release_status: 'draft'|
-    # TODO using `internal`` track with `draft` releases by default while the release itself is in draft mode
+    # TODO: using `internal`` track with `draft` releases by default while the release itself is in draft mode
     build_bundle
     upload_to_store(track: track, release_status: release_status, rollout: '1')
   end
@@ -176,100 +176,100 @@ platform :android do
       )
     end
   end
+end
 
-  #####################################################################################
-  # Versioning utils
-  #####################################################################################
+#####################################################################################
+# Versioning utils
+#####################################################################################
 
-  # Updates the build code in version.properties to the next build code and commits the change
-  #
-  def bump_build_code
-    VERSION_FILE.write_version(
-      version_name: release_version_current,
-      version_code: build_code_next
-    )
-    commit_version_update(message: '[skip ci] Bump build code')
+# Updates the build code in version.properties to the next build code and commits the change
+#
+def bump_build_code
+  VERSION_FILE.write_version(
+    version_name: release_version_current,
+    version_code: build_code_next
+  )
+  commit_version_update(message: '[skip ci] Bump build code')
+end
+
+# Updates the version name in version.properties to the next release version and commits the change
+#
+def bump_version
+  VERSION_FILE.write_version(
+    version_name: release_version_next
+  )
+  commit_version_update(message: '[skip ci] Bump app version')
+end
+
+# Commits the version update to the version.properties file
+#
+def commit_version_update(message:)
+  Fastlane::Helper::GitHelper.commit(
+    message: message,
+    files: VERSION_PROPERTIES_PATH
+  )
+end
+
+# Returns the current version name from `version.properties` without needing formatting or calculations
+#
+def version_name_current
+  VERSION_FILE.read_version_name
+end
+
+# Returns the release version of the app in the format `1.2` or `1.2.3` if it is a hotfix
+#
+def release_version_current
+  current_version = VERSION_FORMATTER.parse(version_name_current)
+  VERSION_FORMATTER.release_version(current_version)
+end
+
+#  Returns the next release version of the app in the format `1.2` or `1.2.3` if it is a hotfix
+#
+def release_version_next
+  current_version = VERSION_FORMATTER.parse(version_name_current)
+  release_version_next = VERSION_CALCULATOR.next_release_version(version: current_version)
+  VERSION_FORMATTER.release_version(release_version_next)
+end
+
+# Returns the current build code of the app
+#
+def build_code_current
+  build_code_current = VERSION_FILE.read_version_code
+  BUILD_CODE_FORMATTER.build_code(build_code: build_code_current)
+end
+
+# Returns the next build code of the app
+#
+def build_code_next
+  build_code_current = VERSION_FILE.read_version_code
+  build_code_next = BUILD_CODE_CALCULATOR.next_build_code(build_code: build_code_current)
+  BUILD_CODE_FORMATTER.build_code(build_code: build_code_next)
+end
+
+# Generates a build number for the prototype build
+#
+def generate_prototype_build_number
+  if ENV['BUILDKITE']
+    commit = ENV.fetch('BUILDKITE_COMMIT', nil)[0, 7]
+    branch = ENV['BUILDKITE_BRANCH'].parameterize
+    pr_num = ENV.fetch('BUILDKITE_PULL_REQUEST', nil)
+
+    pr_num == 'false' ? "#{branch}-#{commit}" : "pr#{pr_num}-#{commit}"
+  else
+    repo = Git.open(PROJECT_ROOT_FOLDER)
+    commit = repo.current_branch.parameterize
+    branch = repo.revparse('HEAD')[0, 7]
+
+    "#{branch}-#{commit}"
   end
+end
 
-  # Updates the version name in version.properties to the next release version and commits the change
-  #
-  def bump_version
-    VERSION_FILE.write_version(
-      version_name: release_version_next
-    )
-    commit_version_update(message: '[skip ci] Bump app version')
-  end
+#####################################################################################
+# Other utils
+#####################################################################################
 
-  # Commits the version update to the version.properties file
-  #
-  def commit_version_update(message:)
-    Fastlane::Helper::GitHelper.commit(
-      message: message,
-      files: VERSION_PROPERTIES_PATH
-    )
-  end
-
-  # Returns the current version name from `version.properties` without needing formatting or calculations
-  #
-  def version_name_current
-    VERSION_FILE.read_version_name
-  end
-
-  # Returns the release version of the app in the format `1.2` or `1.2.3` if it is a hotfix
-  #
-  def release_version_current
-    current_version = VERSION_FORMATTER.parse(version_name_current)
-    VERSION_FORMATTER.release_version(current_version)
-  end
-
-  #  Returns the next release version of the app in the format `1.2` or `1.2.3` if it is a hotfix
-  #
-  def release_version_next
-    current_version = VERSION_FORMATTER.parse(version_name_current)
-    release_version_next = VERSION_CALCULATOR.next_release_version(version: current_version)
-    VERSION_FORMATTER.release_version(release_version_next)
-  end
-
-  # Returns the current build code of the app
-  #
-  def build_code_current
-    build_code_current = VERSION_FILE.read_version_code
-    BUILD_CODE_FORMATTER.build_code(build_code: build_code_current)
-  end
-
-  # Returns the next build code of the app
-  #
-  def build_code_next
-    build_code_current = VERSION_FILE.read_version_code
-    build_code_next = BUILD_CODE_CALCULATOR.next_build_code(build_code: build_code_current)
-    BUILD_CODE_FORMATTER.build_code(build_code: build_code_next)
-  end
-
-  # Generates a build number for the prototype build
-  #
-  def generate_prototype_build_number
-    if ENV['BUILDKITE']
-      commit = ENV.fetch('BUILDKITE_COMMIT', nil)[0, 7]
-      branch = ENV['BUILDKITE_BRANCH'].parameterize
-      pr_num = ENV.fetch('BUILDKITE_PULL_REQUEST', nil)
-
-      pr_num == 'false' ? "#{branch}-#{commit}" : "pr#{pr_num}-#{commit}"
-    else
-      repo = Git.open(PROJECT_ROOT_FOLDER)
-      commit = repo.current_branch.parameterize
-      branch = repo.revparse('HEAD')[0, 7]
-
-      "#{branch}-#{commit}"
-    end
-  end
-
-  #####################################################################################
-  # Other utils
-  #####################################################################################
-
-  def require_env_vars!(*keys)
-    keys.each do |key|
-      UI.user_error!("Environment variable '#{key}' is not set.") unless ENV.key?(key)
-    end
+def require_env_vars!(*keys)
+  keys.each do |key|
+    UI.user_error!("Environment variable '#{key}' is not set.") unless ENV.key?(key)
   end
 end
