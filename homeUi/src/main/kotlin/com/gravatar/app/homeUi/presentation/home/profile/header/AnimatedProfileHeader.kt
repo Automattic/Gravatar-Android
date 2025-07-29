@@ -264,7 +264,8 @@ private fun AnimatedProfileHeaderSavedState(
                 headerState.expansionFraction
             ),
             y = lerp(
-                AVATAR_EXPANDED_SIZE + displayNameSize.height + jobInfoSize.height + locationSize.height + PROFILE_INFO_TOP_PADDING + LINK_TOP_PADDING,
+                AVATAR_EXPANDED_SIZE + displayNameSize.height + jobInfoSize.height + locationSize.height +
+                    PROFILE_INFO_TOP_PADDING + LINK_TOP_PADDING,
                 0.dp,
                 headerState.expansionFraction
             )
