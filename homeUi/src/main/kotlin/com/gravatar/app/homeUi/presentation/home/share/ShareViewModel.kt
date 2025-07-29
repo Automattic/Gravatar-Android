@@ -4,8 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrl
+import com.gravatar.app.usercomponent.domain.usecase.GetPrivateContactInfo
 import com.gravatar.app.usercomponent.domain.usecase.GetUserSharePreferences
+import com.gravatar.app.usercomponent.domain.usecase.UpdatePrivateContactInfo
 import com.gravatar.app.usercomponent.domain.usecase.UpdateUserSharePreferences
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,15 +23,21 @@ internal class ShareViewModel(
     private val getAvatarUrl: GetAvatarUrl,
     private val getUserSharePreferences: GetUserSharePreferences,
     private val updateUserSharePreferences: UpdateUserSharePreferences,
+    private val getPrivateContactInfo: GetPrivateContactInfo,
+    private val updatePrivateContactInfo: UpdatePrivateContactInfo,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ShareUiState())
     internal val uiState: StateFlow<ShareUiState> = _uiState.asStateFlow()
 
+    private var saveContactInfoJob: Job? = null
+    private val debounceDelay = 500L // 500ms debounce delay
+
     init {
         collectProfile()
         collectAvatarUrl()
         collectUserSharePreferences()
+        collectPrivateContactInfo()
     }
 
     fun onEvent(shareEvent: ShareEvent) {
@@ -40,6 +50,7 @@ internal class ShareViewModel(
                         )
                     )
                 }
+                savePrivateContactInfo()
             }
 
             is ShareEvent.OnPhoneValueChanged -> {
@@ -50,6 +61,7 @@ internal class ShareViewModel(
                         )
                     )
                 }
+                savePrivateContactInfo()
             }
 
             is ShareEvent.OnAboutAppClicked -> showAboutAppDialog()
@@ -68,6 +80,17 @@ internal class ShareViewModel(
             viewModelScope.launch {
                 updateUserSharePreferences(this@with.userSharePreferences)
             }
+        }
+    }
+
+    private fun savePrivateContactInfo() {
+        // Cancel any existing job to avoid multiple saves
+        saveContactInfoJob?.cancel()
+
+        // Create a new job with debounce
+        saveContactInfoJob = viewModelScope.launch {
+            delay(debounceDelay) // Wait for the debounce period
+            updatePrivateContactInfo(_uiState.value.privateContactInfo)
         }
     }
 
@@ -125,6 +148,18 @@ internal class ShareViewModel(
                 _uiState.update { currentState ->
                     currentState.copy(
                         userSharePreferences = preferences
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun collectPrivateContactInfo() {
+        getPrivateContactInfo()
+            .onEach { privateContactInfo ->
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        privateContactInfo = privateContactInfo
                     )
                 }
             }

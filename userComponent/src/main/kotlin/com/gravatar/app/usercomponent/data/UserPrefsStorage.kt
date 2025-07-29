@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.gravatar.app.foundations.DispatcherProvider
 import com.gravatar.app.usercomponent.di.UserPrefs
+import com.gravatar.app.usercomponent.domain.model.PrivateContactInfo
 import com.gravatar.app.usercomponent.domain.model.UserSharePreferences
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -37,10 +38,16 @@ internal interface UserSharePreferencesStorage {
     suspend fun saveUserSharePreferences(userSharePreferences: UserSharePreferences)
 }
 
+internal interface PrivateContactInfoStorage {
+    fun getPrivateContactInfo(): Flow<PrivateContactInfo>
+
+    suspend fun savePrivateContactInfo(privateContactInfo: PrivateContactInfo)
+}
+
 /**
  * Convenient interface to clear all user related data in one call.
  */
-internal interface UserStorage : AuthTokenStorage, AvatarCacheBusterStorage, UserSharePreferencesStorage {
+internal interface UserStorage : AuthTokenStorage, AvatarCacheBusterStorage, UserSharePreferencesStorage, PrivateContactInfoStorage {
     suspend fun clear()
 }
 
@@ -60,6 +67,8 @@ internal class DatastoreUserPrefsStorage(
         private const val USER_SHARE_PROFILE_URL_KEY = "share_profile_url"
         private const val USER_SHARE_PRIVATE_EMAIL_KEY = "share_private_email"
         private const val USER_SHARE_PRIVATE_PHONE_KEY = "share_private_phone"
+        private const val USER_SHARE_PRIVATE_PHONE_VALUE_KEY = "private_phone_value"
+        private const val USER_SHARE_PRIVATE_EMAIL_VALUE_KEY = "private_email_value"
     }
 
     private val tokenKey = stringPreferencesKey(AUTH_TOKEN_KEY)
@@ -72,6 +81,8 @@ internal class DatastoreUserPrefsStorage(
     private val userShareProfileUrlKey = booleanPreferencesKey(USER_SHARE_PROFILE_URL_KEY)
     private val userSharePrivateEmailKey = booleanPreferencesKey(USER_SHARE_PRIVATE_EMAIL_KEY)
     private val userSharePrivatePhoneKey = booleanPreferencesKey(USER_SHARE_PRIVATE_PHONE_KEY)
+    private val userSharePrivatePhoneValueKey = stringPreferencesKey(USER_SHARE_PRIVATE_PHONE_VALUE_KEY)
+    private val userSharePrivateEmailValueKey = stringPreferencesKey(USER_SHARE_PRIVATE_EMAIL_VALUE_KEY)
 
     override suspend fun getToken(): String? {
         return try {
@@ -149,6 +160,27 @@ internal class DatastoreUserPrefsStorage(
             preferences[userShareOrganizationKey] = userSharePreferences.organization
             preferences[userShareDescriptionKey] = userSharePreferences.description
             preferences[userShareProfileUrlKey] = userSharePreferences.profileUrl
+        }
+    }
+
+    override fun getPrivateContactInfo(): Flow<PrivateContactInfo> {
+        return dataStore.data
+            .map { preferences ->
+                PrivateContactInfo(
+                    privateEmail = preferences[userSharePrivateEmailValueKey] ?: "",
+                    privatePhone = preferences[userSharePrivatePhoneValueKey] ?: ""
+                )
+            }
+            .catch { emit(PrivateContactInfo.Default) }
+            .flowOn(dispatcherProvider.io)
+    }
+
+    override suspend fun savePrivateContactInfo(privateContactInfo: PrivateContactInfo) {
+        withContext(dispatcherProvider.io) {
+            dataStore.edit { preferences ->
+                preferences[userSharePrivateEmailValueKey] = privateContactInfo.privateEmail
+                preferences[userSharePrivatePhoneValueKey] = privateContactInfo.privatePhone
+            }
         }
     }
 }

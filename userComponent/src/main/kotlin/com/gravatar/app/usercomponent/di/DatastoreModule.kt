@@ -7,6 +7,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.gravatar.app.usercomponent.data.AuthTokenStorage
 import com.gravatar.app.usercomponent.data.AvatarCacheBusterStorage
 import com.gravatar.app.usercomponent.data.DatastoreUserPrefsStorage
+import com.gravatar.app.usercomponent.data.PrivateContactInfoStorage
 import com.gravatar.app.usercomponent.data.UserSharePreferencesStorage
 import com.gravatar.app.usercomponent.data.UserStorage
 import org.koin.android.ext.koin.androidContext
@@ -37,6 +38,12 @@ internal val datastoreModule = module {
         )
     }
     factory<UserSharePreferencesStorage> {
+        DatastoreUserPrefsStorage(
+            dataStore = get(qualifier = named<UserPrefs>()),
+            dispatcherProvider = get()
+        )
+    }
+    factory<PrivateContactInfoStorage> {
         DatastoreUserPrefsStorage(
             dataStore = get(qualifier = named<UserPrefs>()),
             dispatcherProvider = get()
