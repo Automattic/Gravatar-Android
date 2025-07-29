@@ -39,12 +39,12 @@ platform :android do
 
   # Uploads the app bundle to the Google Play Store
   #
-  # @param track [String] The track to upload to. One of: 'internal', 'alpha', 'beta', 'production'. Defaults to 'internal'
-  # @param release_status [String] The release status. One of: 'completed', 'draft', 'halted', 'inProgress'. Defaults to 'completed'
-  # @param rollout [String] The percentage of users who should get the update, as a string between '0' and '1'. Defaults to '1'
+  # @param track [String] The track to upload to. One of: 'internal', 'alpha', 'beta', 'production'.
+  # @param release_status [String] The release status. One of: 'completed', 'draft', 'halted', 'inProgress'.
+  # @param rollout [String] The percentage of users who should get the update, as a string between '0' and '1'.
   # @env [String] PLAY_STORE_RAW_JSON_KEY The Google Play Store service account JSON key data
   #
-  lane :upload_to_store do |track: 'internal', release_status: 'completed', rollout: '1'|
+  lane :upload_to_store do |track:, release_status:, rollout:|
     require_env_vars!('PLAY_STORE_RAW_JSON_KEY')
 
     upload_to_play_store(
@@ -110,9 +110,10 @@ platform :android do
     )
   end
 
-  lane :build_and_upload_to_play_store do |track: 'internal'|
+  lane :build_and_upload_to_play_store do |track: 'internal', release_status: 'draft'|
+    # TODO using `internal`` track with `draft` releases by default while the release itself is in draft mode
     build_bundle
-    upload_to_store(track: track)
+    upload_to_store(track: track, release_status: release_status, rollout: '1')
   end
 
   #####################################################################################
@@ -125,7 +126,7 @@ platform :android do
     UI.important <<~PROMPT
       Initiating a new alpha release.
       This will:
-      - Checkout and pull the #{DEFAULT_BRANCH} branch (if running in CI)
+      - Checkout and pull the #{DEFAULT_BRANCH} branch (if running on CI)
       - Bump the build code from #{build_code_current} to #{build_code_next}
       - Trigger a new alpha build in Buildkite
     PROMPT
