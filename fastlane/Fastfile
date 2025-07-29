@@ -113,7 +113,7 @@ platform :android do
   lane :build_and_upload_to_play_store do |track: 'internal', release_status: 'draft'|
     # TODO: using `internal`` track with `draft` releases by default while the release itself is in draft mode
     build_bundle
-    upload_to_store(track: track, release_status: release_status, rollout: '1')
+    upload_to_store(track: track, release_status: release_status, rollout: release_status == 'draft' ? nil : '1')
   end
 
   #####################################################################################
