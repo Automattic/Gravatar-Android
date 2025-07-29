@@ -80,4 +80,7 @@
     <string name="share_tab_public_info_title">Share info from your Gravatar profile.</string>
     <string name="share_tab_name_label">Name</string>
     <string name="share_tab_profile_url_label">Profile URL</string>
+    <string name="private_info_button_cta">Got it</string>
+    <string name="private_info_dialog_message">Your email and phone number are only shared using the QR code. This information is not saved to your Gravatar profile, and is not publicly available.</string>
+    <string name="private_info_dialog_title">Private information</string>
 </resources>

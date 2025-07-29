@@ -321,6 +321,37 @@ class ShareViewModelTest {
         }
     }
 
+    @Test
+    fun `when OnPrivateInformationClicked event is triggered then isPrivateInformationDialogVisible is set to true`() = runTest {
+        // When
+        viewModel.onEvent(ShareEvent.OnPrivateInformationClicked)
+        advanceUntilIdle()
+
+        // Then
+        viewModel.uiState.test {
+            val state = awaitItem()
+            assertTrue(state.isPrivateInformationDialogVisible)
+        }
+    }
+
+    @Test
+    fun `when OnDismissPrivateInformationDialog event is triggered then isPrivateInformationDialogVisible is set to false`() = runTest {
+        // First show the dialog
+        viewModel.onEvent(ShareEvent.OnPrivateInformationClicked)
+        advanceUntilIdle()
+
+        // Verify dialog is visible
+        viewModel.uiState.test {
+            assertTrue(awaitItem().isPrivateInformationDialogVisible)
+
+            // When
+            viewModel.onEvent(ShareEvent.OnDismissPrivateInformationDialog)
+
+            // Then
+            assertFalse(awaitItem().isPrivateInformationDialogVisible)
+        }
+    }
+
     private fun createTestProfile() = Profile {
         hash = "test-hash"
         displayName = "Test User"

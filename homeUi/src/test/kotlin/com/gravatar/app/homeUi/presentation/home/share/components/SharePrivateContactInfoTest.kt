@@ -25,6 +25,7 @@ class SharePrivateContactInfoTest : RoborazziTest() {
                 onEmailSwitchCheckedChange = {},
                 onPhoneValueChange = {},
                 onPhoneSwitchCheckedChange = {},
+                onTitleClicked = {},
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
@@ -46,6 +47,7 @@ class SharePrivateContactInfoTest : RoborazziTest() {
                 onEmailSwitchCheckedChange = {},
                 onPhoneValueChange = {},
                 onPhoneSwitchCheckedChange = {},
+                onTitleClicked = {},
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
@@ -67,6 +69,7 @@ class SharePrivateContactInfoTest : RoborazziTest() {
                 onEmailSwitchCheckedChange = {},
                 onPhoneValueChange = {},
                 onPhoneSwitchCheckedChange = {},
+                onTitleClicked = {},
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)

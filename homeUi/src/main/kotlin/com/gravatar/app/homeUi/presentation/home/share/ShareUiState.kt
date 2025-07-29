@@ -9,7 +9,8 @@ internal data class ShareUiState(
     val avatarUrl: String? = null,
     val isAboutAppDialogVisible: Boolean = false,
     val privateContactInfo: PrivateContactInfo = PrivateContactInfo.Default,
-    val userSharePreferences: UserSharePreferences = UserSharePreferences.Default
+    val userSharePreferences: UserSharePreferences = UserSharePreferences.Default,
+    val isPrivateInformationDialogVisible: Boolean = false,
 ) {
 
     val privateContactState = PrivateContactState(
