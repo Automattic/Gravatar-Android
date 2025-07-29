@@ -5,6 +5,7 @@ import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 
@@ -13,12 +14,12 @@ internal fun JobInfo(jobInfo: String, modifier: Modifier = Modifier) {
     BasicText(
         text = jobInfo,
         style = MaterialTheme.typography.bodyMedium.copy(
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            color = Color.White.copy(alpha = 0.8f)
         ),
         overflow = TextOverflow.Ellipsis,
         maxLines = 1,
         autoSize = TextAutoSize.StepBased(
-            maxFontSize = 14.sp
+            maxFontSize = 15.sp
         ),
         modifier = modifier
     )
