@@ -6,5 +6,5 @@ install_gems
 echo "--- :closed_lock_with_key: Installing Secrets"
 bundle exec fastlane run configure_apply
 
-echo "--- :hammer_and_wrench: Building"
+echo "--- :hammer_and_wrench: Building and Uploading to Play Store"
 bundle exec fastlane build_and_upload_to_play_store

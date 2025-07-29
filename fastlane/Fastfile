@@ -122,32 +122,33 @@ platform :android do
     require_env_vars!('BUILDKITE_TOKEN')
     ensure_git_status_clean
 
-    Fastlane::Helper::GitHelper.checkout_and_pull(DEFAULT_BRANCH)
-
     UI.important <<~PROMPT
       Initiating a new alpha release.
       This will:
+      - Checkout and pull the #{DEFAULT_BRANCH} branch (if running in CI)
       - Bump the build code from #{build_code_current} to #{build_code_next}
       - Trigger a new alpha build in Buildkite
     PROMPT
     next unless skip_confirm || UI.confirm('Continue?')
 
+    Fastlane::Helper::GitHelper.checkout_and_pull(DEFAULT_BRANCH) if is_ci?
+
     bump_build_code
 
     push_to_git_remote
 
-    trigger_alpha_build
+    trigger_release_build
   end
 
   # Trigger a new alpha build on CI
   #
-  lane :trigger_alpha_build do
+  lane :trigger_release_build do
     require_env_vars!('BUILDKITE_TOKEN')
 
     trigger_buildkite_build(
-      branch: DEFAULT_BRANCH,
+      branch: git_branch,
       pipeline: 'release-builds.yml',
-      message: "Alpha Build (#{build_code_current})"
+      message: "Release Build (#{build_code_current})"
     )
   end
 
