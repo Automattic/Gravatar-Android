@@ -238,6 +238,23 @@ private fun AnimatedProfileHeaderSavedState(
         label = "labelsEndOffset"
     )
 
+    var locationSize by remember { mutableStateOf(DpSize.Zero) }
+    val locationOffset by animateDpOffsetAsState(
+        targetValue = DpOffset(
+            x = lerp(
+                (screenWidth / 2 - (locationSize.width / 2) - HEADER_PADDING),
+                screenWidth,
+                headerState.expansionFraction
+            ),
+            y = lerp(
+                AVATAR_EXPANDED_SIZE + displayNameSize.height + jobInfoSize.height + PROFILE_INFO_TOP_PADDING,
+                0.dp,
+                headerState.expansionFraction
+            )
+        ),
+        label = "locationOffset"
+    )
+
     var linkSize by remember { mutableStateOf(DpSize.Zero) }
     val linkOffset by animateDpOffsetAsState(
         targetValue = DpOffset(
@@ -247,7 +264,7 @@ private fun AnimatedProfileHeaderSavedState(
                 headerState.expansionFraction
             ),
             y = lerp(
-                AVATAR_EXPANDED_SIZE + displayNameSize.height + jobInfoSize.height + PROFILE_INFO_TOP_PADDING + LINK_TOP_PADDING,
+                AVATAR_EXPANDED_SIZE + displayNameSize.height + jobInfoSize.height + locationSize.height + PROFILE_INFO_TOP_PADDING + LINK_TOP_PADDING,
                 0.dp,
                 headerState.expansionFraction
             )
@@ -297,6 +314,17 @@ private fun AnimatedProfileHeaderSavedState(
                         .onGloballyPositioned { coordinates ->
                             jobInfoSize = coordinates.size.toDpSize(density)
                         },
+                )
+            }
+
+            profile.location.takeIf { it.isNotBlank() }?.let { locationInfo ->
+                LocationInfo(
+                    locationInfo = locationInfo,
+                    modifier = Modifier
+                        .padding(start = locationOffset.x, top = locationOffset.y)
+                        .onGloballyPositioned { coordinates ->
+                            locationSize = coordinates.size.toDpSize(density)
+                        }
                 )
             }
 
