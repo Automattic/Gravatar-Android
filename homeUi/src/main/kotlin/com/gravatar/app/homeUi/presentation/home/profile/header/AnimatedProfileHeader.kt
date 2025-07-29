@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
+import com.gravatar.app.design.theme.GravatarAppTheme
 import com.gravatar.app.homeUi.R
 import com.gravatar.app.homeUi.presentation.home.components.BlurredHeaderBackground
 import com.gravatar.app.homeUi.presentation.home.components.GravatarAvatarWithShadow
@@ -259,111 +260,113 @@ private fun AnimatedProfileHeaderSavedState(
         label = "linkAlpha"
     )
 
-    BlurredHeaderBackground(
-        avatarUrl = avatarUrl.orEmpty(),
-        modifier = modifier.fillMaxWidth(),
-    ) {
-        // Content container with animated layout
-        Box(
-            modifier = Modifier
-                .padding(HEADER_PADDING)
-                .systemBarsPadding()
-                .fillMaxWidth()
+    GravatarAppTheme(darkTheme = true) {
+        BlurredHeaderBackground(
+            avatarUrl = avatarUrl.orEmpty(),
+            modifier = modifier.fillMaxWidth(),
         ) {
-            // Avatar with animated position
+            // Content container with animated layout
             Box(
-                modifier = Modifier.offset(avatarOffset.x, avatarOffset.y)
-            ) {
-                GravatarAvatarWithShadow(
-                    url = avatarUrl.orEmpty(),
-                    borderShape = CircleShape,
-                    modifier = Modifier.size(avatarSize)
-                )
-            }
-            DisplayName(
-                displayName = profile.displayName,
                 modifier = Modifier
-                    .padding(start = displayNameOffset.x, top = displayNameOffset.y, end = labelsEndOffset)
-                    .onGloballyPositioned { coordinates ->
-                        displayNameSize = coordinates.size.toDpSize(density)
-                    },
-            )
-
-            profile.jobInfo().takeIf { it.isNotBlank() }?.let { jobInfo ->
-                JobInfo(
-                    jobInfo = jobInfo,
+                    .padding(HEADER_PADDING)
+                    .systemBarsPadding()
+                    .fillMaxWidth()
+            ) {
+                // Avatar with animated position
+                Box(
+                    modifier = Modifier.offset(avatarOffset.x, avatarOffset.y)
+                ) {
+                    GravatarAvatarWithShadow(
+                        url = avatarUrl.orEmpty(),
+                        borderShape = CircleShape,
+                        modifier = Modifier.size(avatarSize)
+                    )
+                }
+                DisplayName(
+                    displayName = profile.displayName,
                     modifier = Modifier
-                        .padding(start = jobInfoOffset.x, top = jobInfoOffset.y, end = labelsEndOffset)
+                        .padding(start = displayNameOffset.x, top = displayNameOffset.y, end = labelsEndOffset)
                         .onGloballyPositioned { coordinates ->
-                            jobInfoSize = coordinates.size.toDpSize(density)
+                            displayNameSize = coordinates.size.toDpSize(density)
                         },
                 )
-            }
 
-            Box(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-            ) {
-                IconButton(
-                    onClick = {
-                        topBarMenuVisible = true
-                    },
+                profile.jobInfo().takeIf { it.isNotBlank() }?.let { jobInfo ->
+                    JobInfo(
+                        jobInfo = jobInfo,
+                        modifier = Modifier
+                            .padding(start = jobInfoOffset.x, top = jobInfoOffset.y, end = labelsEndOffset)
+                            .onGloballyPositioned { coordinates ->
+                                jobInfoSize = coordinates.size.toDpSize(density)
+                            },
+                    )
+                }
+
+                Box(
                     modifier = Modifier
-                        .size(MENU_BUTTON_SIZE)
+                        .align(Alignment.TopEnd)
+                ) {
+                    IconButton(
+                        onClick = {
+                            topBarMenuVisible = true
+                        },
+                        modifier = Modifier
+                            .size(MENU_BUTTON_SIZE)
+                            .onGloballyPositioned { coordinates ->
+                                menuButtonSize = coordinates.size.toDpSize(density)
+                            }
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.more_button),
+                            contentDescription = stringResource(R.string.gravatar_tab_header_more_options),
+                        )
+                    }
+                    if (topBarMenuVisible) {
+                        TopBarPickerPopup(
+                            anchorAlignment = Alignment.End,
+                            offset = DpOffset(0.dp, 6.dp),
+                            onAboutAppClicked = onAboutAppClicked,
+                            onDismissRequest = { topBarMenuVisible = false },
+                        )
+                    }
+                }
+
+                Row(
+                    modifier = Modifier
+                        .alpha(linkAlpha)
+                        .padding(start = linkOffset.x, top = linkOffset.y)
+                        .clickable(
+                            onClick = { onProfileLinkClicked() }
+                        )
+                        .clip(RoundedCornerShape(24.dp))
+                        .background(Color.Black)
+                        .padding(LINK_INTERNAL_PADDING)
                         .onGloballyPositioned { coordinates ->
-                            menuButtonSize = coordinates.size.toDpSize(density)
-                        }
+                            linkSize = coordinates.size.toDpSize(density)
+                        },
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.more_button),
-                        contentDescription = stringResource(R.string.gravatar_tab_header_more_options),
+                        painter = painterResource(R.drawable.profile_header_link_icon),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(16.dp)
+                            .align(Alignment.CenterVertically),
+                    )
+                    BasicText(
+                        text = profile.urlLink(),
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            color = Color.White,
+                        ),
+                        autoSize = TextAutoSize.StepBased(
+                            maxFontSize = 14.sp
+                        ),
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .align(Alignment.CenterVertically),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
-                if (topBarMenuVisible) {
-                    TopBarPickerPopup(
-                        anchorAlignment = Alignment.End,
-                        offset = DpOffset(0.dp, 6.dp),
-                        onAboutAppClicked = onAboutAppClicked,
-                        onDismissRequest = { topBarMenuVisible = false },
-                    )
-                }
-            }
-
-            Row(
-                modifier = Modifier
-                    .alpha(linkAlpha)
-                    .padding(start = linkOffset.x, top = linkOffset.y)
-                    .clickable(
-                        onClick = { onProfileLinkClicked() }
-                    )
-                    .clip(RoundedCornerShape(24.dp))
-                    .background(Color.Black)
-                    .padding(LINK_INTERNAL_PADDING)
-                    .onGloballyPositioned { coordinates ->
-                        linkSize = coordinates.size.toDpSize(density)
-                    },
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.profile_header_link_icon),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(16.dp)
-                        .align(Alignment.CenterVertically),
-                )
-                BasicText(
-                    text = profile.urlLink(),
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        color = Color.White,
-                    ),
-                    autoSize = TextAutoSize.StepBased(
-                        maxFontSize = 14.sp
-                    ),
-                    modifier = Modifier
-                        .padding(start = 8.dp)
-                        .align(Alignment.CenterVertically),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
             }
         }
     }
