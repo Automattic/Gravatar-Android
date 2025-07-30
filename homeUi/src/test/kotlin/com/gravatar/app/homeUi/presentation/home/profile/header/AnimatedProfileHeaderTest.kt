@@ -29,6 +29,28 @@ class AnimatedProfileHeaderTest : RoborazziTest() {
     }
 
     @Test
+    fun animatedProfileHeader_withLocation_whenExpanded_showsCorrectLayout() {
+        screenshotTest {
+            GravatarAppTheme {
+                AnimatedProfileHeader(
+                    profile = defaultProfile(
+                        hash = "",
+                        displayName = "John Doe",
+                        jobTitle = "Software Engineer",
+                        company = "Automattic",
+                        location = "San Francisco, CA"
+                    ),
+                    avatarUrl = "https://gravatar.com/avatar/test",
+                    onSaveProfile = {},
+                    onCancelProfile = {},
+                    headerState = AnimatedProfileHeaderState.EXPANDED,
+                    onProfileLinkClicked = {}
+                )
+            }
+        }
+    }
+
+    @Test
     fun animatedProfileHeader_whenCollapsed_showsCorrectLayout() {
         screenshotTest {
             GravatarAppTheme {
