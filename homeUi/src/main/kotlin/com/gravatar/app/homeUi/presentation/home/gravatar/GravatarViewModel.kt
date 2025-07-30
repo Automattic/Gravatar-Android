@@ -7,8 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.gravatar.app.homeUi.DownloadManagerError
 import com.gravatar.app.homeUi.ImageDownloader
 import com.gravatar.app.homeUi.presentation.FileUtils
-import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import com.gravatar.app.usercomponent.domain.usecase.DeleteUserAvatar
+import com.gravatar.app.usercomponent.domain.usecase.FetchUserAvatars
 import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrl
 import com.gravatar.app.usercomponent.domain.usecase.SelectUserAvatar
 import com.gravatar.app.usercomponent.domain.usecase.UploadUserAvatar
@@ -30,7 +30,7 @@ internal class GravatarViewModel(
     private val selectUserAvatar: SelectUserAvatar,
     private val deleteUserAvatar: DeleteUserAvatar,
     private val uploadUserAvatar: UploadUserAvatar,
-    private val userRepository: UserRepository,
+    private val fetchUserAvatars: FetchUserAvatars,
     private val fileUtils: FileUtils,
     private val imageDownloader: ImageDownloader,
 ) : ViewModel() {
@@ -224,7 +224,7 @@ internal class GravatarViewModel(
                     isLoading = !isRefreshing || currentState.avatars == null,
                 )
             }
-            userRepository.getAvatars()
+            fetchUserAvatars(isRefreshing)
                 .onSuccess { avatars ->
                     _uiState.update { currentState ->
                         currentState.copy(
