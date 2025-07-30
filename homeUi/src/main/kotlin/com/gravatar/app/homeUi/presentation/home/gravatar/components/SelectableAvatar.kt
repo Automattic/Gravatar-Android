@@ -123,6 +123,7 @@ private fun SelectableAvatar(
         }
         if (moreOptionsPopupVisible) {
             AvatarMoreOptionsPickerPopup(
+                isAvatarSelected = isSelected,
                 anchorAlignment = Alignment.Start,
                 offset = DpOffset(0.dp, 10.dp),
                 onDismissRequest = { moreOptionsPopupVisible = false },
