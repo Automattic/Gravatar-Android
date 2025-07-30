@@ -8,4 +8,5 @@ internal sealed class ShareEvent {
     data object OnDismissAboutAppDialog : ShareEvent()
     data object OnPrivateInformationClicked : ShareEvent()
     data object OnDismissPrivateInformationDialog : ShareEvent()
+    data object OnShareClick : ShareEvent()
 }

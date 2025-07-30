@@ -1,5 +1,6 @@
 package com.gravatar.app.homeUi.presentation.home.share
 
+import android.graphics.drawable.Drawable
 import com.gravatar.app.homeUi.presentation.home.share.model.VCard
 import com.gravatar.app.usercomponent.domain.model.PrivateContactInfo
 import com.gravatar.app.usercomponent.domain.model.UserSharePreferences
@@ -12,6 +13,7 @@ internal data class ShareUiState(
     val privateContactInfo: PrivateContactInfo = PrivateContactInfo.Default,
     val userSharePreferences: UserSharePreferences = UserSharePreferences.Default,
     val isPrivateInformationDialogVisible: Boolean = false,
+    private val avatarDrawable: Drawable? = null,
 ) {
     val privateContactState = PrivateContactState(
         emailValue = privateContactInfo.privateEmail,
@@ -45,6 +47,7 @@ internal data class ShareUiState(
         .note(profile?.description.takeIf { userSharePreferences.description })
         .phoneNumber(privateContactState.phoneValue.takeIf { privateContactState.isPhoneShared })
         .email(privateContactState.emailValue.takeIf { privateContactState.isEmailShared })
+        .photo(avatarDrawable)
         .build()
 }
 

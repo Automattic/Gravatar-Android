@@ -1,6 +1,8 @@
 package com.gravatar.app.homeUi.presentation.home.share
 
 import app.cash.turbine.test
+import com.gravatar.app.homeUi.presentation.DrawableUtils
+import com.gravatar.app.homeUi.presentation.FileUtils
 import com.gravatar.app.testUtils.CoroutineTestRule
 import com.gravatar.app.usercomponent.domain.model.PrivateContactInfo
 import com.gravatar.app.usercomponent.domain.model.UserSharePreferences
@@ -12,8 +14,10 @@ import com.gravatar.app.usercomponent.domain.usecase.UpdatePrivateContactInfo
 import com.gravatar.app.usercomponent.domain.usecase.UpdateUserSharePreferences
 import com.gravatar.restapi.models.Profile
 import com.gravatar.restapi.models.ProfileContactInfo
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -26,6 +30,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.io.File
 import java.net.URI
 import java.net.URL
 
@@ -56,6 +61,9 @@ class ShareViewModelTest {
         }
     }
     private val userRepository = mockk<UserRepository>()
+    private val fileUtils = mockk<FileUtils>()
+    private val drawableUtils = mockk<DrawableUtils>()
+    private val testVCardFile = mockk<File>()
 
     private lateinit var viewModel: ShareViewModel
 
@@ -67,13 +75,18 @@ class ShareViewModelTest {
     @Before
     fun setup() {
         every { userRepository.getProfile() } returns profileFlow
+        coEvery { fileUtils.createVCardFile(any(), any()) } returns testVCardFile
+        coEvery { drawableUtils.downloadDrawable(any()) } returns null
+
         viewModel = ShareViewModel(
             userRepository,
             getAvatarUrl,
             getUserSharePreferences,
             updateUserSharePreferences,
             getPrivateContactInfo,
-            updatePrivateContactInfo
+            updatePrivateContactInfo,
+            drawableUtils,
+            fileUtils,
         )
     }
 
@@ -512,6 +525,28 @@ class ShareViewModelTest {
         contactInfo = ProfileContactInfo {
             cellPhone = "123-456-7890"
             email = "test@example.com"
+        }
+    }
+
+    @Test
+    fun `when OnShareClick event is triggered then ShareVCard action is sent`() = runTest {
+        // Given
+        val testProfile = createTestProfile()
+        profileFlow.emit(testProfile)
+        advanceUntilIdle()
+
+        // When
+        viewModel.actions.test {
+            viewModel.onEvent(ShareEvent.OnShareClick)
+            advanceUntilIdle()
+
+            // Then
+            val action = awaitItem()
+            assertTrue(action is ShareAction.ShareVCard)
+            assertEquals(testVCardFile, (action as ShareAction.ShareVCard).vCardFile)
+
+            // Verify that createVCardFile was called with the correct parameters
+            verify { fileUtils.createVCardFile(eq(testProfile.displayName), any()) }
         }
     }
 }

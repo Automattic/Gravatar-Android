@@ -1,6 +1,7 @@
 package com.gravatar.app.homeUi.di
 
 import com.gravatar.app.homeUi.ImageDownloader
+import com.gravatar.app.homeUi.presentation.DrawableUtils
 import com.gravatar.app.homeUi.presentation.FileUtils
 import com.gravatar.app.homeUi.presentation.home.HomeViewModel
 import com.gravatar.app.homeUi.presentation.home.components.topbar.TopBarPickerPopupViewModel
@@ -16,6 +17,7 @@ import org.koin.dsl.module
 val homeUiModule = module {
     factory<ImageDownloader> { ImageDownloader(androidContext()) }
     factoryOf(::FileUtils)
+    factoryOf(::DrawableUtils)
     viewModelOf(::ProfileViewModel)
     viewModelOf(::GravatarViewModel)
     viewModelOf(::TopBarPickerPopupViewModel)
