@@ -21,6 +21,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.navigation)
     implementation(libs.androidx.constraintLayout.compose)
+    implementation(libs.androidx.browser)
     implementation(libs.coil.compose)
     implementation(project.dependencies.platform(libs.koin.bom))
     implementation(libs.koin.core)
@@ -29,6 +30,7 @@ dependencies {
     implementation(libs.gravatar.core)
     implementation(libs.gravatar.ui)
     implementation(libs.ucrop)
+    implementation(libs.qrose)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

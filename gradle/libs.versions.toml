@@ -26,6 +26,7 @@ ksp = "2.1.21-2.0.2"
 ucrop = "2.2.11"
 androidxTestCore = "1.6.1"
 constraintLayout = "1.1.0"
+qrose= "1.0.1"
 
 [libraries]
 kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinCoroutines" }
@@ -76,6 +77,7 @@ room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 ucrop = { group = "com.automattic", name = "ucrop", version.ref = "ucrop" }
+qrose = { group = "io.github.alexzhirkevich", name = "qrose", version.ref = "qrose" }
 
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }

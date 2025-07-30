@@ -2,6 +2,7 @@ package com.gravatar.app.homeUi.presentation.home.components.topbar.components
 
 import android.content.Context
 import android.content.Intent
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -125,14 +126,17 @@ private fun Context.sendSupportEmail() {
 
 private fun Context.openSupportPage() = openUrl("https://$SUPPORT_URL")
 
-private fun Context.openTermsOfService() = openUrl(TERMS_OF_SERVICE_URL)
+private fun Context.openTermsOfService() = openUrlInApp(TERMS_OF_SERVICE_URL)
 
-private fun Context.openPrivacyPolicy() = openUrl(PRIVACY_POLICY_URL)
+private fun Context.openPrivacyPolicy() = openUrlInApp(PRIVACY_POLICY_URL)
 
 private fun Context.openUrl(url: String) {
     val intent = Intent(Intent.ACTION_VIEW, url.toUri())
     startActivity(intent)
 }
+
+private fun Context.openUrlInApp(url: String) =
+    CustomTabsIntent.Builder().build().launchUrl(this, url.toUri())
 
 private const val SUPPORT_URL = "support.gravatar.com"
 private const val SUPPORT_EMAIL = "support@gravatar.com"
