@@ -22,13 +22,12 @@ internal fun BlurredHeaderBackground(
             avatarUrl,
             modifier = Modifier
                 .matchParentSize()
-                .blur(radius = 40.dp, edgeTreatment = BlurredEdgeTreatment.Rectangle)
-                .alpha(0.7f)
+                .blur(radius = 80.dp, edgeTreatment = BlurredEdgeTreatment.Rectangle)
         )
         Box(
             modifier = Modifier
                 .matchParentSize()
-                .background(Color.Black.copy(alpha = 0.2f))
+                .background(Color.Black.copy(alpha = 0.15f))
         )
         content()
     }
