@@ -13,12 +13,12 @@ internal fun JobInfo(jobInfo: String, modifier: Modifier = Modifier) {
     BasicText(
         text = jobInfo,
         style = MaterialTheme.typography.bodyMedium.copy(
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
         ),
         overflow = TextOverflow.Ellipsis,
         maxLines = 1,
         autoSize = TextAutoSize.StepBased(
-            maxFontSize = 14.sp
+            maxFontSize = 15.sp
         ),
         modifier = modifier
     )

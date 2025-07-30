@@ -1,5 +1,6 @@
 package com.gravatar.app.homeUi.presentation.home.share
 
+import com.gravatar.app.homeUi.presentation.home.share.model.VCard
 import com.gravatar.app.usercomponent.domain.model.PrivateContactInfo
 import com.gravatar.app.usercomponent.domain.model.UserSharePreferences
 import com.gravatar.restapi.models.Profile
@@ -12,7 +13,6 @@ internal data class ShareUiState(
     val userSharePreferences: UserSharePreferences = UserSharePreferences.Default,
     val isPrivateInformationDialogVisible: Boolean = false,
 ) {
-
     val privateContactState = PrivateContactState(
         emailValue = privateContactInfo.privateEmail,
         isEmailShared = userSharePreferences.privateEmail,
@@ -34,11 +34,23 @@ internal data class ShareUiState(
             profileUrl = if (shareFieldType is ShareFieldType.ProfileUrl) shareFieldType.checked else userSharePreferences.profileUrl,
         )
     )
+
+    val vCardQrCodeData: VCard = VCard.Builder()
+        .firstName(profile?.firstName.takeIf { userSharePreferences.name })
+        .lastName(profile?.lastName.takeIf { userSharePreferences.name })
+        .nickname(profile?.displayName.takeIf { userSharePreferences.description })
+        .organization(profile?.company.takeIf { userSharePreferences.organization })
+        .title(profile?.jobTitle.takeIf { userSharePreferences.title })
+        .profileUrl(profile?.profileUrl.toString().takeIf { userSharePreferences.profileUrl })
+        .note(profile?.description.takeIf { userSharePreferences.description })
+        .phoneNumber(privateContactState.phoneValue.takeIf { privateContactState.isPhoneShared })
+        .email(privateContactState.emailValue.takeIf { privateContactState.isEmailShared })
+        .build()
 }
 
 internal data class PrivateContactState(
     val emailValue: String = "",
-    val isEmailShared: Boolean = false,
+    val isEmailShared: Boolean = true,
     val phoneValue: String = "",
     val isPhoneShared: Boolean = false,
 )

@@ -20,7 +20,7 @@ internal fun DisplayName(displayName: String, modifier: Modifier = Modifier) {
         overflow = TextOverflow.Ellipsis,
         maxLines = 1,
         autoSize = TextAutoSize.StepBased(
-            maxFontSize = 18.sp
+            maxFontSize = 20.sp
         ),
         modifier = modifier
     )
