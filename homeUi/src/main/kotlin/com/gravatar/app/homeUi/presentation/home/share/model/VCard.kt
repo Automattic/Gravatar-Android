@@ -1,4 +1,4 @@
-    package com.gravatar.app.homeUi.presentation.home.share.model
+package com.gravatar.app.homeUi.presentation.home.share.model
 
 import android.graphics.drawable.Drawable
 import com.gravatar.app.homeUi.presentation.drawableToBase64
