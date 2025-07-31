@@ -42,10 +42,10 @@ platform :android do
   # @param track [String] The track to upload to. One of: 'internal', 'alpha', 'beta', 'production'.
   # @param release_status [String] The release status. One of: 'completed', 'draft', 'halted', 'inProgress'.
   # @param rollout [String] The percentage of users who should get the update, as a string between '0' and '1'.
-  # @env [String] PLAY_STORE_RAW_JSON_KEY The Google Play Store service account JSON key data
+  # @env [String] PLAY_STORE_SERVICE_ACCOUNT_UPLOAD_KEY The Google Play Store service account JSON key data
   #
   lane :upload_to_store do |track:, release_status:, rollout:|
-    require_env_vars!('PLAY_STORE_RAW_JSON_KEY')
+    require_env_vars!('PLAY_STORE_SERVICE_ACCOUNT_UPLOAD_KEY')
 
     upload_to_play_store(
       package_name: 'com.gravatar.app',
@@ -57,7 +57,7 @@ platform :android do
       skip_upload_changelogs: (track != 'production'),
       skip_upload_images: true,
       skip_upload_screenshots: true,
-      json_key_data: ENV.fetch('PLAY_STORE_RAW_JSON_KEY', nil)
+      json_key_data: ENV.fetch('PLAY_STORE_SERVICE_ACCOUNT_UPLOAD_KEY', nil)
     )
   end
 
@@ -149,7 +149,7 @@ platform :android do
     trigger_buildkite_build(
       branch: git_branch,
       pipeline: 'release-builds.yml',
-      message: "Release Build (#{build_code_current})"
+      message: "Release Build #{release_version_current} (#{build_code_current})"
     )
   end
 
