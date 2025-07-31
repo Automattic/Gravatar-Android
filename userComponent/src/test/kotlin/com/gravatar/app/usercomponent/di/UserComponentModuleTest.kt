@@ -6,6 +6,7 @@ import com.gravatar.app.usercomponent.data.InMemoryUserSessionPersistence
 import com.gravatar.app.usercomponent.data.WordPressClient
 import com.gravatar.app.usercomponent.data.interceptors.UnauthorizeInterceptor
 import com.gravatar.app.usercomponent.domain.usecase.DeleteUserAvatarUseCase
+import com.gravatar.app.usercomponent.domain.usecase.FetchAvatarsUseCase
 import com.gravatar.app.usercomponent.domain.usecase.SelectAvatarUseCase
 import com.gravatar.app.usercomponent.domain.usecase.UploadAvatarUseCase
 import kotlinx.coroutines.CoroutineScope
@@ -28,6 +29,7 @@ class UserComponentModuleTest : KoinTest {
                 definition<SelectAvatarUseCase>(AppClock::class),
                 definition<DeleteUserAvatarUseCase>(AppClock::class),
                 definition<UploadAvatarUseCase>(AppClock::class),
+                definition<FetchAvatarsUseCase>(AppClock::class),
                 definition<UnauthorizeInterceptor>(CoroutineScope::class),
             )
         )
