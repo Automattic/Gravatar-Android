@@ -47,6 +47,7 @@ internal fun ShareHeader(
     modifier: Modifier = Modifier,
     onShareClick: () -> Unit = {},
     onAboutAppClicked: () -> Unit = {},
+    onExpandQrCodeClick: () -> Unit = {},
 ) {
     var topBarMenuVisible by remember { mutableStateOf(false) }
     val qrcodePainter: Painter = rememberQrCodePainter(vCardQrCodeData) {
@@ -127,7 +128,19 @@ internal fun ShareHeader(
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.share_button),
-                        contentDescription = null
+                        contentDescription = stringResource(R.string.share_tab_share_contact_information_button)
+                    )
+                }
+                IconButton(
+                    onClick = {
+                        onExpandQrCodeClick()
+                    },
+                    modifier = Modifier
+                        .size(MENU_BUTTON_SIZE)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.expand_button),
+                        contentDescription = stringResource(R.string.share_tab_expand_qr_code)
                     )
                 }
             }

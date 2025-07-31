@@ -14,6 +14,7 @@ import kotlinx.serialization.Serializable
 internal fun HomeNavigation(
     navController: NavHostController,
     snackbarHostState: SnackbarHostState,
+    onShouldShowBottomBar: (Boolean) -> Unit,
 ) {
     NavHost(
         navController = navController,
@@ -37,7 +38,8 @@ internal fun HomeNavigation(
         composable<HomeDestination.Share> {
             ShareScreen(
                 viewModelStoreOwner = navController.getBackStackEntry(HomeRoute::class),
-                snackbarHostState = snackbarHostState
+                snackbarHostState = snackbarHostState,
+                onShouldShowBottomBar = onShouldShowBottomBar,
             )
         }
     }

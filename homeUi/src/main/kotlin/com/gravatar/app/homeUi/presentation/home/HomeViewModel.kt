@@ -26,4 +26,14 @@ internal class HomeViewModel(
             }
             .launchIn(viewModelScope)
     }
+
+    fun onEvent(homeEvent: HomeEvent) {
+        when (homeEvent) {
+            is HomeEvent.ShowBottomBar -> {
+                _uiState.update { currentState ->
+                    currentState.copy(showBottomBar = homeEvent.show)
+                }
+            }
+        }
+    }
 }

@@ -75,6 +75,28 @@ internal class ShareViewModel(
             is ShareEvent.OnPrivateInformationClicked -> showPrivateInformationDialog()
             is ShareEvent.OnDismissPrivateInformationDialog -> hidePrivateInformationDialog()
             ShareEvent.OnShareClick -> shareVCard()
+            ShareEvent.OnExpandQrCodeClick -> expandQrCode()
+            ShareEvent.OnDismissExpandedQrCode -> hideExpandedQrCode()
+        }
+    }
+
+    private fun expandQrCode() {
+        viewModelScope.launch {
+            _uiState.update { currentState ->
+                currentState.copy(isQrCodeExpanded = true)
+            }
+
+            _actions.send(ShareAction.ShowBottomBar(false))
+        }
+    }
+
+    private fun hideExpandedQrCode() {
+        viewModelScope.launch {
+            _uiState.update { currentState ->
+                currentState.copy(isQrCodeExpanded = false)
+            }
+
+            _actions.send(ShareAction.ShowBottomBar(true))
         }
     }
 
