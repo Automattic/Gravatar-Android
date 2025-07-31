@@ -13,6 +13,7 @@ internal class VCard private constructor(
     val note: String? = null,
     val phoneNumber: String? = null,
     val email: String? = null,
+    val location: String? = null,
     val photo: Drawable? = null,
 ) {
 
@@ -44,6 +45,9 @@ internal class VCard private constructor(
         note?.takeIf { it.isNotEmpty() }?.let { contentBuilder.append("NOTE:${it.escaped()}\n") }
         phoneNumber?.takeIf { it.isNotEmpty() }?.let { contentBuilder.append("TEL;TYPE=cell:${it.escaped()}\n") }
         email?.takeIf { it.isNotEmpty() }?.let { contentBuilder.append("EMAIL:${it.escaped()}\n") }
+        location?.takeIf {
+            it.isNotEmpty()
+        }?.let { contentBuilder.append("ADR;CHARSET=UTF-8;TYPE=HOME:;;;${it.escaped()};;;\n") }
         if (withPhoto) {
             photo?.let {
                 drawableToBase64(it).onSuccess { photoBase64 ->
@@ -71,6 +75,7 @@ internal class VCard private constructor(
         private var note: String? = null,
         private var phoneNumber: String? = null,
         private var email: String? = null,
+        private var location: String? = null,
         private var photo: Drawable? = null,
     ) {
         fun firstName(firstName: String?) = apply { this.firstName = firstName }
@@ -82,6 +87,7 @@ internal class VCard private constructor(
         fun note(description: String?) = apply { this.note = description }
         fun phoneNumber(phone: String?) = apply { this.phoneNumber = phone }
         fun email(email: String?) = apply { this.email = email }
+        fun location(location: String?) = apply { this.location = location }
         fun photo(photo: Drawable?) = apply { this.photo = photo }
 
         fun build() = VCard(
@@ -94,6 +100,7 @@ internal class VCard private constructor(
             note = note,
             phoneNumber = phoneNumber,
             email = email,
+            location = location,
             photo = photo,
         )
     }

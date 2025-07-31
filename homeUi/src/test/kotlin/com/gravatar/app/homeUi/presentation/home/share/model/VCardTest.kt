@@ -42,6 +42,7 @@ class VCardTest {
             .note("Awesome developer")
             .phoneNumber("123-456-7890")
             .email("john.doe@example.com")
+            .location("San Jose, CA")
             .build()
 
         val vCardString = vCard.toString()
@@ -58,6 +59,7 @@ class VCardTest {
         assertTrue(vCardString.contains("NOTE:Awesome developer"))
         assertTrue(vCardString.contains("TEL;TYPE=cell:123-456-7890"))
         assertTrue(vCardString.contains("EMAIL:john.doe@example.com"))
+        assertTrue(vCardString.contains("ADR;CHARSET=UTF-8;TYPE=HOME:;;;San Jose, CA;;;"))
         assertTrue(vCardString.endsWith("END:VCARD"))
     }
 
@@ -85,6 +87,7 @@ class VCardTest {
         assertTrue(!vCardString.contains("URL:"))
         assertTrue(!vCardString.contains("NOTE:"))
         assertTrue(!vCardString.contains("TEL;TYPE=cell:"))
+        assertTrue(!vCardString.contains("ADR;CHARSET=UTF-8;TYPE=HOME:"))
     }
 
     @Test
@@ -114,6 +117,7 @@ class VCardTest {
             .note(null)
             .phoneNumber(null)
             .email(null)
+            .location(null)
             .build()
         val vCardString = vCard.toString()
 
@@ -139,6 +143,7 @@ class VCardTest {
             .note("")
             .phoneNumber("")
             .email("")
+            .location("")
             .build()
         val vCardString = vCard.toString()
         // Empty strings should behave like nulls and not result in fields like "ORG:"
@@ -164,6 +169,7 @@ class VCardTest {
             .note("This is a\nnote with\nnewlines.")
             .phoneNumber("123\n456\n7890")
             .email("user\nname@example.com")
+            .location("San\nJose")
             .build()
 
         val vCardString = vCard.toString()
@@ -177,6 +183,7 @@ class VCardTest {
         assertTrue(vCardString.contains("NOTE:This is a note with newlines."))
         assertTrue(vCardString.contains("TEL;TYPE=cell:123 456 7890"))
         assertTrue(vCardString.contains("EMAIL:user name@example.com"))
+        assertTrue(vCardString.contains("ADR;CHARSET=UTF-8;TYPE=HOME:;;;San Jose;;;"))
     }
 
     @Test

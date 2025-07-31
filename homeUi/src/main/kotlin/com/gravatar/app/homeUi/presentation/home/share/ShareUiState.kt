@@ -47,6 +47,7 @@ internal data class ShareUiState(
         .note(profile?.description.takeIf { userSharePreferences.description })
         .phoneNumber(privateContactState.phoneValue.takeIf { privateContactState.isPhoneShared })
         .email(privateContactState.emailValue.takeIf { privateContactState.isEmailShared })
+        .location(profile?.location.takeIf { userSharePreferences.location })
         .photo(avatarDrawable)
         .build()
 }
