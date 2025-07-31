@@ -2,6 +2,6 @@ package com.gravatar.app.homeUi.presentation.home.share
 
 import java.io.File
 
-sealed class ShareAction {
+internal sealed class ShareAction {
     data class ShareVCard(val vCardFile: File) : ShareAction()
 }

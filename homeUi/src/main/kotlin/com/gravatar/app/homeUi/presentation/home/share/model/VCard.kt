@@ -13,7 +13,7 @@ internal class VCard private constructor(
     val note: String? = null,
     val phoneNumber: String? = null,
     val email: String? = null,
-    val photo: Drawable? = null, // Base64 encoded photo data
+    val photo: Drawable? = null,
 ) {
 
     fun exportToString(withPhoto: Boolean = true): String {
