@@ -54,7 +54,7 @@ platform :android do
       release_status: release_status,
       rollout: rollout,
       skip_upload_metadata: (track != 'production'),
-      skip_upload_changelogs: true,
+      skip_upload_changelogs: (track != 'production'),
       skip_upload_images: true,
       skip_upload_screenshots: true,
       json_key_data: ENV.fetch('PLAY_STORE_RAW_JSON_KEY', nil)
@@ -111,7 +111,7 @@ platform :android do
   end
 
   lane :build_and_upload_to_play_store do |track: 'internal', release_status: 'draft'|
-    # TODO: using `internal`` track with `draft` releases by default while the release itself is in draft mode
+    # TODO: using `internal` track with `draft` releases by default while the release itself is in draft mode
     build_bundle
     upload_to_store(track: track, release_status: release_status, rollout: release_status == 'draft' ? nil : '1')
   end
