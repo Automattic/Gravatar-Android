@@ -4,12 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gravatar.app.homeUi.presentation.DrawableUtils
 import com.gravatar.app.homeUi.presentation.FileUtils
+import com.gravatar.app.usercomponent.domain.facade.PrivateContactInfoFacade
+import com.gravatar.app.usercomponent.domain.facade.UserSharePreferencesFacade
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrl
-import com.gravatar.app.usercomponent.domain.usecase.GetPrivateContactInfo
-import com.gravatar.app.usercomponent.domain.usecase.GetUserSharePreferences
-import com.gravatar.app.usercomponent.domain.usecase.UpdatePrivateContactInfo
-import com.gravatar.app.usercomponent.domain.usecase.UpdateUserSharePreferences
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -22,14 +20,11 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-@Suppress("LongParameterList")
 internal class ShareViewModel(
     private val userRepository: UserRepository,
     private val getAvatarUrl: GetAvatarUrl,
-    private val getUserSharePreferences: GetUserSharePreferences,
-    private val updateUserSharePreferences: UpdateUserSharePreferences,
-    private val getPrivateContactInfo: GetPrivateContactInfo,
-    private val updatePrivateContactInfo: UpdatePrivateContactInfo,
+    private val sharePreferencesFacade: UserSharePreferencesFacade,
+    private val privateContactInfoFacade: PrivateContactInfoFacade,
     private val drawableUtils: DrawableUtils,
     private val fileUtils: FileUtils,
 ) : ViewModel() {
@@ -98,7 +93,7 @@ internal class ShareViewModel(
             _uiState.value = this
             // Save the updated preferences
             viewModelScope.launch {
-                updateUserSharePreferences(this@with.userSharePreferences)
+                sharePreferencesFacade.updatePreferences(this@with.userSharePreferences)
             }
         }
     }
@@ -110,7 +105,7 @@ internal class ShareViewModel(
         // Create a new job with debounce
         saveContactInfoJob = viewModelScope.launch {
             delay(debounceDelay) // Wait for the debounce period
-            updatePrivateContactInfo(_uiState.value.privateContactInfo)
+            privateContactInfoFacade.updateContactInfo(_uiState.value.privateContactInfo)
         }
     }
 
@@ -177,7 +172,7 @@ internal class ShareViewModel(
     }
 
     private fun collectUserSharePreferences() {
-        getUserSharePreferences()
+        sharePreferencesFacade.getPreferences()
             .onEach { preferences ->
                 _uiState.update { currentState ->
                     currentState.copy(
@@ -189,7 +184,7 @@ internal class ShareViewModel(
     }
 
     private fun collectPrivateContactInfo() {
-        getPrivateContactInfo()
+        privateContactInfoFacade.getContactInfo()
             .onEach { privateContactInfo ->
                 _uiState.update { currentState ->
                     currentState.copy(

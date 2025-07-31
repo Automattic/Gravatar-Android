@@ -4,6 +4,8 @@ import app.cash.turbine.test
 import com.gravatar.app.homeUi.presentation.DrawableUtils
 import com.gravatar.app.homeUi.presentation.FileUtils
 import com.gravatar.app.testUtils.CoroutineTestRule
+import com.gravatar.app.usercomponent.domain.facade.PrivateContactInfoFacade
+import com.gravatar.app.usercomponent.domain.facade.UserSharePreferencesFacade
 import com.gravatar.app.usercomponent.domain.model.PrivateContactInfo
 import com.gravatar.app.usercomponent.domain.model.UserSharePreferences
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
@@ -60,6 +62,18 @@ class ShareViewModelTest {
             privateContactInfoFlow.emit(privateContactInfo)
         }
     }
+
+    private val userSharePreferencesFacade = object : UserSharePreferencesFacade {
+        override fun getPreferences() = getUserSharePreferences()
+        override suspend fun updatePreferences(preferences: UserSharePreferences) =
+            updateUserSharePreferences(preferences)
+    }
+
+    private val privateContactInfoFacade = object : PrivateContactInfoFacade {
+        override fun getContactInfo() = getPrivateContactInfo()
+        override suspend fun updateContactInfo(info: PrivateContactInfo) =
+            updatePrivateContactInfo(info)
+    }
     private val userRepository = mockk<UserRepository>()
     private val fileUtils = mockk<FileUtils>()
     private val drawableUtils = mockk<DrawableUtils>()
@@ -81,10 +95,8 @@ class ShareViewModelTest {
         viewModel = ShareViewModel(
             userRepository,
             getAvatarUrl,
-            getUserSharePreferences,
-            updateUserSharePreferences,
-            getPrivateContactInfo,
-            updatePrivateContactInfo,
+            userSharePreferencesFacade,
+            privateContactInfoFacade,
             drawableUtils,
             fileUtils,
         )
