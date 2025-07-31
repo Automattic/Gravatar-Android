@@ -224,7 +224,7 @@ internal class GravatarViewModel(
                     isLoading = !isRefreshing || currentState.avatars == null,
                 )
             }
-            fetchUserAvatars(isRefreshing)
+            fetchUserAvatars()
                 .onSuccess { avatars ->
                     _uiState.update { currentState ->
                         currentState.copy(

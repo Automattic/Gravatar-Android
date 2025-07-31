@@ -65,7 +65,7 @@ class GravatarViewModelTest {
     fun `init should fetch avatars`() = runTest {
         // Given
         val avatars = createAvatars()
-        coEvery { fetchUserAvatars(false) } returns Result.success(avatars)
+        coEvery { fetchUserAvatars() } returns Result.success(avatars)
 
         // When
         initViewModel()
@@ -76,21 +76,21 @@ class GravatarViewModelTest {
             assertEquals(GravatarUiState(isLoading = true), awaitItem())
             assertEquals(GravatarUiState(isLoading = false, avatars = avatars), awaitItem())
         }
-        coVerify { fetchUserAvatars(false) }
+        coVerify { fetchUserAvatars() }
     }
 
     @Test
     fun `onEvent Refresh with pullToRefresh true should fetch avatars with isRefreshing true`() = runTest {
         // Given
         val avatars = createAvatars()
-        coEvery { fetchUserAvatars(false) } returns Result.success(avatars)
+        coEvery { fetchUserAvatars() } returns Result.success(avatars)
         initViewModel()
 
         advanceUntilIdle()
 
         // When
         val refreshedAvatars = createAvatars(4)
-        coEvery { fetchUserAvatars(true) } returns Result.success(refreshedAvatars)
+        coEvery { fetchUserAvatars() } returns Result.success(refreshedAvatars)
         viewModel.onEvent(GravatarEvent.Refresh(true))
 
         // Then
@@ -102,22 +102,21 @@ class GravatarViewModelTest {
                 awaitItem()
             )
         }
-        coVerify(exactly = 1) { fetchUserAvatars(false) }
-        coVerify(exactly = 1) { fetchUserAvatars(true) }
+        coVerify(exactly = 2) { fetchUserAvatars() }
     }
 
     @Test
     fun `onEvent Refresh with pullToRefresh false should fetch avatars with isLoading true`() = runTest {
         // Given
         val avatars = createAvatars()
-        coEvery { fetchUserAvatars(false) } returns Result.success(avatars)
+        coEvery { fetchUserAvatars() } returns Result.success(avatars)
         initViewModel()
 
         advanceUntilIdle()
 
         // When
         val refreshedAvatars = createAvatars(4)
-        coEvery { fetchUserAvatars(false) } returns Result.success(refreshedAvatars)
+        coEvery { fetchUserAvatars() } returns Result.success(refreshedAvatars)
         viewModel.onEvent(GravatarEvent.Refresh(false))
 
         // Then
@@ -129,20 +128,20 @@ class GravatarViewModelTest {
                 awaitItem()
             )
         }
-        coVerify(exactly = 2) { fetchUserAvatars(false) }
+        coVerify(exactly = 2) { fetchUserAvatars() }
     }
 
     @Test
     fun `onEvent Refresh with pullToRefresh true and null avatars should fetch avatars with isLoading true`() = runTest {
         // Given
-        coEvery { fetchUserAvatars(false) } returns Result.failure(IllegalStateException(""))
+        coEvery { fetchUserAvatars() } returns Result.failure(IllegalStateException(""))
         initViewModel()
 
         advanceUntilIdle()
 
         // When
         val refreshedAvatars = createAvatars(4)
-        coEvery { fetchUserAvatars(true) } returns Result.success(refreshedAvatars)
+        coEvery { fetchUserAvatars() } returns Result.success(refreshedAvatars)
         viewModel.onEvent(GravatarEvent.Refresh(true))
 
         // Then
@@ -154,14 +153,13 @@ class GravatarViewModelTest {
                 awaitItem()
             )
         }
-        coVerify(exactly = 1) { fetchUserAvatars(false) }
-        coVerify(exactly = 1) { fetchUserAvatars(true) }
+        coVerify(exactly = 2) { fetchUserAvatars() }
     }
 
     @Test
     fun `fetchAvatars should handle failure`() = runTest {
         // Given
-        coEvery { fetchUserAvatars(false) } returns Result.failure(RuntimeException("Test exception"))
+        coEvery { fetchUserAvatars() } returns Result.failure(RuntimeException("Test exception"))
 
         // When
         initViewModel()
@@ -172,14 +170,14 @@ class GravatarViewModelTest {
             assertEquals(GravatarUiState(isLoading = true), awaitItem())
             assertEquals(GravatarUiState(isLoading = false), awaitItem())
         }
-        coVerify { fetchUserAvatars(false) }
+        coVerify { fetchUserAvatars() }
     }
 
     @Test
     fun `onEvent OnAvatarSelected should select avatar successfully`() = runTest {
         // Given
         val avatars = createAvatars()
-        coEvery { fetchUserAvatars(false) } returns Result.success(avatars)
+        coEvery { fetchUserAvatars() } returns Result.success(avatars)
         initViewModel()
         advanceUntilIdle()
 
@@ -209,7 +207,7 @@ class GravatarViewModelTest {
     fun `onEvent OnAvatarSelected shouldn't select the same avatar again`() = runTest {
         // Given
         val avatars = createAvatars()
-        coEvery { fetchUserAvatars(false) } returns Result.success(avatars)
+        coEvery { fetchUserAvatars() } returns Result.success(avatars)
         initViewModel()
         advanceUntilIdle()
 
@@ -238,7 +236,7 @@ class GravatarViewModelTest {
     fun `onEvent OnAvatarSelected should clean the loading state and skip selecting already selected avatar again`() = runTest {
         // Given
         val avatars = createAvatars()
-        coEvery { fetchUserAvatars(false) } returns Result.success(avatars)
+        coEvery { fetchUserAvatars() } returns Result.success(avatars)
         initViewModel()
         advanceUntilIdle()
 
@@ -281,7 +279,7 @@ class GravatarViewModelTest {
     fun `onEvent OnAvatarSelected should handle failure`() = runTest {
         // Given
         val avatars = createAvatars()
-        coEvery { fetchUserAvatars(false) } returns Result.success(avatars)
+        coEvery { fetchUserAvatars() } returns Result.success(avatars)
         initViewModel()
         advanceUntilIdle()
 
@@ -312,7 +310,7 @@ class GravatarViewModelTest {
     fun `onEvent OnLocalImageSelected should send LaunchImageCropper action`() = runTest {
         // Given
         val avatars = createAvatars()
-        coEvery { fetchUserAvatars(false) } returns Result.success(avatars)
+        coEvery { fetchUserAvatars() } returns Result.success(avatars)
         val mockUri = mockk<Uri>()
         val mockFile = mockk<File>()
         every { fileUtils.createCroppedAvatarFile() } returns mockFile
@@ -335,7 +333,7 @@ class GravatarViewModelTest {
     fun `onEvent OnImageCropped should upload avatar successfully`() = runTest {
         // Given
         val avatars = createAvatars()
-        coEvery { fetchUserAvatars(false) } returns Result.success(avatars)
+        coEvery { fetchUserAvatars() } returns Result.success(avatars)
         initViewModel()
         advanceUntilIdle()
 
@@ -380,7 +378,7 @@ class GravatarViewModelTest {
         runTest {
             // Given
             val avatars = createAvatars()
-            coEvery { fetchUserAvatars(false) } returns Result.success(avatars)
+            coEvery { fetchUserAvatars() } returns Result.success(avatars)
             initViewModel()
             advanceUntilIdle()
 
@@ -423,7 +421,7 @@ class GravatarViewModelTest {
     fun `onEvent OnImageCropped should handle failure`() = runTest {
         // Given
         val avatars = createAvatars()
-        coEvery { fetchUserAvatars(false) } returns Result.success(avatars)
+        coEvery { fetchUserAvatars() } returns Result.success(avatars)
         initViewModel()
         advanceUntilIdle()
 
@@ -473,7 +471,7 @@ class GravatarViewModelTest {
     fun `onEvent OnFailedAvatarDialogDismissed should clear failedUploadDialog`() = runTest {
         // Given
         val avatars = createAvatars()
-        coEvery { fetchUserAvatars(false) } returns Result.success(avatars)
+        coEvery { fetchUserAvatars() } returns Result.success(avatars)
         initViewModel()
         advanceUntilIdle()
 
@@ -520,7 +518,7 @@ class GravatarViewModelTest {
     fun `onEvent OnFailedAvatarDismissed should remove failed upload and clear dialog`() = runTest {
         // Given
         val avatars = createAvatars()
-        coEvery { fetchUserAvatars(false) } returns Result.success(avatars)
+        coEvery { fetchUserAvatars() } returns Result.success(avatars)
         initViewModel()
         advanceUntilIdle()
 
@@ -564,7 +562,7 @@ class GravatarViewModelTest {
     fun `onEvent OnFailedAvatarTapped should show failed upload dialog`() = runTest {
         // Given
         val avatars = createAvatars()
-        coEvery { fetchUserAvatars(false) } returns Result.success(avatars)
+        coEvery { fetchUserAvatars() } returns Result.success(avatars)
         initViewModel()
         advanceUntilIdle()
 
@@ -610,7 +608,7 @@ class GravatarViewModelTest {
     fun `onEvent OnDeleteAvatar should delete non-selected avatar successfully`() = runTest {
         // Given
         val avatars = createAvatars()
-        coEvery { fetchUserAvatars(false) } returns Result.success(avatars)
+        coEvery { fetchUserAvatars() } returns Result.success(avatars)
         initViewModel()
         advanceUntilIdle()
 
@@ -636,7 +634,7 @@ class GravatarViewModelTest {
     fun `onEvent OnDeleteAvatar should delete selected avatar successfully and update selectedAvatarId`() = runTest {
         // Given
         val avatars = createAvatars()
-        coEvery { fetchUserAvatars(false) } returns Result.success(avatars)
+        coEvery { fetchUserAvatars() } returns Result.success(avatars)
         initViewModel()
         advanceUntilIdle()
 
@@ -671,7 +669,7 @@ class GravatarViewModelTest {
     fun `onEvent OnDeleteAvatar should handle failure and restore avatar`() = runTest {
         // Given
         val avatars = createAvatars()
-        coEvery { fetchUserAvatars(false) } returns Result.success(avatars)
+        coEvery { fetchUserAvatars() } returns Result.success(avatars)
         initViewModel()
         advanceUntilIdle()
 
@@ -701,7 +699,7 @@ class GravatarViewModelTest {
     fun `onEvent OnDeleteAvatar should handle failure and restore selected avatar`() = runTest {
         // Given
         val avatars = createAvatars()
-        coEvery { fetchUserAvatars(false) } returns Result.success(avatars)
+        coEvery { fetchUserAvatars() } returns Result.success(avatars)
         initViewModel()
         advanceUntilIdle()
 
@@ -736,7 +734,7 @@ class GravatarViewModelTest {
     fun `onEvent OnShowDeleteConfirmation should update confirmAvatarDeletionId`() = runTest {
         // Given
         val avatars = createAvatars()
-        coEvery { fetchUserAvatars(false) } returns Result.success(avatars)
+        coEvery { fetchUserAvatars() } returns Result.success(avatars)
         initViewModel()
         advanceUntilIdle()
 
@@ -761,7 +759,7 @@ class GravatarViewModelTest {
     fun `onEvent OnDismissDeleteConfirmation should clear confirmAvatarDeletionId`() = runTest {
         // Given
         val avatars = createAvatars()
-        coEvery { fetchUserAvatars(false) } returns Result.success(avatars)
+        coEvery { fetchUserAvatars() } returns Result.success(avatars)
         initViewModel()
         advanceUntilIdle()
 
@@ -787,7 +785,7 @@ class GravatarViewModelTest {
     @Test
     fun `each avatar URL collected should be set as state`() = runTest {
         // Given
-        coJustAwait { fetchUserAvatars(false) }
+        coJustAwait { fetchUserAvatars() }
         initViewModel()
         advanceUntilIdle()
 
@@ -805,7 +803,7 @@ class GravatarViewModelTest {
     fun `onEvent OnDownloadAvatar should download avatar image`() = runTest {
         // Given
         val avatars = createAvatars()
-        coEvery { fetchUserAvatars(false) } returns Result.success(avatars)
+        coEvery { fetchUserAvatars() } returns Result.success(avatars)
         initViewModel()
         advanceUntilIdle()
 
@@ -828,7 +826,7 @@ class GravatarViewModelTest {
     fun `onEvent OnDownloadAvatar should handle download manager not available`() = runTest {
         // Given
         val avatars = createAvatars()
-        coEvery { fetchUserAvatars(false) } returns Result.success(avatars)
+        coEvery { fetchUserAvatars() } returns Result.success(avatars)
         initViewModel()
         advanceUntilIdle()
 
@@ -853,7 +851,7 @@ class GravatarViewModelTest {
     fun `onEvent OnDownloadAvatar should handle download manager disabled`() = runTest {
         // Given
         val avatars = createAvatars()
-        coEvery { fetchUserAvatars(false) } returns Result.success(avatars)
+        coEvery { fetchUserAvatars() } returns Result.success(avatars)
         initViewModel()
         advanceUntilIdle()
 
@@ -879,7 +877,7 @@ class GravatarViewModelTest {
     fun `onEvent OnAboutAppClicked should show about app dialog`() = runTest {
         // Given
         val avatars = createAvatars()
-        coEvery { fetchUserAvatars(false) } returns Result.success(avatars)
+        coEvery { fetchUserAvatars() } returns Result.success(avatars)
         initViewModel()
         advanceUntilIdle()
 
@@ -902,7 +900,7 @@ class GravatarViewModelTest {
     fun `onEvent OnDismissAboutAppDialog should hide about app dialog`() = runTest {
         // Given
         val avatars = createAvatars()
-        coEvery { fetchUserAvatars(false) } returns Result.success(avatars)
+        coEvery { fetchUserAvatars() } returns Result.success(avatars)
         initViewModel()
         advanceUntilIdle()
 

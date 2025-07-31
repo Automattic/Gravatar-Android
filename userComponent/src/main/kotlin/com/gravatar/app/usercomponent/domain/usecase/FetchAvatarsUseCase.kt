@@ -1,5 +1,6 @@
 package com.gravatar.app.usercomponent.domain.usecase
 
+import com.gravatar.app.clock.AppClock
 import com.gravatar.app.usercomponent.data.AvatarCacheBusterStorage
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import com.gravatar.restapi.models.Avatar
