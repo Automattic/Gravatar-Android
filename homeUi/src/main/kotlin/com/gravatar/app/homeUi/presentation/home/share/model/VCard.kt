@@ -100,7 +100,7 @@ internal class VCard private constructor(
             note = note,
             phoneNumber = phoneNumber,
             email = email,
-            location = location
+            location = location,
             photo = photo,
         )
     }
