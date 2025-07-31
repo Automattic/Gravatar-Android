@@ -45,6 +45,7 @@ internal fun ShareHeader(
     avatarUrl: String,
     vCardQrCodeData: String,
     modifier: Modifier = Modifier,
+    onShareClick: () -> Unit = {},
     onAboutAppClicked: () -> Unit = {},
 ) {
     var topBarMenuVisible by remember { mutableStateOf(false) }
@@ -91,7 +92,7 @@ internal fun ShareHeader(
                     color = Color.White,
                 )
             }
-            Column {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Box {
                     IconButton(
                         onClick = {
@@ -117,6 +118,18 @@ internal fun ShareHeader(
                         )
                     }
                 }
+                IconButton(
+                    onClick = {
+                        onShareClick()
+                    },
+                    modifier = Modifier
+                        .size(MENU_BUTTON_SIZE)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.share_button),
+                        contentDescription = null
+                    )
+                }
             }
         }
     }
@@ -129,6 +142,7 @@ private fun ShareHeaderPreview() {
         ShareHeader(
             avatarUrl = "url",
             vCardQrCodeData = "BEGIN:VCARD\nVERSION:3.0\nFN:Preview User\nEND:VCARD",
+            onShareClick = { },
             modifier = Modifier
                 .fillMaxWidth()
         )

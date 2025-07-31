@@ -18,5 +18,14 @@ internal class GravatarFileProvider : FileProvider(R.xml.gravatar_filepaths) {
                 file,
             )
         }
+
+        fun getFileUri(context: Context, file: File): Uri {
+            val authority = "${context.packageName}.fileprovider"
+            return getUriForFile(
+                context,
+                authority,
+                file,
+            )
+        }
     }
 }

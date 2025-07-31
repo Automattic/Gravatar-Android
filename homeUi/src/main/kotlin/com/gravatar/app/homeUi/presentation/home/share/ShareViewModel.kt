@@ -2,29 +2,31 @@ package com.gravatar.app.homeUi.presentation.home.share
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gravatar.app.homeUi.presentation.DrawableUtils
+import com.gravatar.app.homeUi.presentation.FileUtils
+import com.gravatar.app.usercomponent.domain.facade.PrivateContactInfoFacade
+import com.gravatar.app.usercomponent.domain.facade.UserSharePreferencesFacade
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrl
-import com.gravatar.app.usercomponent.domain.usecase.GetPrivateContactInfo
-import com.gravatar.app.usercomponent.domain.usecase.GetUserSharePreferences
-import com.gravatar.app.usercomponent.domain.usecase.UpdatePrivateContactInfo
-import com.gravatar.app.usercomponent.domain.usecase.UpdateUserSharePreferences
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class ShareViewModel(
     private val userRepository: UserRepository,
     private val getAvatarUrl: GetAvatarUrl,
-    private val getUserSharePreferences: GetUserSharePreferences,
-    private val updateUserSharePreferences: UpdateUserSharePreferences,
-    private val getPrivateContactInfo: GetPrivateContactInfo,
-    private val updatePrivateContactInfo: UpdatePrivateContactInfo,
+    private val sharePreferencesFacade: UserSharePreferencesFacade,
+    private val privateContactInfoFacade: PrivateContactInfoFacade,
+    private val drawableUtils: DrawableUtils,
+    private val fileUtils: FileUtils,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ShareUiState())
@@ -32,6 +34,9 @@ internal class ShareViewModel(
 
     private var saveContactInfoJob: Job? = null
     private val debounceDelay = 500L // 500ms debounce delay
+
+    private val _actions = Channel<ShareAction>(Channel.BUFFERED)
+    val actions = _actions.receiveAsFlow()
 
     init {
         collectProfile()
@@ -69,6 +74,16 @@ internal class ShareViewModel(
             is ShareEvent.OnUserSharePreferencesChanged -> handleUserSharePreferencesChange(shareEvent.shareFieldType)
             is ShareEvent.OnPrivateInformationClicked -> showPrivateInformationDialog()
             is ShareEvent.OnDismissPrivateInformationDialog -> hidePrivateInformationDialog()
+            ShareEvent.OnShareClick -> shareVCard()
+        }
+    }
+
+    private fun shareVCard() {
+        viewModelScope.launch {
+            val vCardContent = uiState.value.vCardQrCodeData.exportToString(withPhoto = true)
+            val vCardFile = fileUtils.createVCardFile(uiState.value.profile?.displayName.orEmpty(), vCardContent)
+
+            _actions.send(ShareAction.ShareVCard(vCardFile))
         }
     }
 
@@ -78,7 +93,7 @@ internal class ShareViewModel(
             _uiState.value = this
             // Save the updated preferences
             viewModelScope.launch {
-                updateUserSharePreferences(this@with.userSharePreferences)
+                sharePreferencesFacade.updatePreferences(this@with.userSharePreferences)
             }
         }
     }
@@ -90,7 +105,7 @@ internal class ShareViewModel(
         // Create a new job with debounce
         saveContactInfoJob = viewModelScope.launch {
             delay(debounceDelay) // Wait for the debounce period
-            updatePrivateContactInfo(_uiState.value.privateContactInfo)
+            privateContactInfoFacade.updateContactInfo(_uiState.value.privateContactInfo)
         }
     }
 
@@ -121,6 +136,7 @@ internal class ShareViewModel(
     private fun collectAvatarUrl() {
         getAvatarUrl()
             .onEach { avatarUrl ->
+                loadDrawable(avatarUrl?.toString())
                 _uiState.update { currentState ->
                     currentState.copy(
                         avatarUrl = avatarUrl?.toString(),
@@ -128,6 +144,19 @@ internal class ShareViewModel(
                 }
             }
             .launchIn(viewModelScope)
+    }
+
+    private fun loadDrawable(avatarUrl: String?) {
+        viewModelScope.launch {
+            avatarUrl?.let {
+                val drawableAvatar = drawableUtils.downloadDrawable(avatarUrl)
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        avatarDrawable = drawableAvatar,
+                    )
+                }
+            }
+        }
     }
 
     private fun collectProfile() {
@@ -143,7 +172,7 @@ internal class ShareViewModel(
     }
 
     private fun collectUserSharePreferences() {
-        getUserSharePreferences()
+        sharePreferencesFacade.getPreferences()
             .onEach { preferences ->
                 _uiState.update { currentState ->
                     currentState.copy(
@@ -155,7 +184,7 @@ internal class ShareViewModel(
     }
 
     private fun collectPrivateContactInfo() {
-        getPrivateContactInfo()
+        privateContactInfoFacade.getContactInfo()
             .onEach { privateContactInfo ->
                 _uiState.update { currentState ->
                     currentState.copy(

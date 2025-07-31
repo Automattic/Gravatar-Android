@@ -3,4 +3,7 @@
     <cache-path
         name="gravatar_images"
         path="images/" />
+    <cache-path
+        name="vcard_files"
+        path="vcard/" />
 </paths>

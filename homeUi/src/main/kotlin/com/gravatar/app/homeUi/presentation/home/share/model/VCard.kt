@@ -1,5 +1,8 @@
 package com.gravatar.app.homeUi.presentation.home.share.model
 
+import android.graphics.drawable.Drawable
+import com.gravatar.app.homeUi.presentation.drawableToBase64
+
 internal class VCard private constructor(
     val firstName: String? = null,
     val lastName: String? = null,
@@ -10,9 +13,10 @@ internal class VCard private constructor(
     val note: String? = null,
     val phoneNumber: String? = null,
     val email: String? = null,
+    val photo: Drawable? = null,
 ) {
 
-    override fun toString(): String {
+    fun exportToString(withPhoto: Boolean = true): String {
         val contentBuilder = StringBuilder().append("BEGIN:VCARD\n")
             .append("VERSION:3.0\n")
             .append("PRODID:Gravatar Android\n")
@@ -40,10 +44,19 @@ internal class VCard private constructor(
         note?.takeIf { it.isNotEmpty() }?.let { contentBuilder.append("NOTE:${it.escaped()}\n") }
         phoneNumber?.takeIf { it.isNotEmpty() }?.let { contentBuilder.append("TEL;TYPE=cell:${it.escaped()}\n") }
         email?.takeIf { it.isNotEmpty() }?.let { contentBuilder.append("EMAIL:${it.escaped()}\n") }
+        if (withPhoto) {
+            photo?.let {
+                drawableToBase64(it).onSuccess { photoBase64 ->
+                    contentBuilder.append("PHOTO;ENCODING=b;TYPE=JPEG:$photoBase64\n")
+                }
+            }
+        }
 
         contentBuilder.append("END:VCARD")
         return contentBuilder.toString()
     }
+
+    override fun toString() = exportToString()
 
     // We've seen issues with newlines in the vCard content causing problems when importing the contact so removing them
     private fun String.escaped() = this.replace("\n", " ")
@@ -58,6 +71,7 @@ internal class VCard private constructor(
         private var note: String? = null,
         private var phoneNumber: String? = null,
         private var email: String? = null,
+        private var photo: Drawable? = null,
     ) {
         fun firstName(firstName: String?) = apply { this.firstName = firstName }
         fun lastName(lastName: String?) = apply { this.lastName = lastName }
@@ -68,6 +82,7 @@ internal class VCard private constructor(
         fun note(description: String?) = apply { this.note = description }
         fun phoneNumber(phone: String?) = apply { this.phoneNumber = phone }
         fun email(email: String?) = apply { this.email = email }
+        fun photo(photo: Drawable?) = apply { this.photo = photo }
 
         fun build() = VCard(
             firstName = firstName,
@@ -78,7 +93,8 @@ internal class VCard private constructor(
             profileUrl = profileUrl,
             note = note,
             phoneNumber = phoneNumber,
-            email = email
+            email = email,
+            photo = photo,
         )
     }
 }
