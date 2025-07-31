@@ -19,14 +19,14 @@ import com.gravatar.ui.GravatarTheme
 
 @Composable
 internal fun AvatarMoreOptionsPickerPopup(
-    isAvatarSelected: Boolean,
+    isSelected: Boolean,
     anchorAlignment: Alignment.Horizontal,
     offset: DpOffset,
     onDismissRequest: () -> Unit,
     onAvatarOptionClicked: (AvatarOption) -> Unit,
 ) {
     val items = buildList {
-        if (!isAvatarSelected) {
+        if (!isSelected) {
             add(
                 PickerPopupItem(
                     text = stringResource(R.string.gravatar_tab_more_options_make_current),
@@ -94,7 +94,7 @@ private fun AvatarMoreOptionsPickerPopupPreview() {
                 .background(MaterialTheme.colorScheme.background),
         ) {
             AvatarMoreOptionsPickerPopup(
-                isAvatarSelected = false,
+                isSelected = false,
                 anchorAlignment = Alignment.Start,
                 offset = DpOffset.Zero,
                 onDismissRequest = {},
