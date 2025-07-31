@@ -10,6 +10,7 @@ internal class VCard private constructor(
     val note: String? = null,
     val phoneNumber: String? = null,
     val email: String? = null,
+    val location: String? = null,
 ) {
 
     override fun toString(): String {
@@ -40,6 +41,9 @@ internal class VCard private constructor(
         note?.takeIf { it.isNotEmpty() }?.let { contentBuilder.append("NOTE:${it.escaped()}\n") }
         phoneNumber?.takeIf { it.isNotEmpty() }?.let { contentBuilder.append("TEL;TYPE=cell:${it.escaped()}\n") }
         email?.takeIf { it.isNotEmpty() }?.let { contentBuilder.append("EMAIL:${it.escaped()}\n") }
+        location?.takeIf {
+            it.isNotEmpty()
+        }?.let { contentBuilder.append("ADR;CHARSET=UTF-8;TYPE=HOME:;;;${it.escaped()};;;\n") }
 
         contentBuilder.append("END:VCARD")
         return contentBuilder.toString()
@@ -58,6 +62,7 @@ internal class VCard private constructor(
         private var note: String? = null,
         private var phoneNumber: String? = null,
         private var email: String? = null,
+        private var location: String? = null,
     ) {
         fun firstName(firstName: String?) = apply { this.firstName = firstName }
         fun lastName(lastName: String?) = apply { this.lastName = lastName }
@@ -68,6 +73,7 @@ internal class VCard private constructor(
         fun note(description: String?) = apply { this.note = description }
         fun phoneNumber(phone: String?) = apply { this.phoneNumber = phone }
         fun email(email: String?) = apply { this.email = email }
+        fun location(location: String?) = apply { this.location = location }
 
         fun build() = VCard(
             firstName = firstName,
@@ -78,7 +84,8 @@ internal class VCard private constructor(
             profileUrl = profileUrl,
             note = note,
             phoneNumber = phoneNumber,
-            email = email
+            email = email,
+            location = location
         )
     }
 }
