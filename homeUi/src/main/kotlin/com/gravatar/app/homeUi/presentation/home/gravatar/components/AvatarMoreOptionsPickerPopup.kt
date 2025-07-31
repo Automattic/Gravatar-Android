@@ -19,17 +19,15 @@ import com.gravatar.ui.GravatarTheme
 
 @Composable
 internal fun AvatarMoreOptionsPickerPopup(
+    isSelected: Boolean,
     anchorAlignment: Alignment.Horizontal,
     offset: DpOffset,
     onDismissRequest: () -> Unit,
     onAvatarOptionClicked: (AvatarOption) -> Unit,
 ) {
-    PickerPopup(
-        anchorAlignment = anchorAlignment,
-        offset = offset,
-        onDismissRequest = onDismissRequest,
-        popupMenu = PickerPopupMenu(
-            items = listOf(
+    val items = buildList {
+        if (!isSelected) {
+            add(
                 PickerPopupItem(
                     text = stringResource(R.string.gravatar_tab_more_options_make_current),
                     iconRes = R.drawable.check_circle,
@@ -39,29 +37,43 @@ internal fun AvatarMoreOptionsPickerPopup(
                     onClick = {
                         onAvatarOptionClicked(AvatarOption.Select)
                     },
+                )
+            )
+        }
+
+        add(
+            PickerPopupItem(
+                text = stringResource(R.string.gravatar_tab_more_options_download_avatar),
+                iconRes = R.drawable.gravatar_more_options_download,
+                contentDescription = stringResource(
+                    R.string.gravatar_tab_more_options_download_avatar_content_description
                 ),
-                PickerPopupItem(
-                    text = stringResource(R.string.gravatar_tab_more_options_download_avatar),
-                    iconRes = R.drawable.gravatar_more_options_download,
-                    contentDescription = stringResource(
-                        R.string.gravatar_tab_more_options_download_avatar_content_description
-                    ),
-                    onClick = {
-                        onAvatarOptionClicked(AvatarOption.Download)
-                    },
+                onClick = {
+                    onAvatarOptionClicked(AvatarOption.Download)
+                },
+            )
+        )
+
+        add(
+            PickerPopupItem(
+                text = stringResource(R.string.gravatar_tab_more_options_delete_avatar),
+                iconRes = R.drawable.delete_icon,
+                contentDescription = stringResource(
+                    R.string.gravatar_tab_more_options_delete_avatar_content_description
                 ),
-                PickerPopupItem(
-                    text = stringResource(R.string.gravatar_tab_more_options_delete_avatar),
-                    iconRes = R.drawable.delete_icon,
-                    contentDescription = stringResource(
-                        R.string.gravatar_tab_more_options_delete_avatar_content_description
-                    ),
-                    contentColor = MaterialTheme.colorScheme.error,
-                    onClick = {
-                        onAvatarOptionClicked(AvatarOption.Delete)
-                    },
-                ),
-            ),
+                contentColor = MaterialTheme.colorScheme.error,
+                onClick = {
+                    onAvatarOptionClicked(AvatarOption.Delete)
+                },
+            )
+        )
+    }
+    PickerPopup(
+        anchorAlignment = anchorAlignment,
+        offset = offset,
+        onDismissRequest = onDismissRequest,
+        popupMenu = PickerPopupMenu(
+            items = items
         ),
     )
 }
@@ -82,6 +94,7 @@ private fun AvatarMoreOptionsPickerPopupPreview() {
                 .background(MaterialTheme.colorScheme.background),
         ) {
             AvatarMoreOptionsPickerPopup(
+                isSelected = false,
                 anchorAlignment = Alignment.Start,
                 offset = DpOffset.Zero,
                 onDismissRequest = {},
