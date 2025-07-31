@@ -6,6 +6,10 @@ import com.gravatar.app.usercomponent.data.RealProfileRepository
 import com.gravatar.app.usercomponent.data.RealUserRepository
 import com.gravatar.app.usercomponent.data.UserSessionPersistence
 import com.gravatar.app.usercomponent.data.WordPressClient
+import com.gravatar.app.usercomponent.domain.facade.PrivateContactInfoFacade
+import com.gravatar.app.usercomponent.domain.facade.PrivateContactInfoOperations
+import com.gravatar.app.usercomponent.domain.facade.UserSharePreferencesFacade
+import com.gravatar.app.usercomponent.domain.facade.UserSharePreferencesOperations
 import com.gravatar.app.usercomponent.domain.repository.AuthRepository
 import com.gravatar.app.usercomponent.domain.repository.ProfileRepository
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
@@ -54,6 +58,8 @@ val userComponentModule = module {
     factoryOf(::UpdateUserSharePreferencesUseCase) { bind<UpdateUserSharePreferences>() }
     factoryOf(::GetPrivateContactInfoUseCase) { bind<GetPrivateContactInfo>() }
     factoryOf(::UpdatePrivateContactInfoUseCase) { bind<UpdatePrivateContactInfo>() }
+    factoryOf(::UserSharePreferencesOperations) { bind<UserSharePreferencesFacade>() }
+    factoryOf(::PrivateContactInfoOperations) { bind<PrivateContactInfoFacade>() }
     factoryOf(::WordPressClient)
     singleOf(::InMemoryUserSessionPersistence) { bind<UserSessionPersistence>() }
     includes(httpClientModule)

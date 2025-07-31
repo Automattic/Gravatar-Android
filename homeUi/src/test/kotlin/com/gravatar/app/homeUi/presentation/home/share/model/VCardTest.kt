@@ -1,10 +1,34 @@
 package com.gravatar.app.homeUi.presentation.home.share.model
 
+import android.graphics.drawable.Drawable
+import com.gravatar.app.homeUi.presentation.drawableToBase64
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
+import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 
 class VCardTest {
+
+    private lateinit var mockDrawable: Drawable
+    private val testBase64String = "TestBase64EncodedPhotoData"
+
+    @Before
+    fun setup() {
+        mockDrawable = mockk<Drawable>()
+        mockkStatic(::drawableToBase64)
+        every { drawableToBase64(mockDrawable, any(), any()) } returns Result.success(testBase64String)
+    }
+
+    @After
+    fun tearDown() {
+        unmockkStatic(::drawableToBase64)
+    }
 
     @Test
     fun `builder creates VCard with all fields correctly`() {
@@ -180,5 +204,53 @@ class VCardTest {
         assertTrue(vCardString.contains("ORG:Gravatar"))
         assertTrue(vCardString.contains("EMAIL:john.doe@example.com"))
         assertTrue(vCardString.endsWith("END:VCARD"))
+    }
+
+    @Test
+    fun `when photo is available and withPhoto is true, photo is included in vCard`() {
+        // Given
+        val vCard = VCard.Builder()
+            .firstName("John")
+            .lastName("Doe")
+            .photo(mockDrawable)
+            .build()
+
+        // When
+        val vCardString = vCard.exportToString(withPhoto = true)
+
+        // Then
+        assertTrue(vCardString.contains("PHOTO;ENCODING=b;TYPE=JPEG:$testBase64String"))
+    }
+
+    @Test
+    fun `when photo is available and withPhoto is false, photo is not included in vCard`() {
+        // Given
+        val vCard = VCard.Builder()
+            .firstName("John")
+            .lastName("Doe")
+            .photo(mockDrawable)
+            .build()
+
+        // When
+        val vCardString = vCard.exportToString(withPhoto = false)
+
+        // Then
+        assertFalse(vCardString.contains("PHOTO;ENCODING=b;TYPE=JPEG:"))
+    }
+
+    @Test
+    fun `when photo is null and withPhoto is true, photo is not included in vCard`() {
+        // Given
+        val vCard = VCard.Builder()
+            .firstName("John")
+            .lastName("Doe")
+            .photo(null)
+            .build()
+
+        // When
+        val vCardString = vCard.exportToString(withPhoto = true)
+
+        // Then
+        assertFalse(vCardString.contains("PHOTO;ENCODING=b;TYPE=JPEG:"))
     }
 }
