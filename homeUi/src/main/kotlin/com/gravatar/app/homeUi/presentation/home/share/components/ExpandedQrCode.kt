@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -41,13 +42,13 @@ fun ExpandedQrCode(
     BackHandler {
         onDismissRequest()
     }
-    HideSystemBars()
+    HideNavigationBar()
     Surface {
         BlurredHeaderBackground(
             avatarUrl = avatarUrl,
             modifier = Modifier.fillMaxSize()
         ) {
-            Row(verticalAlignment = Alignment.Top) {
+            Row(verticalAlignment = Alignment.Top, modifier = Modifier.statusBarsPadding()) {
                 IconButton(
                     onClick = {
                         onDismissRequest()
@@ -82,21 +83,19 @@ fun ExpandedQrCode(
 }
 
 @Composable
-private fun HideSystemBars() {
+private fun HideNavigationBar() {
     val context = LocalContext.current
     DisposableEffect(Unit) {
         val window = context.findComponentActivity()?.window ?: return@DisposableEffect onDispose {}
         val insetsController = WindowCompat.getInsetsController(window, window.decorView)
 
         insetsController.apply {
-            hide(WindowInsetsCompat.Type.statusBars())
             hide(WindowInsetsCompat.Type.navigationBars())
             systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
 
         onDispose {
             insetsController.apply {
-                show(WindowInsetsCompat.Type.statusBars())
                 show(WindowInsetsCompat.Type.navigationBars())
                 systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_DEFAULT
             }
