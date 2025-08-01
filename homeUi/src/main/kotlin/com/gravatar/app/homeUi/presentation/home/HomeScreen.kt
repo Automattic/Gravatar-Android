@@ -51,7 +51,9 @@ internal fun HomeScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     HomeScreen(uiState = uiState) { navController, snackbarHostState ->
-        HomeNavigation(navController, snackbarHostState)
+        HomeNavigation(navController, snackbarHostState) { showBottomBar ->
+            viewModel.onEvent(HomeEvent.ShowBottomBar(showBottomBar))
+        }
     }
 }
 
@@ -68,37 +70,39 @@ internal fun HomeScreen(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         snackbarHost = { GravatarSnackbarHost(hostState = snackbarHostState) },
         bottomBar = {
-            NavigationBar {
-                HomeDestination.allDestinations
-                    .sortedBy { it.position }
-                    .forEach { destination ->
-                        NavigationBarItem(
-                            icon = {
-                                Icon(
-                                    painterResource(id = destination.iconRes),
-                                    contentDescription = stringResource(destination.labelRes)
-                                )
-                            },
-                            label = { Text(stringResource(destination.labelRes)) },
-                            selected = destination.route == backStackEntry.value?.destination?.route,
-                            onClick = {
-                                if (backStackEntry.value?.destination?.route != destination.route) {
-                                    navController.navigate(destination) {
-                                        popUpTo(navController.graph.startDestinationId) {
-                                            saveState = true
+            if (uiState.showBottomBar) {
+                NavigationBar {
+                    HomeDestination.allDestinations
+                        .sortedBy { it.position }
+                        .forEach { destination ->
+                            NavigationBarItem(
+                                icon = {
+                                    Icon(
+                                        painterResource(id = destination.iconRes),
+                                        contentDescription = stringResource(destination.labelRes)
+                                    )
+                                },
+                                label = { Text(stringResource(destination.labelRes)) },
+                                selected = destination.route == backStackEntry.value?.destination?.route,
+                                onClick = {
+                                    if (backStackEntry.value?.destination?.route != destination.route) {
+                                        navController.navigate(destination) {
+                                            popUpTo(navController.graph.startDestinationId) {
+                                                saveState = true
+                                            }
+                                            launchSingleTop = true
+                                            restoreState = true
                                         }
-                                        launchSingleTop = true
-                                        restoreState = true
                                     }
-                                }
-                            },
-                            colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = MaterialTheme.colorScheme.primary,
-                                selectedTextColor = MaterialTheme.colorScheme.primary,
-                                indicatorColor = Color.Transparent,
+                                },
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                                    indicatorColor = Color.Transparent,
+                                )
                             )
-                        )
-                    }
+                        }
+                }
             }
         }
     ) { innerPadding ->
@@ -148,7 +152,7 @@ private fun HomeScreenPreview() {
             networkState = null
         )
     ) { navController, snackbarHostState ->
-        HomeNavigation(navController, snackbarHostState)
+        HomeNavigation(navController, snackbarHostState) {}
     }
 }
 
@@ -160,6 +164,6 @@ private fun HomeScreenNoInternetPreview() {
             networkState = NetworkState.DISCONNECTED
         )
     ) { navController, snackbarHostState ->
-        HomeNavigation(navController, snackbarHostState)
+        HomeNavigation(navController, snackbarHostState) {}
     }
 }

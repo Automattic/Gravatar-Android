@@ -561,4 +561,39 @@ class ShareViewModelTest {
             verify { fileUtils.createVCardFile(eq(testProfile.displayName), any()) }
         }
     }
+
+    @Test
+    fun `when OnExpandQrCodeClick event is triggered then isQrCodeExpanded is set to true and bottom bar is hidden`() = runTest {
+        viewModel.onEvent(ShareEvent.OnExpandQrCodeClick)
+
+        viewModel.uiState.test {
+            // Initial state
+            assertFalse(awaitItem().isQrCodeExpanded)
+
+            // Then - verify state update
+            assertTrue(awaitItem().isQrCodeExpanded)
+        }
+
+        viewModel.actions.test {
+            assertFalse((awaitItem() as ShareAction.ShowBottomBar).show)
+        }
+    }
+
+    @Test
+    fun `when OnDismissExpandedQrCode event is triggered then isQrCodeExpanded is set to false and bottom bar is shown`() = runTest {
+        viewModel.onEvent(ShareEvent.OnExpandQrCodeClick)
+
+        viewModel.onEvent(ShareEvent.OnDismissExpandedQrCode)
+        advanceUntilIdle()
+
+        // Test UI state update
+        viewModel.uiState.test {
+            assertFalse(awaitItem().isQrCodeExpanded)
+        }
+
+        viewModel.actions.test {
+            assertFalse((awaitItem() as ShareAction.ShowBottomBar).show)
+            assertTrue((awaitItem() as ShareAction.ShowBottomBar).show)
+        }
+    }
 }

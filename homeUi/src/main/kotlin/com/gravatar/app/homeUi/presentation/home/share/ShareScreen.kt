@@ -2,6 +2,11 @@ package com.gravatar.app.homeUi.presentation.home.share
 
 import android.content.Context
 import android.content.Intent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,6 +31,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.gravatar.app.design.theme.GravatarAppTheme
 import com.gravatar.app.homeUi.GravatarFileProvider
 import com.gravatar.app.homeUi.presentation.home.components.topbar.components.AboutAppDialog
+import com.gravatar.app.homeUi.presentation.home.share.components.ExpandedQrCode
 import com.gravatar.app.homeUi.presentation.home.share.components.ItemDivider
 import com.gravatar.app.homeUi.presentation.home.share.components.PrivateInformationDialog
 import com.gravatar.app.homeUi.presentation.home.share.components.ShareHeader
@@ -42,7 +48,8 @@ import java.io.File
 internal fun ShareScreen(
     viewModelStoreOwner: ViewModelStoreOwner,
     viewModel: ShareViewModel = koinViewModel(viewModelStoreOwner = viewModelStoreOwner),
-    snackbarHostState: SnackbarHostState
+    snackbarHostState: SnackbarHostState,
+    onShouldShowBottomBar: (Boolean) -> Unit,
 ) {
     val context = LocalContext.current
     val lifecycle = LocalLifecycleOwner.current
@@ -55,6 +62,10 @@ internal fun ShareScreen(
                     when (action) {
                         is ShareAction.ShareVCard -> {
                             shareVCardFile(action.vCardFile, context)
+                        }
+
+                        is ShareAction.ShowBottomBar -> {
+                            onShouldShowBottomBar(action.show)
                         }
                     }
                 }
@@ -86,6 +97,7 @@ internal fun ShareScreen(uiState: ShareUiState, onEvent: (ShareEvent) -> Unit) {
                 },
                 vCardQrCodeData = uiState.vCardQrCodeData.exportToString(withPhoto = false),
                 onShareClick = { onEvent(ShareEvent.OnShareClick) },
+                onExpandQrCodeClick = { onEvent(ShareEvent.OnExpandQrCodeClick) },
                 modifier = Modifier
                     .fillMaxWidth(),
             )
@@ -130,6 +142,20 @@ internal fun ShareScreen(uiState: ShareUiState, onEvent: (ShareEvent) -> Unit) {
         PrivateInformationDialog(
             onDismissRequest = {
                 onEvent(ShareEvent.OnDismissPrivateInformationDialog)
+            }
+        )
+    }
+
+    AnimatedVisibility(
+        visible = uiState.isQrCodeExpanded,
+        enter = slideInVertically() + fadeIn(),
+        exit = slideOutVertically() + fadeOut(),
+    ) {
+        ExpandedQrCode(
+            qrCodeData = uiState.vCardQrCodeData.exportToString(withPhoto = false),
+            avatarUrl = uiState.avatarUrl.orEmpty(),
+            onDismissRequest = {
+                onEvent(ShareEvent.OnDismissExpandedQrCode)
             }
         )
     }

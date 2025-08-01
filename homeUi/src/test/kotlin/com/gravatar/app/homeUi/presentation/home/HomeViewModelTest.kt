@@ -75,4 +75,30 @@ class HomeViewModelTest {
             assertEquals(true, state.noInternetBannerVisible)
         }
     }
+
+    @Test
+    fun `when ShowBottomBar event is received then showBottomBar state is updated accordingly`() = runTest {
+        // Given
+        viewModel = HomeViewModel(networkMonitor)
+
+        // When - Hide bottom bar
+        viewModel.onEvent(HomeEvent.ShowBottomBar(show = false))
+        advanceUntilIdle()
+
+        // Then
+        viewModel.uiState.test {
+            val state = awaitItem()
+            assertEquals(false, state.showBottomBar)
+        }
+
+        // When - Show bottom bar
+        viewModel.onEvent(HomeEvent.ShowBottomBar(show = true))
+        advanceUntilIdle()
+
+        // Then
+        viewModel.uiState.test {
+            val state = awaitItem()
+            assertEquals(true, state.showBottomBar)
+        }
+    }
 }

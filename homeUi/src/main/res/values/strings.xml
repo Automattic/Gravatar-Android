@@ -83,4 +83,8 @@
     <string name="private_info_button_cta">Got it</string>
     <string name="private_info_dialog_message">Your email and phone number are only shared using the QR code. This information is not saved to your Gravatar profile, and is not publicly available.</string>
     <string name="private_info_dialog_title">Private information</string>
+    <string name="share_tab_share_contact_information_button">Share contact information in vCard file</string>
+    <string name="share_tab_expand_qr_code">Expand QR Code for sharing contact information</string>
+    <string name="share_tab_qr_code">QR Code</string>
+    <string name="close_button">Close</string>
 </resources>
