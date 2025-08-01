@@ -19,8 +19,9 @@ VERSION_FILE = Fastlane::Wpmreleasetoolkit::Versioning::AndroidVersionFile.new(v
 
 VERSION_CALCULATOR = Fastlane::Wpmreleasetoolkit::Versioning::SemanticVersionCalculator.new
 VERSION_FORMATTER = Fastlane::Wpmreleasetoolkit::Versioning::RCNotationVersionFormatter.new
-BUILD_CODE_CALCULATOR = Fastlane::Wpmreleasetoolkit::Versioning::SimpleBuildCodeCalculator.new
-BUILD_CODE_FORMATTER = Fastlane::Wpmreleasetoolkit::Versioning::SimpleBuildCodeFormatter.new
+# Using DerivedBuildCodeFormatter to derive build codes from version name (format: 1XXYYZZNNN)
+# This eliminates the need for manual build code incrementing and provides deterministic versioning
+BUILD_CODE_FORMATTER = Fastlane::Wpmreleasetoolkit::Versioning::DerivedBuildCodeFormatter.new
 
 PROTOTYPE_BUILD_DOMAIN = 'https://cdn.a8c-ci.services'
 RELEASE_BUILD_TYPE = 'Release'
@@ -211,7 +212,7 @@ end
 # Versioning utils
 #####################################################################################
 
-# Updates the build code in version.properties to the next build code and commits the change
+# Updates the build code in version.properties by incrementing the build number and deriving the new build code
 #
 def bump_build_code
   VERSION_FILE.write_version(
@@ -260,19 +261,25 @@ def release_version_next
   VERSION_FORMATTER.release_version(release_version_next)
 end
 
-# Returns the current build code of the app
+# Returns the current build code of the app derived from the current version
 #
 def build_code_current
-  build_code_current = VERSION_FILE.read_version_code
-  BUILD_CODE_FORMATTER.build_code(build_code: build_code_current)
+  current_version = VERSION_FORMATTER.parse(version_name_current)
+  BUILD_CODE_FORMATTER.build_code(version: current_version)
 end
 
-# Returns the next build code of the app
+# Returns the next build code of the app derived from the current version with incremented build number
 #
 def build_code_next
-  build_code_current = VERSION_FILE.read_version_code
-  build_code_next = BUILD_CODE_CALCULATOR.next_build_code(build_code: build_code_current)
-  BUILD_CODE_FORMATTER.build_code(build_code: build_code_next)
+  current_version = VERSION_FORMATTER.parse(version_name_current)
+  # Create a new version with incremented build number
+  next_version = Fastlane::Models::AppVersion.new(
+    current_version.major,
+    current_version.minor,
+    current_version.patch,
+    current_version.build_number + 1
+  )
+  BUILD_CODE_FORMATTER.build_code(version: next_version)
 end
 
 # Generates a build number for the prototype build
