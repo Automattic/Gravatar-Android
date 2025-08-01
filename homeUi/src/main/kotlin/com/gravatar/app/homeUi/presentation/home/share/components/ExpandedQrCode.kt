@@ -15,7 +15,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,19 +31,15 @@ import com.gravatar.app.homeUi.R
 import com.gravatar.app.homeUi.presentation.findComponentActivity
 import com.gravatar.app.homeUi.presentation.home.components.BlurredHeaderBackground
 import com.gravatar.app.homeUi.presentation.home.profile.header.MENU_BUTTON_SIZE
-import kotlinx.coroutines.launch
 
 @Composable
 fun ExpandedQrCode(
-    vCardQrCodeData: String,
+    qrCodeData: String,
     avatarUrl: String,
     onDismissRequest: () -> Unit,
 ) {
-    val coroutineScope = rememberCoroutineScope()
     BackHandler {
-        coroutineScope.launch {
-            onDismissRequest()
-        }
+        onDismissRequest()
     }
     HideSystemBars()
     Surface {
@@ -63,7 +58,7 @@ fun ExpandedQrCode(
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.close_button),
-                        contentDescription = stringResource(R.string.gravatar_tab_header_more_options),
+                        contentDescription = stringResource(R.string.close_button),
                     )
                 }
             }
@@ -75,7 +70,7 @@ fun ExpandedQrCode(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
             ) {
-                QrCode(qrCodeData = vCardQrCodeData)
+                QrCode(qrCodeData = qrCodeData)
                 Text(
                     text = stringResource(R.string.share_tab_scan_qr_code),
                     style = MaterialTheme.typography.bodyMedium,
@@ -114,7 +109,7 @@ private fun HideSystemBars() {
 fun ExpandedQrCodeDialogPreview() {
     GravatarAppTheme {
         ExpandedQrCode(
-            vCardQrCodeData = "BEGIN:VCARD\nVERSION:3.0\nFN:John Doe\nEMAIL:",
+            qrCodeData = "BEGIN:VCARD\nVERSION:3.0\nFN:John Doe\nEMAIL:",
             avatarUrl = "https://gravatar.com/avatar/test",
             onDismissRequest = {}
         )

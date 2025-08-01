@@ -144,7 +144,7 @@ internal fun ShareScreen(uiState: ShareUiState, onEvent: (ShareEvent) -> Unit) {
 
     AnimatedVisibility(uiState.isQrCodeExpanded) {
         ExpandedQrCode(
-            vCardQrCodeData = uiState.vCardQrCodeData.exportToString(withPhoto = false),
+            qrCodeData = uiState.vCardQrCodeData.exportToString(withPhoto = false),
             avatarUrl = uiState.avatarUrl.orEmpty(),
             onDismissRequest = {
                 onEvent(ShareEvent.OnDismissExpandedQrCode)

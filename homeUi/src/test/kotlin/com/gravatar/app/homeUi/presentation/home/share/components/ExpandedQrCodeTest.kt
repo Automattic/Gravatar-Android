@@ -10,7 +10,7 @@ class ExpandedQrCodeTest : RoborazziTest() {
     fun expandedQrCode() = screenshotTest {
         GravatarAppTheme {
             ExpandedQrCode(
-                vCardQrCodeData = "BEGIN:VCARD\nVERSION:3.0\nFN:Test User\nEND:VCARD",
+                qrCodeData = "BEGIN:VCARD\nVERSION:3.0\nFN:Test User\nEND:VCARD",
                 avatarUrl = "https://gravatar.com/avatar/test",
                 onDismissRequest = {}
             )

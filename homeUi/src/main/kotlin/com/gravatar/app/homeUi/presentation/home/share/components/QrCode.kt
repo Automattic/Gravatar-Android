@@ -10,9 +10,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gravatar.app.design.theme.GravatarAppTheme
+import com.gravatar.app.homeUi.R
 import io.github.alexzhirkevich.qrose.options.QrBallShape
 import io.github.alexzhirkevich.qrose.options.QrFrameShape
 import io.github.alexzhirkevich.qrose.options.QrPixelShape
@@ -34,7 +36,7 @@ fun QrCode(
 
     Image(
         painter = qrcodePainter,
-        contentDescription = null,
+        contentDescription = stringResource(R.string.share_tab_qr_code),
         modifier = modifier
             .background(Color.White, RoundedCornerShape(4.dp))
             .fillMaxWidth()

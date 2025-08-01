@@ -85,4 +85,6 @@
     <string name="private_info_dialog_title">Private information</string>
     <string name="share_tab_share_contact_information_button">Share contact information in vCard file</string>
     <string name="share_tab_expand_qr_code">Expand QR Code for sharing contact information</string>
+    <string name="share_tab_qr_code">QR Code</string>
+    <string name="close_button">Close</string>
 </resources>
