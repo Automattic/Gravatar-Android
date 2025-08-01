@@ -1,17 +1,22 @@
-package com.gravatar.app.homeUi.presentation.home.components.topbar.components
+package com.gravatar.app.homeUi.presentation.home.components.topbar.components.about
 
 import android.content.Context
 import android.content.Intent
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -36,17 +41,36 @@ internal fun AboutAppDialog(
     viewModel: AboutAppDialogViewModel = koinViewModel()
 ) {
     val appVersion: AppVersion = koinInject()
+    val uiState by viewModel.uiState.collectAsState()
+
     GravatarDialog(
         onDismissRequest = onDismissRequest,
         content = {
-            AboutAppDialogContent(
-                appVersion = appVersion.value,
-                onDone = onDismissRequest,
-                onEvent = viewModel::onEvent,
-                modifier = Modifier
-            )
+            if (uiState.isLoading) {
+                Box(contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        strokeWidth = 4.dp,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+            } else {
+                AboutAppDialogContent(
+                    appVersion = appVersion.value,
+                    onDone = onDismissRequest,
+                    onEvent = viewModel::onEvent,
+                    modifier = Modifier
+                )
+            }
         }
     )
+
+    if (uiState.isDeleteConfirmationVisible) {
+        DeleteConfirmationBottomSheet(
+            onDismiss = { viewModel.onEvent(AboutAppDialogEvent.OnHideDeleteConfirmation) },
+            onConfirm = { viewModel.onEvent(AboutAppDialogEvent.OnConfirmDeleteAccount) }
+        )
+    }
 }
 
 @Composable
@@ -131,7 +155,7 @@ internal fun AboutAppDialogContent(
                 modifier = Modifier
                     .padding(top = 8.dp)
                     .clickable {
-                        onEvent(AboutAppDialogEvent.OnDeleteAccount)
+                        onEvent(AboutAppDialogEvent.OnShowDeleteConfirmation)
                     }
             )
         }

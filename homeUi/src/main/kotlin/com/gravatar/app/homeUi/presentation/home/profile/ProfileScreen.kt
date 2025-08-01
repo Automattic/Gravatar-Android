@@ -39,7 +39,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.gravatar.app.design.components.snackbar.SnackbarType
 import com.gravatar.app.design.components.snackbar.showGravatarSnackbar
 import com.gravatar.app.homeUi.R
-import com.gravatar.app.homeUi.presentation.home.components.topbar.components.AboutAppDialog
+import com.gravatar.app.homeUi.presentation.home.components.topbar.components.about.AboutAppDialog
 import com.gravatar.app.homeUi.presentation.home.profile.about.AboutInputField
 import com.gravatar.app.homeUi.presentation.home.profile.about.AboutSection
 import com.gravatar.app.homeUi.presentation.home.profile.header.AnimatedProfileHeader

@@ -30,7 +30,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.gravatar.app.design.theme.GravatarAppTheme
 import com.gravatar.app.homeUi.GravatarFileProvider
-import com.gravatar.app.homeUi.presentation.home.components.topbar.components.AboutAppDialog
+import com.gravatar.app.homeUi.presentation.home.components.topbar.components.about.AboutAppDialog
 import com.gravatar.app.homeUi.presentation.home.share.components.ExpandedQrCode
 import com.gravatar.app.homeUi.presentation.home.share.components.ItemDivider
 import com.gravatar.app.homeUi.presentation.home.share.components.PrivateInformationDialog

@@ -90,4 +90,7 @@
     <string name="close_button">Close</string>
     <string name="about_app_dialog_delete_account_button">Delete account</string>
     <string name="about_app_dialog_delete_profile_description">No longer using Gravatar? Delete your account here.</string>
+    <string name="about_app_dialog_delete_profile_confirmation_title">Deleting your Gravatar profile will immediately prevent all access to it.</string>
+    <string name="about_app_dialog_delete_profile_confirmation_description">"Your data will be permanently deleted after 30 days. During this period, you can still restore your profile by logging in at gravatar.com using your browser. After 30 days, it will no longer be recoverable.  "</string>
+    <string name="about_app_dialog_delete_profile_confirmation_cancel">Cancel</string>
 </resources>
