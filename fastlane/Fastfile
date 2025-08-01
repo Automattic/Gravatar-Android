@@ -26,7 +26,9 @@ PROTOTYPE_BUILD_DOMAIN = 'https://cdn.a8c-ci.services'
 RELEASE_BUILD_TYPE = 'Release'
 
 platform :android do
-  # Builds a release app bundle .aab
+  # Builds a release app bundle (.aab) for the Gravatar Android app
+  #
+  # This lane cleans the project and builds a release bundle (.aab) that can be uploaded to the Google Play Store.
   #
   lane :build_bundle do
     gradle(task: 'clean')
@@ -39,10 +41,18 @@ platform :android do
 
   # Uploads the app bundle to the Google Play Store
   #
-  # @param track [String] The track to upload to. One of: 'internal', 'alpha', 'beta', 'production'.
-  # @param release_status [String] The release status. One of: 'completed', 'draft', 'halted', 'inProgress'.
-  # @param rollout [String] The percentage of users who should get the update, as a string between '0' and '1'.
+  # This lane uploads a previously built app bundle to the specified track on Google Play Store
+  # with the given release status and rollout percentage.
+  #
+  # @param track [String] The track to upload to. One of: 'internal', 'alpha', 'beta', 'production'
+  # @param release_status [String] The release status. One of: 'completed', 'draft', 'halted', 'inProgress'
+  # @param rollout [String] The percentage of users who should get the update, as a string between '0' and '1'
   # @env [String] PLAY_STORE_SERVICE_ACCOUNT_UPLOAD_KEY The Google Play Store service account JSON key data
+  #
+  # @example Upload to internal track as draft
+  #   upload_to_store(track: 'internal', release_status: 'draft', rollout: nil)
+  # @example Upload to production with 50% rollout
+  #   upload_to_store(track: 'production', release_status: 'completed', rollout: '0.5')
   #
   lane :upload_to_store do |track:, release_status:, rollout:|
     require_env_vars!('PLAY_STORE_SERVICE_ACCOUNT_UPLOAD_KEY')
@@ -61,11 +71,10 @@ platform :android do
     )
   end
 
-  # Builds the Gravatar Demo app prototype APK, uploads it to S3, and posts a download link as a comment on the associated pull request.
+  # Builds the Gravatar Demo app prototype APK, uploads it to S3, and posts a download link as a comment on the associated pull request
   #
-  # Intended for use in CI to provide reviewers with an installable build for testing.
-  # @env [String] BUILDKITE_ARTIFACTS_S3_BUCKET The S3 bucket to upload artifacts to. Must be set.
-  # @env [String] BUILDKITE_PULL_REQUEST The pull request number.
+  # This lane is intended for use in CI to provide reviewers with an installable build for testing.
+  # It builds a release APK, uploads it to S3, and posts the download link as a PR comment.
   #
   lane :build_and_upload_prototype_build do
     require_env_vars!('BUILDKITE_ARTIFACTS_S3_BUCKET')
@@ -110,6 +119,15 @@ platform :android do
     )
   end
 
+  # Builds an app bundle and uploads it to the Google Play Store
+  #
+  # This is a convenience lane that combines building the app bundle and uploading it to the Play Store.
+  # It uses internal track with draft releases by default while the release process is being refined.
+  #
+  # @param track [String] The Play Store track to upload to (default: 'internal')
+  # @param release_status [String] The Play Store release status (default: 'draft')
+  # @see upload_to_store
+  #
   lane :build_and_upload_to_play_store do |track: 'internal', release_status: 'draft'|
     # TODO: using `internal` track with `draft` releases by default while the release itself is in draft mode
     build_bundle
@@ -117,8 +135,16 @@ platform :android do
   end
 
   #####################################################################################
-  # Release lanes & utils
+  # Release lanes
   #####################################################################################
+
+  # Initiates a new alpha release by bumping the build code and triggering a release build
+  #
+  # This lane will checkout and pull the trunk branch (if running on CI), bump the build code,
+  # push the changes to the remote repository, and trigger a new alpha build in Buildkite.
+  #
+  # @param skip_confirm [Boolean] Skip the confirmation prompt (default: false)
+  #
   lane :new_alpha_release do |skip_confirm: false|
     require_env_vars!('BUILDKITE_TOKEN')
     ensure_git_status_clean
@@ -141,7 +167,10 @@ platform :android do
     trigger_release_build
   end
 
-  # Trigger a new alpha build on CI
+  # Triggers a new alpha build on CI using Buildkite
+  #
+  # This lane triggers a release build in Buildkite for the current git branch.
+  # The build will use the current release version and build code.
   #
   lane :trigger_release_build do
     require_env_vars!('BUILDKITE_TOKEN')
