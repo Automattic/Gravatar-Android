@@ -3,6 +3,10 @@ package com.gravatar.app.homeUi.presentation.home.share
 import android.content.Context
 import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -142,7 +146,11 @@ internal fun ShareScreen(uiState: ShareUiState, onEvent: (ShareEvent) -> Unit) {
         )
     }
 
-    AnimatedVisibility(uiState.isQrCodeExpanded) {
+    AnimatedVisibility(
+        visible = uiState.isQrCodeExpanded,
+        enter = slideInVertically() + fadeIn(),
+        exit = slideOutVertically() + fadeOut(),
+    ) {
         ExpandedQrCode(
             qrCodeData = uiState.vCardQrCodeData.exportToString(withPhoto = false),
             avatarUrl = uiState.avatarUrl.orEmpty(),
