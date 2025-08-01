@@ -12,6 +12,7 @@ class AboutAppDialogTest : RoborazziTest() {
             AboutAppDialogContent(
                 appVersion = "1.0.0",
                 onDone = {},
+                onEvent = { _ -> }
             )
         }
     }

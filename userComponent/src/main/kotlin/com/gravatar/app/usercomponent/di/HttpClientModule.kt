@@ -1,5 +1,6 @@
 package com.gravatar.app.usercomponent.di
 
+import com.gravatar.app.di.apiModule
 import com.gravatar.app.usercomponent.data.interceptors.UnauthorizeInterceptor
 import com.gravatar.app.usercomponent.domain.usecase.Logout
 import com.gravatar.services.AvatarService
@@ -35,4 +36,6 @@ internal val httpClientModule = module {
     }
     single { ProfileService(okHttpClient = get<OkHttpClient>()) }
     single { AvatarService(okHttpClient = get<OkHttpClient>()) }
+
+    includes(apiModule)
 }

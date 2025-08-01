@@ -26,12 +26,14 @@ import com.gravatar.app.design.components.dialog.GravatarDialog
 import com.gravatar.app.design.theme.GravatarAppTheme
 import com.gravatar.app.homeUi.AppVersion
 import com.gravatar.app.homeUi.R
+import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun AboutAppDialog(
     onDismissRequest: () -> Unit,
+    viewModel: AboutAppDialogViewModel = koinViewModel()
 ) {
     val appVersion: AppVersion = koinInject()
     GravatarDialog(
@@ -40,6 +42,7 @@ internal fun AboutAppDialog(
             AboutAppDialogContent(
                 appVersion = appVersion.value,
                 onDone = onDismissRequest,
+                onEvent = viewModel::onEvent,
                 modifier = Modifier
             )
         }
@@ -50,6 +53,7 @@ internal fun AboutAppDialog(
 internal fun AboutAppDialogContent(
     appVersion: String,
     onDone: () -> Unit,
+    onEvent: (AboutAppDialogEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -109,6 +113,28 @@ internal fun AboutAppDialogContent(
                 }
             )
         }
+        Column {
+            Text(
+                text = stringResource(R.string.about_app_dialog_delete_account),
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.SemiBold
+                ),
+                modifier = modifier.padding(top = 4.dp),
+            )
+            DialogText(
+                text = stringResource(R.string.about_app_dialog_delete_profile_description),
+            )
+            Text(
+                text = stringResource(R.string.about_app_dialog_delete_account_button),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onErrorContainer,
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .clickable {
+                        onEvent(AboutAppDialogEvent.OnDeleteAccount)
+                    }
+            )
+        }
         PrimaryButton(
             text = stringResource(R.string.done_button_cta),
             onClick = onDone,
@@ -150,7 +176,8 @@ private fun AboutAppDialogContentPreview() {
         AboutAppDialogContent(
             appVersion = "0.0.1",
             onDone = { },
-            modifier = Modifier.fillMaxWidth(),
+            onEvent = { _ -> },
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
