@@ -7,12 +7,20 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.material3.AlertDialogDefaults
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -61,6 +69,28 @@ internal fun AboutAppDialog(
                     onEvent = viewModel::onEvent,
                     modifier = Modifier
                 )
+            }
+            if (uiState.showDeleteAccountErrorAlert) {
+                BasicAlertDialog(
+                    onDismissRequest = { viewModel.dismissErrorMessage() }
+                ) {
+                    Surface(
+                        modifier = Modifier.wrapContentWidth().wrapContentHeight(),
+                        shape = MaterialTheme.shapes.large,
+                        tonalElevation = AlertDialogDefaults.TonalElevation
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(text = stringResource(R.string.about_app_dialog_delete_profile_error_message))
+                            Spacer(modifier = Modifier.height(24.dp))
+                            TextButton(
+                                onClick = { viewModel.dismissErrorMessage() },
+                                modifier = Modifier.align(Alignment.End)
+                            ) {
+                                Text(text = stringResource(R.string.done_button_cta))
+                            }
+                        }
+                    }
+                }
             }
         }
     )
@@ -153,7 +183,7 @@ internal fun AboutAppDialogContent(
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onErrorContainer,
                 modifier = Modifier
-                    .padding(top = 8.dp)
+                    .padding(top = 16.dp, bottom = 8.dp)
                     .clickable {
                         onEvent(AboutAppDialogEvent.OnShowDeleteConfirmation)
                     }

@@ -33,6 +33,15 @@ internal class AboutAppDialogViewModel(
         }
     }
 
+    fun dismissErrorMessage() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                showDeleteAccountErrorAlert = false,
+                isLoading = false
+            )
+        }
+    }
+
     private fun showDeleteConfirmation() {
         _uiState.update { currentState ->
             currentState.copy(isDeleteConfirmationVisible = true)
@@ -52,7 +61,9 @@ internal class AboutAppDialogViewModel(
             }
             deleteUserProfile().onFailure {
                 _uiState.update { currentState ->
-                    currentState.copy(isLoading = false)
+                    currentState.copy(
+                        showDeleteAccountErrorAlert = true
+                    )
                 }
             }
         }

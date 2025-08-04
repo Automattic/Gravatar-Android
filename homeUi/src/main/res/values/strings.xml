@@ -93,4 +93,5 @@
     <string name="about_app_dialog_delete_profile_confirmation_title">Deleting your Gravatar profile will immediately prevent all access to it.</string>
     <string name="about_app_dialog_delete_profile_confirmation_description">"Your data will be permanently deleted after 30 days. During this period, you can still restore your profile by logging in at gravatar.com using your browser. After 30 days, it will no longer be recoverable."</string>
     <string name="about_app_dialog_delete_profile_confirmation_cancel">Cancel</string>
+    <string name="about_app_dialog_delete_profile_error_message">An error has occurred while deleting your account</string>
 </resources>
