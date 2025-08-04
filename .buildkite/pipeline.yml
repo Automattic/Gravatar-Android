@@ -91,10 +91,12 @@ steps:
     blocked_state: passed
 
   - label: 🏗️ Prototype Build
-    if: build.pull_request.id != null
     depends_on:
       - run-on-demand-prototype-build
     command: .buildkite/commands/prototype-build.sh
     plugins: [$CI_TOOLKIT]
     artifact_paths:
       - "**/build/outputs/apk/**/*"
+    notify:
+      - github_commit_status:
+          context: Prototype Build
