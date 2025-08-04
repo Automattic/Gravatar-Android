@@ -54,7 +54,7 @@ import com.gravatar.app.homeUi.GravatarFileProvider
 import com.gravatar.app.homeUi.R
 import com.gravatar.app.homeUi.presentation.home.components.ErrorViewWithRetry
 import com.gravatar.app.homeUi.presentation.home.components.PermissionRationaleDialog
-import com.gravatar.app.homeUi.presentation.home.components.topbar.components.AboutAppDialog
+import com.gravatar.app.homeUi.presentation.home.components.topbar.components.about.AboutAppDialog
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.AvatarDeletionConfirmationDialog
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.AvatarOption
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.CollapsibleTopAppBar

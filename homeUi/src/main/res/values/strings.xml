@@ -76,6 +76,7 @@
     <string name="about_app_dialog_legal">Legal</string>
     <string name="about_app_dialog_terms_of_service">Terms of Service</string>
     <string name="about_app_dialog_privacy_policy">Privacy Policy</string>
+    <string name="about_app_dialog_delete_account">Delete account</string>
     <string name="done_button_cta">Done</string>
     <string name="share_tab_public_info_title">Share info from your Gravatar profile.</string>
     <string name="share_tab_name_label">Name</string>
@@ -87,4 +88,10 @@
     <string name="share_tab_expand_qr_code">Expand QR Code for sharing contact information</string>
     <string name="share_tab_qr_code">QR Code</string>
     <string name="close_button">Close</string>
+    <string name="about_app_dialog_delete_account_button">Delete account</string>
+    <string name="about_app_dialog_delete_profile_description">No longer using Gravatar? Delete your account here.</string>
+    <string name="about_app_dialog_delete_profile_confirmation_title">Deleting your Gravatar profile will immediately prevent all access to it.</string>
+    <string name="about_app_dialog_delete_profile_confirmation_description">"Your data will be permanently deleted after 30 days. During this period, you can still restore your profile by logging in at gravatar.com using your browser. After 30 days, it will no longer be recoverable."</string>
+    <string name="about_app_dialog_delete_profile_confirmation_cancel">Cancel</string>
+    <string name="about_app_dialog_delete_profile_error_message">An error has occurred while deleting your account</string>
 </resources>

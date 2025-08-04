@@ -15,6 +15,8 @@ import com.gravatar.app.usercomponent.domain.repository.ProfileRepository
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import com.gravatar.app.usercomponent.domain.usecase.DeleteUserAvatar
 import com.gravatar.app.usercomponent.domain.usecase.DeleteUserAvatarUseCase
+import com.gravatar.app.usercomponent.domain.usecase.DeleteUserProfile
+import com.gravatar.app.usercomponent.domain.usecase.DeleteUserProfileUseCase
 import com.gravatar.app.usercomponent.domain.usecase.FetchAvatarsUseCase
 import com.gravatar.app.usercomponent.domain.usecase.FetchUserAvatars
 import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrl
@@ -58,6 +60,7 @@ val userComponentModule = module {
     factoryOf(::UpdateUserSharePreferencesUseCase) { bind<UpdateUserSharePreferences>() }
     factoryOf(::GetPrivateContactInfoUseCase) { bind<GetPrivateContactInfo>() }
     factoryOf(::UpdatePrivateContactInfoUseCase) { bind<UpdatePrivateContactInfo>() }
+    factoryOf(::DeleteUserProfileUseCase) { bind<DeleteUserProfile>() }
     factoryOf(::UserSharePreferencesOperations) { bind<UserSharePreferencesFacade>() }
     factoryOf(::PrivateContactInfoOperations) { bind<PrivateContactInfoFacade>() }
     factoryOf(::WordPressClient)
