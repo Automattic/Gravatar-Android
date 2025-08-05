@@ -19,9 +19,9 @@ VERSION_FILE = Fastlane::Wpmreleasetoolkit::Versioning::AndroidVersionFile.new(v
 
 VERSION_CALCULATOR = Fastlane::Wpmreleasetoolkit::Versioning::SemanticVersionCalculator.new
 VERSION_FORMATTER = Fastlane::Wpmreleasetoolkit::Versioning::RCNotationVersionFormatter.new
-# Using DerivedBuildCodeFormatter to derive build codes from version name (format: 1XXYYZZNNN)
+# Using DerivedBuildCodeFormatter to derive build codes from version name (format: 1XXYYYZNN)
 # This eliminates the need for manual build code incrementing and provides deterministic versioning
-BUILD_CODE_FORMATTER = Fastlane::Wpmreleasetoolkit::Versioning::DerivedBuildCodeFormatter.new
+BUILD_CODE_FORMATTER = Fastlane::Wpmreleasetoolkit::Versioning::DerivedBuildCodeFormatter.new(prefix: '1', major_digits: 2, minor_digits: 3, patch_digits: 1, build_digits: 2)
 
 PROTOTYPE_BUILD_DOMAIN = 'https://cdn.a8c-ci.services'
 RELEASE_BUILD_TYPE = 'Release'
