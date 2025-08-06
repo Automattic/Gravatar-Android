@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json
+---
+
+steps:
+  - label: ":rocket: New Alpha Release"
+    key: new-alpha-release
+    plugins: [$CI_TOOLKIT]
+    command: |
+      echo "--- :robot_face: Use bot for Git operations"
+      source use-bot-for-git
+
+      echo "--- :ruby: Setup Ruby Tools"
+      install_gems
+
+      echo "--- :rocket: Create New Alpha"
+      bundle exec fastlane new_alpha_release skip_confirm:true
+    agents:
+      queue: tumblr-metal
