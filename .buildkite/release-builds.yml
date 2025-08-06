@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json
+---
+
+# This pipeline is meant to be run via the action `buildkite_add_trigger_step`, which calls the buildkite-agent to add it as a trigger step
+
+agents:
+  queue: "android"
+
+steps:
+  - label: Gradle Wrapper Validation
+    command: validate_gradle_wrapper
+    priority: 1
+    agents:
+      queue: linter
+
+  # Wait for Gradle Wrapper to be validated
+  - wait
+
+  - label: 🕵️‍♂️ Lint
+    command: ./gradlew lintRelease
+    key: lint
+    plugins: [$CI_TOOLKIT]
+    artifact_paths:
+      - "**/build/reports/lint-results*.*"
+
+  - label: ":hammer_and_wrench: :android: Build Release and Upload to Play Store"
+    command: .buildkite/commands/release-build.sh
+    priority: 1
+    depends_on: lint
+    plugins: [$CI_TOOLKIT]
+    artifact_paths:
+      - "app/build/outputs/bundle/release/*.aab"

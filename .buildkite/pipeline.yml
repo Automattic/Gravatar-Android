@@ -50,7 +50,7 @@ steps:
       ./gradlew :app:lintDebug
       
       upload_sarif_to_github 'app/build/reports/lint-results-debug.sarif'
-    plugins: [ $CI_TOOLKIT ]
+    plugins: [$CI_TOOLKIT]
     artifact_paths:
       - "**/build/reports/lint-results*.*"
     notify:
@@ -62,7 +62,7 @@ steps:
       ./gradlew detekt
       
       upload_sarif_to_github 'app/build/reports/detekt/detekt.sarif'
-    plugins: [ $CI_TOOLKIT ]
+    plugins: [$CI_TOOLKIT]
     artifact_paths:
       - "**/build/reports/detekt/*.*"
     notify:

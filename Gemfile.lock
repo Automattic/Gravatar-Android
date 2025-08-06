@@ -167,7 +167,7 @@ GEM
       xcodeproj (>= 1.13.0, < 2.0.0)
       xcpretty (~> 0.4.1)
       xcpretty-travis-formatter (>= 0.0.3, < 2.0.0)
-    fastlane-plugin-wpmreleasetoolkit (13.3.1)
+    fastlane-plugin-wpmreleasetoolkit (13.4.0)
       activesupport (>= 6.1.7.1)
       buildkit (~> 1.5)
       chroma (= 0.2.0)
@@ -354,7 +354,7 @@ PLATFORMS
 DEPENDENCIES
   danger-dangermattic (~> 1.2)
   fastlane (~> 2.228)
-  fastlane-plugin-wpmreleasetoolkit (~> 13.3)
+  fastlane-plugin-wpmreleasetoolkit (~> 13.4)
 
 BUNDLED WITH
    2.6.3
