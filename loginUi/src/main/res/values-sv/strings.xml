@@ -23,8 +23,6 @@ Language: sv_SE
     <string name="share_tab_private_contact_info_title">Dela privat kontaktinformation</string>
     <string name="share_tab_scan_qr_code">Låt andra skanna denna QR-kod för att dela din kontaktinformation.</string>
     <string name="home_no_internet_available">Ingen internetanslutning</string>
-    <string name="gravatar_tab_no_avatar_selected_info">Ingen profilbild vald. Visar standardprofilbilden.</string>
-    <string name="gravatar_tab_unable_to_load_avatars_message">Det var ett problem att ladda in dina profilbilder. Försök igen om några minuter.</string>
     <string name="gravatar_tab_unable_to_load_avatars">Kan inte ladda profilbilder</string>
     <string name="retry_cta">Försök igen</string>
     <string name="permission_required_dismiss">Avfärda</string>
@@ -83,4 +81,6 @@ Language: sv_SE
     <string name="home_screen_navigation_item_profile">Profil</string>
     <string name="home_screen_navigation_item_share">Dela</string>
     <string name="home_screen_navigation_item_gravatar">Gravatar</string>
+    <string name="gravatar_tab_unable_to_load_avatars_message">Det var ett problem att ladda in dina profilbilder. Försök igen om några minuter.</string>
+    <string name="gravatar_tab_no_avatar_selected_info">Ingen profilbild vald. Visar standardprofilbilden.</string>
 </resources>
