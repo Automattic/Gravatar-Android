@@ -2,4 +2,6 @@
 <lint>
     <issue id="GradleDependency" severity="ignore"/>
     <issue id="AndroidGradlePluginVersion" severity="ignore" />
+    <issue id="ExtraTranslation" severity="ignore" />
+    <issue id="MissingTranslation" severity="ignore" />
 </lint>

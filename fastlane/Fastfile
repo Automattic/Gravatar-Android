@@ -27,6 +27,31 @@ BUILD_CODE_FORMATTER = Fastlane::Wpmreleasetoolkit::Versioning::DerivedBuildCode
 PROTOTYPE_BUILD_DOMAIN = 'https://cdn.a8c-ci.services'
 RELEASE_BUILD_TYPE = 'Release'
 
+GLOTPRESS_PROJECT_BASE_URL = 'https://translate.wordpress.com/projects/gravatar/gravatar-android'
+RESOURCES_TO_TRANSLATE = {
+  File.join('homeUi', 'src', 'main', 'res') => "#{GLOTPRESS_PROJECT_BASE_URL}/login-ui/",
+  File.join('loginUi', 'src', 'main', 'res') => "#{GLOTPRESS_PROJECT_BASE_URL}/home-ui/"
+}.freeze
+
+SUPPORTED_LOCALES = [
+  { glotpress: 'ar',    android: 'ar'     },
+  { glotpress: 'de',    android: 'de'     },
+  { glotpress: 'es',    android: 'es'     },
+  { glotpress: 'fr',    android: 'fr'     },
+  { glotpress: 'he',    android: 'iw'     },
+  { glotpress: 'id',    android: 'in'     },
+  { glotpress: 'it',    android: 'it'     },
+  { glotpress: 'ja',    android: 'ja'     },
+  { glotpress: 'ko',    android: 'ko'     },
+  { glotpress: 'nl',    android: 'nl'     },
+  { glotpress: 'pt-br', android: 'pt-rBR' },
+  { glotpress: 'ru',    android: 'ru'     },
+  { glotpress: 'sv',    android: 'sv'     },
+  { glotpress: 'tr',    android: 'tr'     },
+  { glotpress: 'zh-cn', android: 'zh-rCN' },
+  { glotpress: 'zh-tw', android: 'zh-rTW' }
+].freeze
+
 platform :android do
   # Builds a release app bundle (.aab) for the Gravatar Android app
   #
@@ -134,6 +159,34 @@ platform :android do
     # TODO: using `internal` track with `draft` releases by default while the release itself is in draft mode
     build_bundle
     upload_to_store(track: track, release_status: release_status, rollout: release_status == 'draft' ? nil : '1')
+  end
+
+  # Download the latest app translations from GlotPress and update the strings.xml files accordingly.
+  #
+  # @example Running the lane
+  #          bundle exec fastlane download_translations skip_commit:true
+  #
+  # @param skip_commit [Boolean] Skip committing the changes to git (default: false)
+  #
+  lane :download_translations do |skip_commit: false|
+    RESOURCES_TO_TRANSLATE.each do |res_dir, gp_url|
+      android_download_translations(
+        res_dir: res_dir.to_s,
+        glotpress_url: gp_url,
+        locales: SUPPORTED_LOCALES,
+        skip_commit: true
+      )
+    end
+
+    next if skip_commit
+
+    strings_paths = RESOURCES_TO_TRANSLATE.keys.map(&:to_s)
+    git_add(path: strings_paths)
+    git_commit(
+      path: strings_paths,
+      message: 'Update translations',
+      allow_nothing_to_commit: true
+    )
   end
 
   #####################################################################################

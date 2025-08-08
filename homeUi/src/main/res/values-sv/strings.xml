@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Translation-Revision-Date: 2025-07-29 15:31:37+0000
+Plural-Forms: nplurals=2; plural=n != 1;
+Generator: GlotPress/2.4.0-alpha
+Language: sv_SE
+-->
+<resources>
+    <string name="login_authorization_denied_title">Du måste logga in på Gravatar.com</string>
+    <string name="login_profile_load_failure_alternative_cta">Prova med ett annat konto</string>
+    <string name="login_profile_load_failure_cta">Försök igen</string>
+    <string name="login_profile_load_failure_generic_message">Det var ett problem att ladda in din profil.</string>
+    <string name="login_profile_load_failure_title">Kan inte ladda din profil</string>
+    <string name="login_retrieving_token_failure_message">Något gick fel</string>
+    <string name="log_in">Logga in</string>
+    <string name="your_globally_recognized_avatar">Din globalt igenkända profilbild.</string>
+</resources>
