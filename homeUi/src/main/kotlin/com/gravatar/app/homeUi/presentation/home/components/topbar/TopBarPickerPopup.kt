@@ -87,10 +87,10 @@ internal fun TopBarPickerPopup(
                     },
                 ),
                 PickerPopupItem(
-                    text = stringResource(R.string.gravatar_tab_topbar_menu_share),
+                    text = stringResource(R.string.gravatar_tab_topbar_menu_share_profile),
                     iconRes = R.drawable.top_bar_menu_share,
                     contentDescription = stringResource(
-                        R.string.gravatar_tab_topbar_menu_share
+                        R.string.gravatar_tab_topbar_menu_share_profile
                     ),
                     onClick = {
                         onEvent(TopBarPickerPopupEvent.OnShareProfileClicked)

@@ -53,7 +53,8 @@
     <string name="gravatar_tab_avatar_selection_failed">Unable to change your avatar. Try again.</string>
     <string name="gravatar_tab_avatar_deletion_failed">Couldn\'t delete the image. Try again.</string>
     <string name="gravatar_tab_topbar_menu_visit_profile">Visit your profile</string>
-    <string name="gravatar_tab_topbar_menu_share">Share profile</string>
+    <string name="gravatar_tab_topbar_menu_share">Share</string>
+    <string name="gravatar_tab_topbar_menu_share_profile">Share profile</string>
     <string name="gravatar_tab_topbar_menu_gravatar" translatable="false">Gravatar.com</string>
     <string name="gravatar_tab_topbar_menu_sign_out">Sign out</string>
     <string name="gravatar_tab_topbar_menu_about">About this app</string>
