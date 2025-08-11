@@ -1,6 +1,8 @@
 package com.gravatar.app.homeUi.presentation.home.gravatar.components
 
 import android.net.Uri
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -25,8 +27,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -85,18 +90,28 @@ private fun SelectableAvatar(
     onFailedAvatarClicked: (() -> Unit)? = null,
 ) {
     var moreOptionsPopupVisible by remember { mutableStateOf(false) }
+    val animatedAlpha: Float by animateFloatAsState(
+        targetValue = if (moreOptionsPopupVisible) 0.7f else 1f,
+        animationSpec = tween(
+            durationMillis = 120,
+        )
+    )
+    val animatedScale by animateFloatAsState(
+        targetValue = if (moreOptionsPopupVisible) 0.95f else 1f,
+        animationSpec = tween(
+            durationMillis = 120,
+        )
+    )
+
     Box(
         modifier = modifier
             .aspectRatio(1f)
-            .clickable {
-                when (loadingState) {
-                    AvatarLoadingState.Failure -> onFailedAvatarClicked?.invoke()
-                    AvatarLoadingState.Loading -> Unit
-                    AvatarLoadingState.None -> {
-                        moreOptionsPopupVisible = true
-                    }
-                }
-            }
+            .graphicsLayer(
+                alpha = animatedAlpha,
+                scaleX = animatedScale,
+                scaleY = animatedScale,
+                transformOrigin = TransformOrigin.Center
+            )
             .then(
                 if (isSelected) {
                     Modifier.border(
@@ -107,7 +122,16 @@ private fun SelectableAvatar(
                 } else {
                     Modifier
                 },
-            ),
+            )
+            .clickable {
+                when (loadingState) {
+                    AvatarLoadingState.Failure -> onFailedAvatarClicked?.invoke()
+                    AvatarLoadingState.Loading -> Unit
+                    AvatarLoadingState.None -> {
+                        moreOptionsPopupVisible = true
+                    }
+                }
+            },
     ) {
         AtomicAvatar(
             state = ComponentState.Loaded(imageUrl),
