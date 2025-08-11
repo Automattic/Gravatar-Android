@@ -26,21 +26,21 @@ import com.gravatar.app.homeUi.R
 @Composable
 internal fun ShareSectionTitle(
     @StringRes title: Int,
-    @DrawableRes rightIcon: Int?,
-    rightIconTint: Color = LocalContentColor.current,
+    @DrawableRes icon: Int?,
+    iconTint: Color = LocalContentColor.current,
     modifier: Modifier = Modifier,
-    @DrawableRes leftIcon: Int? = null,
+    @DrawableRes accessoryIcon: Int? = null,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier.fillMaxWidth()
     ) {
-        leftIcon?.let {
+        icon?.let {
             Icon(
                 painter = painterResource(id = it),
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                modifier = Modifier.padding(end = 6.dp)
+                tint = iconTint,
+                modifier = Modifier.padding(end = 12.dp),
             )
         }
         BasicText(
@@ -55,12 +55,12 @@ internal fun ShareSectionTitle(
             ),
             modifier = Modifier.weight(1f),
         )
-        rightIcon?.let {
+        accessoryIcon?.let {
             Icon(
                 painter = painterResource(id = it),
                 contentDescription = null,
-                tint = rightIconTint,
-                modifier = Modifier.padding(end = 12.dp),
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                modifier = Modifier.padding(end = 16.dp)
             )
         }
     }
@@ -71,9 +71,9 @@ internal fun ShareSectionTitle(
 private fun ShareSectionTitlePreview() {
     GravatarAppTheme {
         ShareSectionTitle(
-            leftIcon = R.drawable.share_section_title_warning,
+            accessoryIcon = R.drawable.share_section_title_warning,
             title = R.string.share_tab_private_contact_info_title,
-            rightIcon = R.drawable.share_section_title_lock,
+            icon = R.drawable.share_section_title_lock,
             modifier = Modifier.fillMaxWidth()
         )
     }
