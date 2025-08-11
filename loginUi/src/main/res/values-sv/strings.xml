@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Translation-Revision-Date: 2025-07-29 21:27:31+0000
+Plural-Forms: nplurals=2; plural=n != 1;
+Generator: GlotPress/2.4.0-alpha
+Language: sv_SE
+-->
+<resources>
+    <string name="private_info_dialog_title">Privat information</string>
+    <string name="private_info_dialog_message">Din e-post och ditt telefonnummer delas endast med hjälp av QR-koden. Denna information är inte sparad i din Gravatar-profil och är inte offentligt tillgänglig.</string>
+    <string name="private_info_button_cta">Jag förstår</string>
+    <string name="share_tab_profile_url_label">Profil-URL</string>
+    <string name="share_tab_name_label">Namn</string>
+    <string name="share_tab_public_info_title">Dela information från din Gravatar-profil.</string>
+    <string name="done_button_cta">Klar</string>
+    <string name="about_app_dialog_privacy_policy">Integritetspolicy</string>
+    <string name="about_app_dialog_terms_of_service">Användarvillkor</string>
+    <string name="about_app_dialog_legal">Juridiskt</string>
+    <string name="about_app_dialog_get_help">Skaffa hjälp</string>
+    <string name="about_app_dialog_about_gravatar">Om Gravatar</string>
+    <string name="share_tab_private_contact_phone_number_placeholder">Telefonnummer</string>
+    <string name="share_tab_private_contact_email_placeholder">E-post</string>
+    <string name="share_tab_private_contact_info_title">Dela privat kontaktinformation</string>
+    <string name="share_tab_scan_qr_code">Låt andra skanna denna QR-kod för att dela din kontaktinformation.</string>
+    <string name="home_no_internet_available">Ingen internetanslutning</string>
+    <string name="gravatar_tab_unable_to_load_avatars">Kan inte ladda profilbilder</string>
+    <string name="retry_cta">Försök igen</string>
+    <string name="permission_required_dismiss">Avfärda</string>
+    <string name="permission_required_open_settings">Öppna inställningar</string>
+    <string name="permission_required_alert_title">Behörighet krävs</string>
+    <string name="gravatar_tab_topbar_menu_about">Om denna app</string>
+    <string name="gravatar_tab_topbar_menu_sign_out">Logga ut</string>
+    <string name="gravatar_tab_topbar_menu_share">Dela</string>
+    <string name="gravatar_tab_topbar_menu_visit_profile">Besök din profil</string>
+    <string name="gravatar_tab_avatar_deletion_failed">Kunde inte ta bort bilden. Försök igen.</string>
+    <string name="gravatar_tab_avatar_selection_failed">Kan inte ändra din profilbild. Försök igen.</string>
+    <string name="gravatar_tab_avatar_updated_successfully">Profilbild uppdaterad.</string>
+    <string name="gravatar_tab_delete_confirmation_cancel">Avbryt</string>
+    <string name="gravatar_tab_delete_confirmation_confirm">Ta bort</string>
+    <string name="gravatar_tab_delete_confirmation_message">Är du säker på att du vill ta bort denna bild?</string>
+    <string name="gravatar_tab_delete_confirmation_title">Ta bort bild</string>
+    <string name="gravatar_tab_more_options_download_avatar_content_description">Ladda ner bild</string>
+    <string name="gravatar_tab_more_options_download_avatar">Ladda ner bild</string>
+    <string name="gravatar_tab_more_options_delete_avatar_content_description">Ta bort denna profilbild</string>
+    <string name="gravatar_tab_more_options_delete_avatar">Ta bort</string>
+    <string name="gravatar_tab_more_options_make_current_content_description">Välj profilbild som nuvarande</string>
+    <string name="gravatar_tab_more_options_make_current">Gör nuvarande</string>
+    <string name="gravatar_tab_avatar_upload_failure_dialog_remove_upload">Ta bort uppladdning</string>
+    <string name="gravatar_tab_avatar_upload_error_action">Försök igen</string>
+    <string name="gravatar_tab_avatar_upload_failure_image_too_big">Den angivna bilden överskrider den maximala storleken: 10 MB</string>
+    <string name="gravatar_tab_avatar_upload_failure_dialog_title">Kunde inte ladda upp bild</string>
+    <string name="gravatar_tab_failed_to_load_avatar_content_description">Uppladdning misslyckades, tryck för att se åtgärder.</string>
+    <string name="gravatar_tab_photos_content_description">Lägg till nytt profilbild från foton</string>
+    <string name="gravatar_tab_photos">Foton</string>
+    <string name="gravatar_tab_camera_content_description">Ta ny profilbild med kamera</string>
+    <string name="gravatar_tab_camera">Kamera</string>
+    <string name="gravatar_tab_upload_avatar_message">Låt din personlighet glänsa med en ny profilbild.</string>
+    <string name="profile_screen_saved_successfully">Profil sparad.</string>
+    <string name="profile_screen_save_fail_try_again">Kan inte spara din profil. Försök igen.</string>
+    <string name="profile_screen_saving">Sparar …</string>
+    <string name="profile_screen_cancel_button">Avbryt</string>
+    <string name="profile_screen_save_button">Spara</string>
+    <string name="picker_submenu_icon_description">Expandera</string>
+    <string name="gravatar_tab_header_more_options">Fler alternativ</string>
+    <string name="gravatar_tab_tap_for_options">Tryck för alternativ</string>
+    <string name="gravatar_tab_empty_avatars">Dina profilbilder kommer visas här</string>
+    <string name="gravatar_tab_previous_avatars">Tidigare profilbilder</string>
+    <string name="about_field_label_contact_email">E-post</string>
+    <string name="about_field_label_cell_phone">Telefon</string>
+    <string name="about_field_label_location">Plats</string>
+    <string name="about_field_description_about_me">Kort beskrivning av din profil</string>
+    <string name="about_field_label_about_me">Om mig</string>
+    <string name="about_field_label_company">Organisation</string>
+    <string name="about_field_label_job_title">Titel</string>
+    <string name="about_field_label_pronouns">Pronomen</string>
+    <string name="about_field_description_pronunciation">Hur man säger ditt namn</string>
+    <string name="about_field_label_pronunciation">Uttal</string>
+    <string name="about_field_label_display_name">Visningsnamn</string>
+    <string name="about_field_label_last_name">Efter</string>
+    <string name="about_field_label_first_name">För</string>
+    <string name="home_screen_navigation_item_profile">Profil</string>
+    <string name="home_screen_navigation_item_share">Dela</string>
+    <string name="home_screen_navigation_item_gravatar">Gravatar</string>
+    <string name="gravatar_tab_unable_to_load_avatars_message">Det var ett problem att ladda in dina profilbilder. Försök igen om några minuter.</string>
+    <string name="gravatar_tab_no_avatar_selected_info">Ingen profilbild vald. Visar standardprofilbilden.</string>
+</resources>
