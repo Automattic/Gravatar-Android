@@ -29,7 +29,7 @@ internal fun AvatarMoreOptionsPickerPopup(
         if (!isSelected) {
             add(
                 PickerPopupItem(
-                    text = stringResource(R.string.gravatar_tab_more_options_make_current),
+                    text = stringResource(R.string.gravatar_tab_more_options_select),
                     iconRes = R.drawable.check_circle,
                     contentDescription = stringResource(
                         R.string.gravatar_tab_more_options_make_current_content_description

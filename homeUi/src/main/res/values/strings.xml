@@ -38,7 +38,8 @@
     <string name="gravatar_tab_avatar_upload_failure_image_too_big">The provided image exceeds the maximum size: 10MB</string>
     <string name="gravatar_tab_avatar_upload_error_action">Retry</string>
     <string name="gravatar_tab_avatar_upload_failure_dialog_remove_upload">Remove upload</string>
-    <string name="gravatar_tab_more_options_make_current">Select</string>
+    <string name="gravatar_tab_more_options_make_current">Make current</string>
+    <string name="gravatar_tab_more_options_select">Select</string>
     <string name="gravatar_tab_more_options_make_current_content_description">Select avatar as current one</string>
     <string name="gravatar_tab_more_options_delete_avatar">Delete</string>
     <string name="gravatar_tab_more_options_delete_avatar_content_description">Delete this avatar</string>
