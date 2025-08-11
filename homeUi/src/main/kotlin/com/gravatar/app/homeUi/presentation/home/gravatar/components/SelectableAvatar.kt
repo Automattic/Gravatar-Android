@@ -106,15 +106,6 @@ private fun SelectableAvatar(
     Box(
         modifier = modifier
             .aspectRatio(1f)
-            .clickable {
-                when (loadingState) {
-                    AvatarLoadingState.Failure -> onFailedAvatarClicked?.invoke()
-                    AvatarLoadingState.Loading -> Unit
-                    AvatarLoadingState.None -> {
-                        moreOptionsPopupVisible = true
-                    }
-                }
-            }
             .graphicsLayer(
                 alpha = animatedAlpha,
                 scaleX = animatedScale,
@@ -131,7 +122,16 @@ private fun SelectableAvatar(
                 } else {
                     Modifier
                 },
-            ),
+            )
+            .clickable {
+                when (loadingState) {
+                    AvatarLoadingState.Failure -> onFailedAvatarClicked?.invoke()
+                    AvatarLoadingState.Loading -> Unit
+                    AvatarLoadingState.None -> {
+                        moreOptionsPopupVisible = true
+                    }
+                }
+            },
     ) {
         AtomicAvatar(
             state = ComponentState.Loaded(imageUrl),
