@@ -28,8 +28,8 @@ internal fun SharePublicContactInfo(
     ) {
         ShareSectionTitle(
             title = R.string.share_tab_public_info_title,
-            rightIcon = R.drawable.gravatar,
-            rightIconTint = MaterialTheme.colorScheme.primary,
+            icon = R.drawable.gravatar,
+            iconTint = MaterialTheme.colorScheme.primary,
             Modifier.padding(top = 8.dp, bottom = 28.dp, start = horizontalPadding, end = horizontalPadding)
         )
         profile.fullName?.let { fullName ->
