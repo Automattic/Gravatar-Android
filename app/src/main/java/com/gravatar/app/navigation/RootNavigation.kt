@@ -1,7 +1,11 @@
 package com.gravatar.app.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -18,20 +22,16 @@ import org.koin.compose.koinInject
 @Composable
 fun RootNavigation() {
     val navController = rememberNavController()
-    val backStackEntry = navController.currentBackStackEntryAsState()
+    val backStackEntry by navController.currentBackStackEntryAsState()
     val isUserLoggedIn: IsUserLoggedIn = koinInject<IsUserLoggedIn>()
 
     LaunchedEffect(Unit) {
         isUserLoggedIn()
             .collect { userSession ->
-                val lastRoute = backStackEntry.value?.destination?.route?.let {
-                    RootDestination.fromRoute(it)
-                } ?: RootDestination.Splash
+                val lastRoute =
+                    backStackEntry?.destination?.rootDestination ?: RootDestination.Splash
 
-                val currentRoute = navController.currentDestination?.route?.let {
-                    RootDestination.fromRoute(it)
-                }
-
+                Log.d("RootNavigation", "Last route: $lastRoute")
                 when (userSession) {
                     LOGGED_IN -> navController.navigateToRootDestination(
                         destination = RootDestination.Home,
@@ -65,11 +65,7 @@ private fun NavHostController.navigateToRootDestination(
     popTo: RootDestination,
     shouldSaveState: Boolean = true
 ) {
-    val currentRoute = currentDestination?.route?.let {
-        RootDestination.fromRoute(it)
-    }
-
-    if (currentRoute != destination) {
+    if (popTo != destination) {
         navigate(destination) {
             popUpTo(popTo) {
                 inclusive = true
@@ -81,6 +77,14 @@ private fun NavHostController.navigateToRootDestination(
     }
 }
 
+private val NavDestination.rootDestination: RootDestination?
+    get() = when {
+        hasRoute(RootDestination.Splash::class) -> RootDestination.Splash
+        hasRoute(RootDestination.Login::class) -> RootDestination.Login
+        hasRoute(RootDestination.Home::class) -> RootDestination.Home
+        else -> null
+    }
+
 internal sealed class RootDestination {
     @Serializable
     data object Splash : RootDestination()
@@ -90,15 +94,4 @@ internal sealed class RootDestination {
 
     @Serializable
     data object Home : RootDestination()
-
-    companion object {
-        fun fromRoute(route: String?): RootDestination? {
-            return when (route) {
-                Splash::class.qualifiedName -> Splash
-                Login::class.qualifiedName -> Login
-                Home::class.qualifiedName -> Home
-                else -> null
-            }
-        }
-    }
 }
