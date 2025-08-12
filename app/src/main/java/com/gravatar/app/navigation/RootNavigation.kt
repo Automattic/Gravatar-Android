@@ -1,6 +1,5 @@
 package com.gravatar.app.navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -31,7 +30,6 @@ fun RootNavigation() {
                 val lastRoute =
                     backStackEntry?.destination?.rootDestination ?: RootDestination.Splash
 
-                Log.d("RootNavigation", "Last route: $lastRoute")
                 when (userSession) {
                     LOGGED_IN -> navController.navigateToRootDestination(
                         destination = RootDestination.Home,
