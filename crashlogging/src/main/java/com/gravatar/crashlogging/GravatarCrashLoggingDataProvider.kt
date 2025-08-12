@@ -6,11 +6,14 @@ import com.automattic.android.tracks.crashlogging.EventLevel
 import com.automattic.android.tracks.crashlogging.ExtraKnownKey
 import com.automattic.android.tracks.crashlogging.PerformanceMonitoringConfig
 import com.automattic.android.tracks.crashlogging.ReleaseName
+import com.gravatar.app.usercomponent.domain.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.map
 
 internal class GravatarCrashLoggingDataProvider(
-    localeProvider: LocaleProvider
+    localeProvider: LocaleProvider,
+    private val profileRepository: UserRepository
 ) : CrashLoggingDataProvider {
 
     override val applicationContextProvider = emptyFlow<Map<String, String>>()
@@ -27,7 +30,13 @@ internal class GravatarCrashLoggingDataProvider(
 
     override val sentryDSN: String = BuildConfig.SENTRY_DSN
 
-    override val user: Flow<CrashLoggingUser> = emptyFlow()
+    override val user: Flow<CrashLoggingUser> = profileRepository.getProfile().map { profile ->
+        CrashLoggingUser(
+            userID = profile?.userId?.toString(),
+            email = null,
+            username = profile?.displayName,
+        )
+    }
 
     override fun crashLoggingEnabled(): Boolean = true
 

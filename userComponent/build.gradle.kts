@@ -30,7 +30,7 @@ dependencies {
     implementation(libs.ktor.okhttp)
     implementation(libs.ktor.content.negotiation)
     implementation(libs.ktor.serialization.json)
-    implementation(libs.gravatar.core)
+    api(libs.gravatar.core)
 
     // Room
     implementation(libs.room.runtime)
