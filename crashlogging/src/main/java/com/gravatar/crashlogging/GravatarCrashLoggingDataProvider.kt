@@ -25,7 +25,7 @@ internal class GravatarCrashLoggingDataProvider(
 
     override val releaseName = ReleaseName.SetByTracksLibrary
 
-    override val sentryDSN: String = ""
+    override val sentryDSN: String = BuildConfig.SENTRY_DSN
 
     override val user: Flow<CrashLoggingUser> = emptyFlow()
 
