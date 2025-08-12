@@ -25,10 +25,10 @@ android {
 dependencies {
     implementation(project(":userComponent"))
 
-    implementation(project.dependencies.platform(libs.koin.bom))
     implementation(libs.koin.core)
     implementation(libs.koin.android)
-    api(libs.automattic.crashlogging)
     implementation(libs.kotlinx.coroutines)
     implementation(libs.androidx.core.ktx)
+
+    api(libs.automattic.crashlogging)
 }
