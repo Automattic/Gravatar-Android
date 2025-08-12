@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.map
 
 internal class GravatarCrashLoggingDataProvider(
     localeProvider: LocaleProvider,
-    private val profileRepository: UserRepository
+    userRepository: UserRepository
 ) : CrashLoggingDataProvider {
 
     override val applicationContextProvider = emptyFlow<Map<String, String>>()
@@ -30,7 +30,7 @@ internal class GravatarCrashLoggingDataProvider(
 
     override val sentryDSN: String = BuildConfig.SENTRY_DSN
 
-    override val user: Flow<CrashLoggingUser> = profileRepository.getProfile().map { profile ->
+    override val user: Flow<CrashLoggingUser> = userRepository.getProfile().map { profile ->
         CrashLoggingUser(
             userID = profile?.userId?.toString(),
             email = null,
