@@ -29,6 +29,7 @@ androidxTestCore = "1.6.1"
 constraintLayout = "1.1.0"
 qrose= "1.0.1"
 moshi = "1.15.2"
+core = "1.16.0"
 
 [libraries]
 kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinCoroutines" }
@@ -42,6 +43,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-constraintLayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "constraintLayout" }
 androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidxTestCore" }
 # Tracks - Analytics and Crash Reporting
+automattic-crashlogging = { module = "com.automattic.tracks:crashlogging", version.ref = "tracks" }
 automattic-tracks = { module = "com.automattic:Automattic-Tracks-Android", version.ref = "tracks" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }

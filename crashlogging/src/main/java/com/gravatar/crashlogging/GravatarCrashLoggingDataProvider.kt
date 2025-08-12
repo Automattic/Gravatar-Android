@@ -1,0 +1,46 @@
+package com.gravatar.crashlogging
+
+import com.automattic.android.tracks.crashlogging.CrashLoggingDataProvider
+import com.automattic.android.tracks.crashlogging.CrashLoggingUser
+import com.automattic.android.tracks.crashlogging.EventLevel
+import com.automattic.android.tracks.crashlogging.ExtraKnownKey
+import com.automattic.android.tracks.crashlogging.PerformanceMonitoringConfig
+import com.automattic.android.tracks.crashlogging.ReleaseName
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+
+internal class GravatarCrashLoggingDataProvider(
+    localeProvider: LocaleProvider
+) : CrashLoggingDataProvider {
+
+    override val applicationContextProvider = emptyFlow<Map<String, String>>()
+
+    override val buildType = BuildConfig.BUILD_TYPE
+
+    override val enableCrashLoggingLogs = BuildConfig.DEBUG
+
+    override val locale = localeProvider.provideLocale()
+
+    override val performanceMonitoringConfig = PerformanceMonitoringConfig.Disabled
+
+    override val releaseName = ReleaseName.SetByTracksLibrary
+
+    override val sentryDSN: String = ""
+
+    override val user: Flow<CrashLoggingUser> = emptyFlow()
+
+    override fun crashLoggingEnabled(): Boolean = true
+
+    override fun extraKnownKeys(): List<ExtraKnownKey> = emptyList()
+
+    override fun provideExtrasForEvent(
+        currentExtras: Map<ExtraKnownKey, String>,
+        eventLevel: EventLevel
+    ): Map<ExtraKnownKey, String> = emptyMap()
+
+    override fun shouldDropWrappingException(
+        module: String,
+        type: String,
+        value: String
+    ): Boolean = false
+}
