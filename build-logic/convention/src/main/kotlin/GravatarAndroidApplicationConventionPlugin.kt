@@ -84,9 +84,12 @@ class GravatarAndroidApplicationConventionPlugin : Plugin<Project> {
 
     private fun Project.configureSentry() {
         configure<SentryPluginExtension> {
+            org.set("a8c")
+            projectName.set("gravatar-android")
+            authToken.set(System.getenv("SENTRY_AUTH_TOKEN"))
+
             includeProguardMapping.set(System.getenv("CI").toBoolean())
             includeSourceContext.set(System.getenv("CI").toBoolean())
-            authToken.set(System.getenv("SENTRY_AUTH_TOKEN"))
 
             autoInstallation.enabled.set(false)
             ignoredBuildTypes.set(listOf("debug"))
