@@ -54,8 +54,6 @@ internal sealed class HomeDestination(
     val labelRes: Int,
     val position: Int,
 ) {
-    val route: String =
-        this::class.qualifiedName ?: error("Route name is not defined for $this")
 
     @Serializable
     data object Gravatar : HomeDestination(
