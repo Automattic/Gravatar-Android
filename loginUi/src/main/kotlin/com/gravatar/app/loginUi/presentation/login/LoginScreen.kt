@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
+import com.gravatar.app.design.components.Screen
 import com.gravatar.app.design.components.snackbar.GravatarSnackbarHost
 import com.gravatar.app.design.components.snackbar.SnackbarType
 import com.gravatar.app.design.components.snackbar.showGravatarSnackbar
@@ -54,9 +55,11 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun LoginScreen() {
-    LoginScreen(
-        viewModel = koinViewModel(),
-    )
+    Screen {
+        LoginScreen(
+            viewModel = koinViewModel(),
+        )
+    }
 }
 
 @Composable
