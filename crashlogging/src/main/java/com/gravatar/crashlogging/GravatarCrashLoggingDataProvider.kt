@@ -26,7 +26,11 @@ internal class GravatarCrashLoggingDataProvider(
 
     override val performanceMonitoringConfig = PerformanceMonitoringConfig.Disabled
 
-    override val releaseName = ReleaseName.SetByTracksLibrary
+    override val releaseName = if (BuildConfig.DEBUG) {
+        ReleaseName.SetByApplication(DEBUG_RELEASE_NAME)
+    } else {
+        ReleaseName.SetByTracksLibrary
+    }
 
     override val sentryDSN: String = BuildConfig.SENTRY_DSN
 
@@ -52,4 +56,8 @@ internal class GravatarCrashLoggingDataProvider(
         type: String,
         value: String
     ): Boolean = false
+
+    companion object {
+        const val DEBUG_RELEASE_NAME = "debug"
+    }
 }
