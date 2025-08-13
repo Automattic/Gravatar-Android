@@ -32,9 +32,9 @@ internal class GravatarCrashLoggingDataProvider(
         ReleaseName.SetByTracksLibrary
     }
 
-    override val sentryDSN: String = BuildConfig.SENTRY_DSN
+    override val sentryDSN = BuildConfig.SENTRY_DSN
 
-    override val user: Flow<CrashLoggingUser> = userRepository.getProfile().map { profile ->
+    override val user = userRepository.getProfile().map { profile ->
         CrashLoggingUser(
             userID = profile?.userId?.toString(),
             email = profile?.hash,
@@ -42,20 +42,20 @@ internal class GravatarCrashLoggingDataProvider(
         )
     }
 
-    override fun crashLoggingEnabled(): Boolean = true
+    override fun crashLoggingEnabled() = true
 
-    override fun extraKnownKeys(): List<ExtraKnownKey> = emptyList()
+    override fun extraKnownKeys() = emptyList<ExtraKnownKey>()
 
     override fun provideExtrasForEvent(
         currentExtras: Map<ExtraKnownKey, String>,
         eventLevel: EventLevel
-    ): Map<ExtraKnownKey, String> = emptyMap()
+    ) = emptyMap<ExtraKnownKey, String>()
 
     override fun shouldDropWrappingException(
         module: String,
         type: String,
         value: String
-    ): Boolean = false
+    ) = false
 
     companion object {
         const val DEBUG_RELEASE_NAME = "debug"
