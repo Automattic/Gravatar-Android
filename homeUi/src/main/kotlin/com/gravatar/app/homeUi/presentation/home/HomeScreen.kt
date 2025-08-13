@@ -29,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -64,7 +65,7 @@ internal fun HomeScreen(
 ) {
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
-    val backStackEntry = navController.currentBackStackEntryAsState()
+    val backStackEntry by navController.currentBackStackEntryAsState()
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -83,9 +84,9 @@ internal fun HomeScreen(
                                     )
                                 },
                                 label = { Text(stringResource(destination.labelRes)) },
-                                selected = destination.route == backStackEntry.value?.destination?.route,
+                                selected = backStackEntry?.destination?.hasRoute(destination::class) == true,
                                 onClick = {
-                                    if (backStackEntry.value?.destination?.route != destination.route) {
+                                    if (backStackEntry?.destination?.hasRoute(destination::class) == false) {
                                         navController.navigate(destination) {
                                             popUpTo(navController.graph.startDestinationId) {
                                                 saveState = true
