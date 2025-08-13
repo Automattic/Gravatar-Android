@@ -41,7 +41,7 @@ internal class GravatarCrashLoggingDataProvider(
         )
     }
 
-    override fun crashLoggingEnabled() = true
+    override fun crashLoggingEnabled() = false
 
     override fun extraKnownKeys() = emptyList<ExtraKnownKey>()
 
