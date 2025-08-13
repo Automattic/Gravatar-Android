@@ -2,6 +2,8 @@ import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.gradle.AppPlugin
 import com.gravatar.app.configureDetekt
 import com.gravatar.app.configureKotlinAndroid
+import io.sentry.android.gradle.SentryPlugin
+import io.sentry.android.gradle.extensions.SentryPluginExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
@@ -18,6 +20,7 @@ class GravatarAndroidApplicationConventionPlugin : Plugin<Project> {
         with(target) {
             apply<AppPlugin>()
             apply<KotlinAndroidPluginWrapper>()
+            apply<SentryPlugin>()
 
             extensions.configure<ApplicationExtension> {
                 configureKotlinAndroid(this)
@@ -35,6 +38,8 @@ class GravatarAndroidApplicationConventionPlugin : Plugin<Project> {
                     checkDependencies = true
                 }
             }
+
+            configureSentry()
             configureDetekt()
         }
     }
@@ -74,6 +79,20 @@ class GravatarAndroidApplicationConventionPlugin : Plugin<Project> {
                     signingConfig = releaseSigningConfig
                 }
             }
+        }
+    }
+
+    private fun Project.configureSentry() {
+        configure<SentryPluginExtension> {
+            org.set("a8c")
+            projectName.set("gravatar-android")
+            authToken.set(System.getenv("SENTRY_AUTH_TOKEN"))
+
+            includeProguardMapping.set(System.getenv("CI").toBoolean())
+            includeSourceContext.set(System.getenv("CI").toBoolean())
+
+            autoInstallation.enabled.set(false)
+            ignoredBuildTypes.set(listOf("debug"))
         }
     }
 }
