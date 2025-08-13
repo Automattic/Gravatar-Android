@@ -52,13 +52,15 @@ internal fun TopBarPickerPopup(
         }
     }
 
-    TopBarPickerPopup(
-        anchorAlignment = anchorAlignment,
-        offset = offset,
-        onAboutAppClicked = onAboutAppClicked,
-        onDismissRequest = onDismissRequest,
-        onEvent = viewModel::onEvent
-    )
+    GravatarTheme {
+        TopBarPickerPopup(
+            anchorAlignment = anchorAlignment,
+            offset = offset,
+            onAboutAppClicked = onAboutAppClicked,
+            onDismissRequest = onDismissRequest,
+            onEvent = viewModel::onEvent
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
