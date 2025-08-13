@@ -7,7 +7,6 @@ import com.automattic.android.tracks.crashlogging.ExtraKnownKey
 import com.automattic.android.tracks.crashlogging.PerformanceMonitoringConfig
 import com.automattic.android.tracks.crashlogging.ReleaseName
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
 
