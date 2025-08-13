@@ -53,7 +53,7 @@ internal fun LazyGridScope.avatarsGridSection(
             )
         }
     } else {
-        if (avatars.none { it is AvatarUi.Uploaded && it.isSelected }) {
+        if (avatars.shouldShowNoAvatarSelectedBanner) {
             item(
                 span = { GridItemSpan(maxLineSpan) },
             ) {
@@ -108,6 +108,9 @@ private fun AvatarsGridHeader(
         )
     }
 }
+
+private val List<AvatarUi>.shouldShowNoAvatarSelectedBanner: Boolean
+    get() = none { it is AvatarUi.Uploaded && it.isSelected } && any { it is AvatarUi.Uploaded }
 
 @Composable
 private fun NoAvatarSelectedBanner(
@@ -182,6 +185,33 @@ private fun AvatarsGridSectionNoAvatarSelectedPreview() {
                             },
                             isSelected = false,
                             isLoading = false,
+                        )
+                    },
+                    onAvatarOptionClicked = { _, _ -> },
+                    onFailedAvatarClicked = { },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+private fun AvatarsGridSectionUploadingFirstAvatarPreview() {
+    MaterialTheme {
+        Box {
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = avatarSize),
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                state = rememberLazyGridState(),
+            ) {
+                avatarsGridSection(
+                    avatars = List(1) {
+                        AvatarUi.Local(
+                            uri = Uri.EMPTY,
+                            isLoading = true
                         )
                     },
                     onAvatarOptionClicked = { _, _ -> },
