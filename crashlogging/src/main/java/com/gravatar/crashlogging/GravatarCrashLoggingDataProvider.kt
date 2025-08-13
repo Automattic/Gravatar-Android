@@ -33,7 +33,7 @@ internal class GravatarCrashLoggingDataProvider(
     override val user: Flow<CrashLoggingUser> = userRepository.getProfile().map { profile ->
         CrashLoggingUser(
             userID = profile?.userId?.toString(),
-            email = null,
+            email = profile?.hash,
             username = profile?.displayName,
         )
     }
