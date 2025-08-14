@@ -42,79 +42,81 @@ internal fun ShareHeader(
 ) {
     var topBarMenuVisible by remember { mutableStateOf(false) }
 
-    BlurredHeaderBackground(
-        avatarUrl = avatarUrl,
-        modifier = modifier.fillMaxWidth()
-    ) {
-        Row(
-            modifier = Modifier
-                .statusBarsPadding()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(22.dp),
-            verticalAlignment = Alignment.Top
+    GravatarAppTheme(darkTheme = true) {
+        BlurredHeaderBackground(
+            avatarUrl = avatarUrl,
+            modifier = modifier.fillMaxWidth()
         ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+            Row(
                 modifier = Modifier
-                    .padding(top = 6.dp)
-                    .weight(1f),
+                    .statusBarsPadding()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(22.dp),
+                verticalAlignment = Alignment.Top
             ) {
-                QrCode(vCardQrCodeData)
-                Text(
-                    text = stringResource(R.string.share_tab_scan_qr_code),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.White,
-                )
-            }
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Box {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier
+                        .padding(top = 6.dp)
+                        .weight(1f),
+                ) {
+                    QrCode(vCardQrCodeData)
+                    Text(
+                        text = stringResource(R.string.share_tab_scan_qr_code),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White,
+                    )
+                }
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Box {
+                        IconButton(
+                            onClick = {
+                                topBarMenuVisible = true
+                            },
+                            modifier = Modifier
+                                .size(MENU_BUTTON_SIZE)
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.more_button),
+                                contentDescription = stringResource(R.string.gravatar_tab_header_more_options),
+                            )
+                        }
+                        if (topBarMenuVisible) {
+                            TopBarPickerPopup(
+                                anchorAlignment = Alignment.End,
+                                offset = DpOffset(0.dp, 6.dp),
+                                onDismissRequest = { topBarMenuVisible = false },
+                                onAboutAppClicked = {
+                                    topBarMenuVisible = false
+                                    onAboutAppClicked()
+                                }
+                            )
+                        }
+                    }
                     IconButton(
                         onClick = {
-                            topBarMenuVisible = true
+                            onShareClick()
                         },
                         modifier = Modifier
                             .size(MENU_BUTTON_SIZE)
                     ) {
                         Image(
-                            painter = painterResource(id = R.drawable.more_button),
-                            contentDescription = stringResource(R.string.gravatar_tab_header_more_options),
+                            painter = painterResource(id = R.drawable.share_button),
+                            contentDescription = stringResource(R.string.share_tab_share_contact_information_button)
                         )
                     }
-                    if (topBarMenuVisible) {
-                        TopBarPickerPopup(
-                            anchorAlignment = Alignment.End,
-                            offset = DpOffset(0.dp, 6.dp),
-                            onDismissRequest = { topBarMenuVisible = false },
-                            onAboutAppClicked = {
-                                topBarMenuVisible = false
-                                onAboutAppClicked()
-                            }
+                    IconButton(
+                        onClick = {
+                            onExpandQrCodeClick()
+                        },
+                        modifier = Modifier
+                            .size(MENU_BUTTON_SIZE)
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.expand_button),
+                            contentDescription = stringResource(R.string.share_tab_expand_qr_code)
                         )
                     }
-                }
-                IconButton(
-                    onClick = {
-                        onShareClick()
-                    },
-                    modifier = Modifier
-                        .size(MENU_BUTTON_SIZE)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.share_button),
-                        contentDescription = stringResource(R.string.share_tab_share_contact_information_button)
-                    )
-                }
-                IconButton(
-                    onClick = {
-                        onExpandQrCodeClick()
-                    },
-                    modifier = Modifier
-                        .size(MENU_BUTTON_SIZE)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.expand_button),
-                        contentDescription = stringResource(R.string.share_tab_expand_qr_code)
-                    )
                 }
             }
         }

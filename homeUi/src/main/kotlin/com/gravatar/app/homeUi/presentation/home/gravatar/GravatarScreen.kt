@@ -47,6 +47,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
+import com.gravatar.app.design.components.Screen
 import com.gravatar.app.design.components.snackbar.SnackbarType
 import com.gravatar.app.design.components.snackbar.showGravatarSnackbar
 import com.gravatar.app.design.theme.GravatarAppTheme
@@ -139,17 +140,21 @@ internal fun GravatarScreen(
         }
     }
 
-    GravatarScreen(
-        uiState = uiState,
-        onEvent = viewModel::onEvent,
-        onTakePictureClicked = takePhotoCallback,
-        onPickMediaClicked = {
-            if (!mediaPickerLaunched) {
-                pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                mediaPickerLaunched = true
-            }
-        },
-    )
+    Screen(
+        appearanceLightStatusBars = false
+    ) {
+        GravatarScreen(
+            uiState = uiState,
+            onEvent = viewModel::onEvent,
+            onTakePictureClicked = takePhotoCallback,
+            onPickMediaClicked = {
+                if (!mediaPickerLaunched) {
+                    pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    mediaPickerLaunched = true
+                }
+            },
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
