@@ -58,7 +58,8 @@ class ShareUiStateTest {
             title = false,
             organization = false,
             description = false,
-            profileUrl = false
+            profileUrl = false,
+            verifiedAccounts = emptyMap()
         )
 
         // When
@@ -94,7 +95,8 @@ class ShareUiStateTest {
             title = false,
             organization = false,
             description = false,
-            profileUrl = false
+            profileUrl = false,
+            verifiedAccounts = emptyMap()
         )
 
         // When
@@ -129,7 +131,8 @@ class ShareUiStateTest {
             title = false,
             organization = false,
             description = true,
-            profileUrl = false
+            profileUrl = false,
+            verifiedAccounts = emptyMap()
         )
 
         // When
@@ -164,7 +167,8 @@ class ShareUiStateTest {
             title = false,
             organization = true,
             description = false,
-            profileUrl = false
+            profileUrl = false,
+            verifiedAccounts = emptyMap()
         )
 
         // When
@@ -199,7 +203,8 @@ class ShareUiStateTest {
             title = true,
             organization = false,
             description = false,
-            profileUrl = false
+            profileUrl = false,
+            verifiedAccounts = emptyMap()
         )
 
         // When
@@ -234,7 +239,8 @@ class ShareUiStateTest {
             title = false,
             organization = false,
             description = false,
-            profileUrl = true
+            profileUrl = true,
+            verifiedAccounts = emptyMap()
         )
 
         // When
@@ -272,7 +278,8 @@ class ShareUiStateTest {
             title = false,
             organization = false,
             description = false,
-            profileUrl = false
+            profileUrl = false,
+            verifiedAccounts = emptyMap()
         )
 
         // When
@@ -310,7 +317,8 @@ class ShareUiStateTest {
             title = false,
             organization = false,
             description = false,
-            profileUrl = false
+            profileUrl = false,
+            verifiedAccounts = emptyMap()
         )
 
         // When

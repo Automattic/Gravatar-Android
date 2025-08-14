@@ -141,7 +141,8 @@ internal class DatastoreUserPrefsStorage(
                     title = preferences[userShareTitleKey] ?: true,
                     organization = preferences[userShareOrganizationKey] ?: true,
                     description = preferences[userShareDescriptionKey] ?: true,
-                    profileUrl = preferences[userShareProfileUrlKey] ?: true
+                    profileUrl = preferences[userShareProfileUrlKey] ?: true,
+                    verifiedAccounts = emptyMap()
                 )
             }
             .catch { emit(UserSharePreferences.Default) }

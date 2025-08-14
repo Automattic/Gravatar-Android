@@ -95,6 +95,17 @@ internal fun SharePublicContactInfo(
             )
             ItemDivider()
         }
+
+        profile.verifiedAccounts.forEach { account ->
+            SharePublicRow(
+                label = stringResource(R.string.share_tab_verified_service_account_label, account.serviceLabel),
+                value = account.url.toString(),
+                checked = userSharePreferences.verifiedAccounts[account.url.toString()] ?: true,
+                onCheckedChange = { },
+                modifier = Modifier.padding(horizontal = horizontalPadding),
+            )
+            ItemDivider()
+        }
     }
 }
 
