@@ -1,12 +1,19 @@
 package com.gravatar.app.usercomponent.data.database
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.gravatar.app.usercomponent.data.database.model.ProfileEntity
+import com.gravatar.app.usercomponent.data.database.model.VerifiedAccountEntity
 
-@Database(entities = [ProfileEntity::class], version = 1, exportSchema = true)
+@Database(
+    entities = [ProfileEntity::class, VerifiedAccountEntity::class],
+    version = 2,
+    exportSchema = true,
+    autoMigrations = [AutoMigration(from = 1, to = 2)],
+)
 internal abstract class UserDatabase : RoomDatabase() {
 
     abstract fun profileDao(): ProfileDao
