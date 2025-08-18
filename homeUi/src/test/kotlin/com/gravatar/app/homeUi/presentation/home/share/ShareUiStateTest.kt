@@ -1,9 +1,11 @@
 package com.gravatar.app.homeUi.presentation.home.share
 
+import com.gravatar.app.homeUi.presentation.home.share.model.VCard
 import com.gravatar.app.usercomponent.domain.model.PrivateContactInfo
 import com.gravatar.app.usercomponent.domain.model.UserSharePreferences
 import com.gravatar.restapi.models.Profile
 import com.gravatar.restapi.models.ProfileContactInfo
+import com.gravatar.restapi.models.VerifiedAccount
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -39,6 +41,16 @@ class ShareUiStateTest {
             assertEquals("Test description", note)
             assertEquals("private@example.com", email)
             assertEquals("987-654-3210", phoneNumber)
+            assertEquals("Test Location", location)
+            assertEquals(
+                createVerifiedAccounts().map {
+                    VCard.URL(
+                        label = it.serviceLabel,
+                        url = it.url.toString(),
+                    )
+                },
+                verifiedAccounts
+            )
         }
     }
 
@@ -59,7 +71,9 @@ class ShareUiStateTest {
             organization = false,
             description = false,
             profileUrl = false,
-            verifiedAccounts = emptyMap()
+            verifiedAccounts = createVerifiedAccounts().associate {
+                it.url.toString() to false
+            }
         )
 
         // When
@@ -80,6 +94,7 @@ class ShareUiStateTest {
             assertNull(note)
             assertNull(email)
             assertNull(phoneNumber)
+            assertEquals(emptyList<VCard.URL>(), verifiedAccounts)
         }
     }
 
@@ -96,7 +111,9 @@ class ShareUiStateTest {
             organization = false,
             description = false,
             profileUrl = false,
-            verifiedAccounts = emptyMap()
+            verifiedAccounts = createVerifiedAccounts().associate {
+                it.url.toString() to false
+            }
         )
 
         // When
@@ -116,6 +133,7 @@ class ShareUiStateTest {
             assertNull(note)
             assertNull(email)
             assertNull(phoneNumber)
+            assertEquals(emptyList<VCard.URL>(), verifiedAccounts)
         }
     }
 
@@ -132,7 +150,9 @@ class ShareUiStateTest {
             organization = false,
             description = true,
             profileUrl = false,
-            verifiedAccounts = emptyMap()
+            verifiedAccounts = createVerifiedAccounts().associate {
+                it.url.toString() to false
+            }
         )
 
         // When
@@ -152,6 +172,7 @@ class ShareUiStateTest {
             assertEquals("Test description", note)
             assertNull(email)
             assertNull(phoneNumber)
+            assertEquals(emptyList<VCard.URL>(), verifiedAccounts)
         }
     }
 
@@ -355,10 +376,29 @@ class ShareUiStateTest {
         company = "Test Company"
         firstName = "Test"
         lastName = "User"
-        verifiedAccounts = emptyList()
+        verifiedAccounts = createVerifiedAccounts()
         contactInfo = ProfileContactInfo {
             cellPhone = "123-456-7890"
             email = "test@example.com"
         }
+    }
+
+    private fun createVerifiedAccounts(): List<VerifiedAccount> {
+        return listOf(
+            VerifiedAccount {
+                serviceIcon = URI("https://example.com/icon.png")
+                serviceLabel = "Example Service"
+                serviceType = "example"
+                url = URI("https://example.com/johndoe")
+                isHidden = false
+            },
+            VerifiedAccount {
+                serviceIcon = URI("https://another.com/icon.png")
+                serviceLabel = "Another Service"
+                serviceType = "another"
+                url = URI("https://another.com/johndoe")
+                isHidden = false
+            }
+        )
     }
 }

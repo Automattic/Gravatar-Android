@@ -57,6 +57,16 @@ internal data class ShareUiState(
         .email(privateContactState.emailValue.takeIf { privateContactState.isEmailShared })
         .location(profile?.location.takeIf { userSharePreferences.location })
         .photo(avatarDrawable)
+        .verifiedAccounts(
+            profile?.verifiedAccounts.orEmpty()
+                .filter { userSharePreferences.verifiedAccountUrlChecked(it.url.toString()) }
+                .map {
+                    VCard.URL(
+                        label = it.serviceLabel,
+                        url = it.url.toString()
+                    )
+                }
+        )
         .build()
 }
 

@@ -24,4 +24,6 @@ data class UserSharePreferences(
             verifiedAccounts = emptyMap()
         )
     }
+
+    fun verifiedAccountUrlChecked(url: String) = verifiedAccounts[url] ?: true
 }

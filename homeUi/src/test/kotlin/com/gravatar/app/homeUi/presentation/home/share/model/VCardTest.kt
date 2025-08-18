@@ -43,6 +43,12 @@ class VCardTest {
             .phoneNumber("123-456-7890")
             .email("john.doe@example.com")
             .location("San Jose, CA")
+            .verifiedAccounts(
+                listOf(
+                    VCard.URL("Facebook", "https://facebook.com/johndoe"),
+                    VCard.URL("Twitter", "https://twitter.com/johndoe")
+                )
+            )
             .build()
 
         val vCardString = vCard.toString()
@@ -60,6 +66,12 @@ class VCardTest {
         assertTrue(vCardString.contains("TEL;TYPE=cell:123-456-7890"))
         assertTrue(vCardString.contains("EMAIL:john.doe@example.com"))
         assertTrue(vCardString.contains("ADR;CHARSET=UTF-8;TYPE=HOME:;;;San Jose, CA;;;"))
+        assertTrue(
+            vCardString.contains(
+                "URL;TYPE=\"Facebook\":https://facebook.com/johndoe\n" +
+                    "URL;TYPE=\"Twitter\":https://twitter.com/johndoe"
+            )
+        )
         assertTrue(vCardString.endsWith("END:VCARD"))
     }
 
@@ -88,6 +100,7 @@ class VCardTest {
         assertTrue(!vCardString.contains("NOTE:"))
         assertTrue(!vCardString.contains("TEL;TYPE=cell:"))
         assertTrue(!vCardString.contains("ADR;CHARSET=UTF-8;TYPE=HOME:"))
+        assertTrue(!vCardString.contains("URL;TYPE="))
     }
 
     @Test
