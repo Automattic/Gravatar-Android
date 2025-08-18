@@ -61,7 +61,7 @@ class RealProfileRepositoryTest {
 
         val profileResult = GravatarResult.Success<Profile, ErrorType>(profile)
         coEvery { profileService.retrieveAuthenticatedCatching(testToken) } returns profileResult
-        coJustRun { profileDao.insertProfile(any()) }
+        coJustRun { profileDao.insertProfileWithVerifiedAccounts(any(), any()) }
 
         // When
         val result = repository.refreshUserProfile()
@@ -69,7 +69,7 @@ class RealProfileRepositoryTest {
         // Then
         assertTrue(result.isSuccess)
         coVerify { profileService.retrieveAuthenticatedCatching(testToken) }
-        coVerify { profileDao.insertProfile(any()) }
+        coVerify { profileDao.insertProfileWithVerifiedAccounts(any(), any()) }
     }
 
     @Test
@@ -139,7 +139,7 @@ class RealProfileRepositoryTest {
 
         val profileResult = GravatarResult.Success<Profile, ErrorType>(profile)
         coEvery { profileService.updateProfileCatching(testToken, updateRequest) } returns profileResult
-        coJustRun { profileDao.insertProfile(any()) }
+        coJustRun { profileDao.insertProfileWithVerifiedAccounts(any(), any()) }
 
         // When
         val result = repository.update(updateRequest)
@@ -148,7 +148,7 @@ class RealProfileRepositoryTest {
         assertTrue(result.isSuccess)
 
         coVerify { profileService.updateProfileCatching(testToken, updateRequest) }
-        coVerify { profileDao.insertProfile(any()) }
+        coVerify { profileDao.insertProfileWithVerifiedAccounts(any(), any()) }
     }
 
     @Test
