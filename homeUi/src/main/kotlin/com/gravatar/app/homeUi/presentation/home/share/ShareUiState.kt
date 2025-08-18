@@ -35,6 +35,13 @@ internal data class ShareUiState(
             organization = if (shareFieldType is ShareFieldType.Organization) shareFieldType.checked else userSharePreferences.organization,
             description = if (shareFieldType is ShareFieldType.Description) shareFieldType.checked else userSharePreferences.description,
             profileUrl = if (shareFieldType is ShareFieldType.ProfileUrl) shareFieldType.checked else userSharePreferences.profileUrl,
+            verifiedAccounts = if (shareFieldType is ShareFieldType.VerifiedAccount) {
+                userSharePreferences.verifiedAccounts.toMutableMap().apply {
+                    this[shareFieldType.url] = shareFieldType.checked
+                }
+            } else {
+                userSharePreferences.verifiedAccounts
+            }
         )
     )
 
@@ -92,6 +99,11 @@ internal sealed class ShareFieldType {
     ) : ShareFieldType()
 
     data class PrivatePhone(
+        override val checked: Boolean
+    ) : ShareFieldType()
+
+    data class VerifiedAccount(
+        val url: String,
         override val checked: Boolean
     ) : ShareFieldType()
 }

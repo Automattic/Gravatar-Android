@@ -101,7 +101,11 @@ internal fun SharePublicContactInfo(
                 label = stringResource(R.string.share_tab_verified_service_account_label, account.serviceLabel),
                 value = account.url.toString(),
                 checked = userSharePreferences.verifiedAccounts[account.url.toString()] ?: true,
-                onCheckedChange = { },
+                onCheckedChange = {
+                    onUserPreferenceChanged(
+                        ShareFieldType.VerifiedAccount(account.url.toString(), it)
+                    )
+                },
                 modifier = Modifier.padding(horizontal = horizontalPadding),
             )
             ItemDivider()
