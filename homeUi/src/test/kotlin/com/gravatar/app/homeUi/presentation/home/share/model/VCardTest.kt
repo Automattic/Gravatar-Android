@@ -69,7 +69,7 @@ class VCardTest {
         assertTrue(
             vCardString.contains(
                 "URL;TYPE=\"Facebook\":https://facebook.com/johndoe\n" +
-                    "URL;TYPE=\"Twitter\":https://twitter.com/johndoe"
+                    "URL;TYPE=\"Twitter\":https://twitter.com/johndoe\n"
             )
         )
         assertTrue(vCardString.endsWith("END:VCARD"))

@@ -58,7 +58,7 @@ internal class VCard private constructor(
             }
         }
         verifiedAccounts.takeIf { it.isNotEmpty() }?.let { vCardURLS ->
-            contentBuilder.append(vCardURLS.toVCardFormat())
+            contentBuilder.append(vCardURLS.toVCardFormat() + "\n")
         }
 
         contentBuilder.append("END:VCARD")
