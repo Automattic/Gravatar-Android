@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
 
 internal interface AuthTokenStorage {
     suspend fun getToken(): String?
@@ -188,27 +189,11 @@ internal class DatastoreUserPrefsStorage(
         }
     }
 
-    private val verifiedAccountEntrySeparator = ";"
-    private val verifiedAccountKeyValueSeparator = "="
-
-    private fun Map<String, Boolean>.toCustomMapStringBoolean(): String {
-        return this.entries.joinToString(verifiedAccountEntrySeparator) {
-            "${it.key}$verifiedAccountKeyValueSeparator${it.value}"
-        }
-    }
+    private fun Map<String, Boolean>.toCustomMapStringBoolean(): String = Json.encodeToString(this)
 
     private fun String.toCustomMapStringBoolean(): Map<String, Boolean> {
-        if (this.isBlank()) return emptyMap() // Handle empty string case
-        return this.split(verifiedAccountEntrySeparator)
-            .filter { it.isNotBlank() } // Handle potential trailing semicolons or empty parts
-            .mapNotNull { entryString ->
-                val parts = entryString.split(verifiedAccountKeyValueSeparator, limit = 2)
-                if (parts.size == 2) {
-                    parts[0] to parts[1].toBooleanStrict()
-                } else {
-                    null
-                }
-            }
-            .toMap()
+        return runCatching { Json.decodeFromString<Map<String, Boolean>>(this@toCustomMapStringBoolean) }
+            .getOrNull()
+            ?: emptyMap()
     }
 }
