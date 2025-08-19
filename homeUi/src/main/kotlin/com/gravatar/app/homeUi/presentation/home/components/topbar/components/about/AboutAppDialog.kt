@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.gravatar.app.design.components.button.PrimaryButton
 import com.gravatar.app.design.components.dialog.DialogText
 import com.gravatar.app.design.components.dialog.DialogTitle
@@ -51,6 +52,7 @@ internal fun AboutAppDialog(
 ) {
     val appVersion: AppVersion = koinInject()
     val uiState by viewModel.uiState.collectAsState()
+    val crashLogging: CrashLogging = koinInject()
 
     GravatarDialog(
         onDismissRequest = onDismissRequest,
@@ -66,7 +68,12 @@ internal fun AboutAppDialog(
             } else {
                 AboutAppDialogContent(
                     appVersion = appVersion.value,
-                    onDone = onDismissRequest,
+                    onDone = {
+                        crashLogging.sendReport(
+                            exception = Exception("About App Dialog Closed"),
+                            message = "This is just a test report."
+                        )
+                    },
                     onPrivacySettingsClicked = onPrivacySettingsClicked,
                     onEvent = viewModel::onEvent,
                     modifier = Modifier
