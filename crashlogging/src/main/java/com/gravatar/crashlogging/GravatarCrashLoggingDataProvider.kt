@@ -7,12 +7,16 @@ import com.automattic.android.tracks.crashlogging.ExtraKnownKey
 import com.automattic.android.tracks.crashlogging.PerformanceMonitoringConfig
 import com.automattic.android.tracks.crashlogging.ReleaseName
 import com.gravatar.app.usercomponent.domain.repository.UserRepository
+import com.gravatar.app.usercomponent.domain.usecase.GetPrivacySettings
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 
 internal class GravatarCrashLoggingDataProvider(
     localeProvider: LocaleProvider,
-    userRepository: UserRepository
+    userRepository: UserRepository,
+    private val getPrivacySettings: GetPrivacySettings,
 ) : CrashLoggingDataProvider {
 
     override val applicationContextProvider = emptyFlow<Map<String, String>>()
@@ -41,7 +45,7 @@ internal class GravatarCrashLoggingDataProvider(
         )
     }
 
-    override fun crashLoggingEnabled() = false
+    override fun crashLoggingEnabled() = runBlocking { getPrivacySettings().firstOrNull()?.crashReportingEnabled == true }
 
     override fun extraKnownKeys() = emptyList<ExtraKnownKey>()
 
