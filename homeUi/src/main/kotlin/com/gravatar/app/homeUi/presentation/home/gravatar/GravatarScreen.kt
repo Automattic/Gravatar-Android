@@ -141,7 +141,8 @@ internal fun GravatarScreen(
     }
 
     Screen(
-        appearanceLightStatusBars = false
+        screenName = "avatars",
+        appearanceLightStatusBars = false,
     ) {
         GravatarScreen(
             uiState = uiState,

@@ -81,7 +81,8 @@ internal fun ProfileScreen(
     }
 
     Screen(
-        appearanceLightStatusBars = false
+        screenName = "profile",
+        appearanceLightStatusBars = false,
     ) {
         ProfileScreen(
             uiState = uiState,
