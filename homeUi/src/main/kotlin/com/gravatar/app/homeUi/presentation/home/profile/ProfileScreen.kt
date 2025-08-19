@@ -26,7 +26,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -41,7 +40,7 @@ import com.gravatar.app.design.components.Screen
 import com.gravatar.app.design.components.snackbar.SnackbarType
 import com.gravatar.app.design.components.snackbar.showGravatarSnackbar
 import com.gravatar.app.homeUi.R
-import com.gravatar.app.homeUi.presentation.home.components.topbar.PrivacySettingsBottomSheet
+import com.gravatar.app.homeUi.presentation.home.components.privacySetting.PrivacySettingsBottomSheet
 import com.gravatar.app.homeUi.presentation.home.components.topbar.components.about.AboutAppDialog
 import com.gravatar.app.homeUi.presentation.home.profile.about.AboutInputField
 import com.gravatar.app.homeUi.presentation.home.profile.about.AboutSection

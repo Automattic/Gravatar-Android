@@ -4,6 +4,7 @@ import com.gravatar.app.homeUi.ImageDownloader
 import com.gravatar.app.homeUi.presentation.DrawableUtils
 import com.gravatar.app.homeUi.presentation.FileUtils
 import com.gravatar.app.homeUi.presentation.home.HomeViewModel
+import com.gravatar.app.homeUi.presentation.home.components.privacySetting.PrivacySettingsViewModel
 import com.gravatar.app.homeUi.presentation.home.components.topbar.TopBarPickerPopupViewModel
 import com.gravatar.app.homeUi.presentation.home.components.topbar.components.about.AboutAppDialogViewModel
 import com.gravatar.app.homeUi.presentation.home.gravatar.GravatarViewModel
@@ -25,6 +26,7 @@ val homeUiModule = module {
     viewModelOf(::AboutAppDialogViewModel)
     viewModelOf(::ShareViewModel)
     viewModelOf(::HomeViewModel)
+    viewModelOf(::PrivacySettingsViewModel)
 
     includes(userComponentModule)
 }

@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.gravatar.app.homeUi.presentation.home.components.topbar
+package com.gravatar.app.homeUi.presentation.home.components.privacySetting
 
 import android.content.Context
 import android.content.Intent
@@ -39,6 +39,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -49,8 +50,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gravatar.app.design.theme.GravatarAppTheme
 import com.gravatar.app.homeUi.R
+import org.koin.androidx.compose.koinViewModel
 
 private const val PRIVACY_POLICY_URL = "https://automattic.com/privacy/"
 
@@ -61,6 +64,9 @@ internal fun PrivacySettingsBottomSheet(
     val topPadding = with(LocalDensity.current) {
         WindowInsets.safeContent.only(WindowInsetsSides.Top).getTop(LocalDensity.current).toDp()
     }
+    val viewModel: PrivacySettingsViewModel = koinViewModel()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = rememberModalBottomSheetState(
@@ -79,6 +85,8 @@ internal fun PrivacySettingsBottomSheet(
         }
     ) {
         PrivacySettings(
+            uiState = uiState,
+            onEvent = viewModel::onEvent,
             onDismissRequest = onDismissRequest,
         )
     }
@@ -86,6 +94,8 @@ internal fun PrivacySettingsBottomSheet(
 
 @Composable
 internal fun PrivacySettings(
+    uiState: PrivacySettingUiState,
+    onEvent: (PrivacySettingsEvent) -> Unit,
     onDismissRequest: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -123,8 +133,8 @@ internal fun PrivacySettings(
                 settingTitle = stringResource(R.string.privacy_settings_share_analytics_data_tittle),
                 settingIcon = R.drawable.ic_analytics_tracking,
                 settingDescription = stringResource(R.string.privacy_settings_share_analytics_data_description),
-                checked = true, // Replace with actual state
-                onCheckedChange = { },
+                checked = uiState.privacySettings.analyticsEnabled,
+                onCheckedChange = { onEvent(PrivacySettingsEvent.OnAnalyticsEnabledChanged(it)) },
                 extraContent = {
                     Text(
                         text = stringResource(R.string.privacy_settings_privacy_policy),
@@ -142,8 +152,8 @@ internal fun PrivacySettings(
                 settingTitle = stringResource(R.string.privacy_settings_share_crash_reports_title),
                 settingIcon = R.drawable.ic_crashlytics,
                 settingDescription = stringResource(R.string.privacy_settings_share_crash_reports_description),
-                checked = true, // Replace with actual state
-                onCheckedChange = { },
+                checked = uiState.privacySettings.crashReportingEnabled,
+                onCheckedChange = { onEvent(PrivacySettingsEvent.OnCrashReportingEnabledChanged(it)) },
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -206,6 +216,8 @@ private fun PrivacySettingsCard(
 internal fun PrivacySettingsPreview() {
     GravatarAppTheme {
         PrivacySettings(
+            uiState = PrivacySettingUiState(),
+            onEvent = {},
             onDismissRequest = {}
         )
     }
