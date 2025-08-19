@@ -54,6 +54,13 @@ class GravatarAndroidApplicationConventionPlugin : Plugin<Project> {
         }
 
         signingConfigs {
+            getByName("debug") {
+                storeFile = project.rootProject.file("debug.keystore")
+                storePassword = "android"
+                keyAlias = "androiddebugkey"
+                keyPassword = "android"
+            }
+
             if (canSignRelease) {
                 maybeCreate("release").apply {
                     storeFile = project.file("$secretsPath/${secretsProperties.getProperty("uploadStoreFile")}")
@@ -63,7 +70,6 @@ class GravatarAndroidApplicationConventionPlugin : Plugin<Project> {
                 }
             }
         }
-
         buildTypes {
             getByName("debug") {
                 signingConfig = signingConfigs.getByName("debug")
