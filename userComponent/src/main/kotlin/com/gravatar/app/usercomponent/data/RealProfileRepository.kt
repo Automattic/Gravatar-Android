@@ -2,9 +2,12 @@ package com.gravatar.app.usercomponent.data
 
 import com.gravatar.app.usercomponent.data.database.ProfileDao
 import com.gravatar.app.usercomponent.data.database.model.ProfileEntity
+import com.gravatar.app.usercomponent.data.database.model.toEntity
+import com.gravatar.app.usercomponent.data.database.model.toVerifiedAccount
 import com.gravatar.app.usercomponent.domain.repository.ProfileRepository
 import com.gravatar.restapi.models.Profile
 import com.gravatar.restapi.models.UpdateProfileRequest
+import com.gravatar.restapi.models.VerifiedAccount
 import com.gravatar.services.ProfileService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -27,8 +30,12 @@ internal class RealProfileRepository(
     }
 
     override fun get(): Flow<Profile?> {
-        return profileDao.getProfile()
-            .map { entity -> entity?.toProfile() }
+        return profileDao.getProfileWithVerifiedAccounts()
+            .map { joined ->
+                if (joined == null) return@map null
+                val accounts: List<VerifiedAccount> = joined.verifiedAccounts.map { it.toVerifiedAccount() }
+                joined.profile.toProfile(accounts)
+            }
     }
 
     override suspend fun update(updateRequest: UpdateProfileRequest): Result<Unit> {
@@ -36,7 +43,7 @@ internal class RealProfileRepository(
         return if (token != null) {
             val result = profileService.updateProfileCatching(token, updateRequest).valueOrNull()
             if (result != null) {
-                profileDao.insertProfile(ProfileEntity.fromProfile(result))
+                storeProfile(result)
                 Result.success(Unit)
             } else {
                 Result.failure(IllegalStateException("Failed to update profile"))
@@ -55,7 +62,7 @@ internal class RealProfileRepository(
         if (token != null) {
             val fetchedProfile = profileService.retrieveAuthenticatedCatching(withToken = token).valueOrNull()
             return if (fetchedProfile != null) {
-                profileDao.insertProfile(ProfileEntity.fromProfile(fetchedProfile))
+                storeProfile(fetchedProfile)
                 Result.success(fetchedProfile)
             } else {
                 Result.failure(IllegalStateException("Failed to fetch user profile"))
@@ -63,5 +70,11 @@ internal class RealProfileRepository(
         } else {
             return Result.failure(IllegalStateException("User is not logged in"))
         }
+    }
+
+    private suspend fun storeProfile(result: Profile) {
+        val profileEntity = ProfileEntity.fromProfile(result)
+        val accounts = result.verifiedAccounts.map { it.toEntity(profileEntity.userId) }
+        profileDao.insertProfileWithVerifiedAccounts(profileEntity, accounts)
     }
 }

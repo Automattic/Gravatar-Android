@@ -4,6 +4,8 @@ import app.cash.turbine.test
 import com.gravatar.app.testUtils.CoroutineTestRule
 import com.gravatar.app.usercomponent.data.database.ProfileDao
 import com.gravatar.app.usercomponent.data.database.model.ProfileEntity
+import com.gravatar.app.usercomponent.data.database.model.ProfileWithVerifiedAccounts
+import com.gravatar.app.usercomponent.data.database.model.toEntity
 import com.gravatar.restapi.models.Profile
 import com.gravatar.restapi.models.ProfileContactInfo
 import com.gravatar.restapi.models.UpdateProfileRequest
@@ -59,7 +61,7 @@ class RealProfileRepositoryTest {
 
         val profileResult = GravatarResult.Success<Profile, ErrorType>(profile)
         coEvery { profileService.retrieveAuthenticatedCatching(testToken) } returns profileResult
-        coJustRun { profileDao.insertProfile(any()) }
+        coJustRun { profileDao.insertProfileWithVerifiedAccounts(any(), any()) }
 
         // When
         val result = repository.refreshUserProfile()
@@ -67,7 +69,7 @@ class RealProfileRepositoryTest {
         // Then
         assertTrue(result.isSuccess)
         coVerify { profileService.retrieveAuthenticatedCatching(testToken) }
-        coVerify { profileDao.insertProfile(any()) }
+        coVerify { profileDao.insertProfileWithVerifiedAccounts(any(), any()) }
     }
 
     @Test
@@ -107,9 +109,13 @@ class RealProfileRepositoryTest {
         // Given
         val profile = createTestProfile()
         val profileEntity = ProfileEntity.fromProfile(profile)
+        val profileWithVerifiedAccounts = ProfileWithVerifiedAccounts(
+            profile = profileEntity,
+            verifiedAccounts = profile.verifiedAccounts.map { it.toEntity(profileEntity.userId) }
+        )
         tokenStorage.saveToken(testToken)
 
-        every { profileDao.getProfile() } returns flow { emit(profileEntity) }
+        every { profileDao.getProfileWithVerifiedAccounts() } returns flow { emit(profileWithVerifiedAccounts) }
 
         // When
         repository.get().test {
@@ -117,7 +123,7 @@ class RealProfileRepositoryTest {
             assertEquals(profile, awaitItem())
             awaitComplete()
             // Verify DAO was called and service was not called
-            verify { profileDao.getProfile() }
+            verify { profileDao.getProfileWithVerifiedAccounts() }
             coVerify(exactly = 0) { profileService.retrieveAuthenticatedCatching(any()) }
         }
     }
@@ -133,7 +139,7 @@ class RealProfileRepositoryTest {
 
         val profileResult = GravatarResult.Success<Profile, ErrorType>(profile)
         coEvery { profileService.updateProfileCatching(testToken, updateRequest) } returns profileResult
-        coJustRun { profileDao.insertProfile(any()) }
+        coJustRun { profileDao.insertProfileWithVerifiedAccounts(any(), any()) }
 
         // When
         val result = repository.update(updateRequest)
@@ -142,7 +148,7 @@ class RealProfileRepositoryTest {
         assertTrue(result.isSuccess)
 
         coVerify { profileService.updateProfileCatching(testToken, updateRequest) }
-        coVerify { profileDao.insertProfile(any()) }
+        coVerify { profileDao.insertProfileWithVerifiedAccounts(any(), any()) }
     }
 
     @Test

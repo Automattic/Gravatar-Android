@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
 
 internal interface AuthTokenStorage {
     suspend fun getToken(): String?
@@ -69,6 +70,7 @@ internal class DatastoreUserPrefsStorage(
         private const val USER_SHARE_PRIVATE_PHONE_KEY = "share_private_phone"
         private const val USER_SHARE_PRIVATE_PHONE_VALUE_KEY = "private_phone_value"
         private const val USER_SHARE_PRIVATE_EMAIL_VALUE_KEY = "private_email_value"
+        private const val USER_SHARE_VERIFIED_ACCOUNTS_KEY = "verified_accounts"
     }
 
     private val tokenKey = stringPreferencesKey(AUTH_TOKEN_KEY)
@@ -83,6 +85,7 @@ internal class DatastoreUserPrefsStorage(
     private val userSharePrivatePhoneKey = booleanPreferencesKey(USER_SHARE_PRIVATE_PHONE_KEY)
     private val userSharePrivatePhoneValueKey = stringPreferencesKey(USER_SHARE_PRIVATE_PHONE_VALUE_KEY)
     private val userSharePrivateEmailValueKey = stringPreferencesKey(USER_SHARE_PRIVATE_EMAIL_VALUE_KEY)
+    private val userShareVerifiedAccounts = stringPreferencesKey(USER_SHARE_VERIFIED_ACCOUNTS_KEY)
 
     override suspend fun getToken(): String? {
         return try {
@@ -141,7 +144,8 @@ internal class DatastoreUserPrefsStorage(
                     title = preferences[userShareTitleKey] ?: true,
                     organization = preferences[userShareOrganizationKey] ?: true,
                     description = preferences[userShareDescriptionKey] ?: true,
-                    profileUrl = preferences[userShareProfileUrlKey] ?: true
+                    profileUrl = preferences[userShareProfileUrlKey] ?: true,
+                    verifiedAccounts = preferences[userShareVerifiedAccounts]?.toCustomMapStringBoolean() ?: emptyMap()
                 )
             }
             .catch { emit(UserSharePreferences.Default) }
@@ -160,6 +164,7 @@ internal class DatastoreUserPrefsStorage(
             preferences[userShareOrganizationKey] = userSharePreferences.organization
             preferences[userShareDescriptionKey] = userSharePreferences.description
             preferences[userShareProfileUrlKey] = userSharePreferences.profileUrl
+            preferences[userShareVerifiedAccounts] = userSharePreferences.verifiedAccounts.toCustomMapStringBoolean()
         }
     }
 
@@ -182,5 +187,13 @@ internal class DatastoreUserPrefsStorage(
                 preferences[userSharePrivatePhoneValueKey] = privateContactInfo.privatePhone
             }
         }
+    }
+
+    private fun Map<String, Boolean>.toCustomMapStringBoolean(): String = Json.encodeToString(this)
+
+    private fun String.toCustomMapStringBoolean(): Map<String, Boolean> {
+        return runCatching { Json.decodeFromString<Map<String, Boolean>>(this@toCustomMapStringBoolean) }
+            .getOrNull()
+            ?: emptyMap()
     }
 }

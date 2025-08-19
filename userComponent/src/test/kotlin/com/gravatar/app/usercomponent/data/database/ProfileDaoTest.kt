@@ -3,6 +3,8 @@ package com.gravatar.app.usercomponent.data.database
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.gravatar.app.usercomponent.data.database.model.ProfileEntity
+import com.gravatar.app.usercomponent.data.database.model.ProfileWithVerifiedAccounts
+import com.gravatar.app.usercomponent.data.database.model.VerifiedAccountEntity
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -38,22 +40,25 @@ class ProfileDaoTest {
     }
 
     @Test
-    fun insertAndGetProfile() = runTest {
+    fun insertAndGetFullProfile() = runTest {
         // Given
-        val profileEntity = createTestProfileEntity()
+        val profileWithVerifiedAccounts = createTestProfile()
 
         // When
-        profileDao.insertProfile(profileEntity)
-        val retrievedProfile = profileDao.getProfile().firstOrNull()
+        profileDao.insertProfileWithVerifiedAccounts(
+            profileWithVerifiedAccounts.profile,
+            profileWithVerifiedAccounts.verifiedAccounts
+        )
+        val retrievedProfile = profileDao.getProfileWithVerifiedAccounts().firstOrNull()
 
         // Then
-        assertEquals(profileEntity, retrievedProfile)
+        assertEquals(profileWithVerifiedAccounts, retrievedProfile)
     }
 
     @Test
     fun getProfileWhenEmpty() = runTest {
         // When
-        val retrievedProfile = profileDao.getProfile().firstOrNull()
+        val retrievedProfile = profileDao.getProfileWithVerifiedAccounts().firstOrNull()
 
         // Then
         assertNull(retrievedProfile)
@@ -62,57 +67,75 @@ class ProfileDaoTest {
     @Test
     fun insertReplaceAndGetProfile() = runTest {
         // Given
-        val profileEntity1 = createTestProfileEntity(userId = 123, displayName = "Original Name")
-        val profileEntity2 = createTestProfileEntity(userId = 123, displayName = "Updated Name")
+        val profile1 = createTestProfile(userId = 123, displayName = "Original Name")
+        val profile2 = createTestProfile(userId = 123, displayName = "Updated Name")
 
         // When
-        profileDao.insertProfile(profileEntity1)
-        profileDao.insertProfile(profileEntity2)
-        val retrievedProfile = profileDao.getProfile().firstOrNull()
+        profileDao.insertProfileWithVerifiedAccounts(profile1.profile, profile1.verifiedAccounts)
+        profileDao.insertProfileWithVerifiedAccounts(profile2.profile, profile2.verifiedAccounts)
+        val retrievedProfile = profileDao.getProfileWithVerifiedAccounts().firstOrNull()
 
         // Then
-        assertEquals(profileEntity2, retrievedProfile)
+        assertEquals(profile2, retrievedProfile)
     }
 
     @Test
     fun deleteProfile() = runTest {
         // Given
-        val profileEntity = createTestProfileEntity()
-        profileDao.insertProfile(profileEntity)
+        val profileWithVerifiedAccounts = createTestProfile()
+        profileDao.insertProfileWithVerifiedAccounts(
+            profileWithVerifiedAccounts.profile,
+            profileWithVerifiedAccounts.verifiedAccounts
+        )
 
         // Verify profile was inserted
-        val profileBeforeDelete = profileDao.getProfile().firstOrNull()
-        assertEquals(profileEntity, profileBeforeDelete)
+        val profileBeforeDelete = profileDao.getProfileWithVerifiedAccounts().firstOrNull()
+        assertEquals(profileWithVerifiedAccounts, profileBeforeDelete)
 
         // When
         profileDao.delete()
 
         // Then
-        val profileAfterDelete = profileDao.getProfile().firstOrNull()
+        val profileAfterDelete = profileDao.getProfileWithVerifiedAccounts().firstOrNull()
         assertNull(profileAfterDelete)
     }
 
-    private fun createTestProfileEntity(
+    private fun createTestProfile(
         userId: Int = 123,
         displayName: String = "Test User"
-    ): ProfileEntity {
-        return ProfileEntity(
-            userId = userId,
-            hash = "test-hash",
-            displayName = displayName,
-            profileUrl = "https://example.com/profile",
-            avatarUrl = "https://example.com/avatar",
-            avatarAltText = "",
-            description = "Test Description",
-            pronouns = "they/them",
-            pronunciation = "Test Pronunciation",
-            location = "Test Location",
-            jobTitle = "Test Job",
-            company = "Test Company",
-            firstName = "Test",
-            lastName = "User",
-            contactCellPhone = "123-456-7890",
-            contactEmail = "test@example.com"
+    ): ProfileWithVerifiedAccounts {
+        return ProfileWithVerifiedAccounts(
+            profile = ProfileEntity(
+                userId = userId,
+                hash = "test-hash",
+                displayName = displayName,
+                profileUrl = "https://example.com/profile",
+                avatarUrl = "https://example.com/avatar",
+                avatarAltText = "",
+                description = "Test Description",
+                pronouns = "they/them",
+                pronunciation = "Test Pronunciation",
+                location = "Test Location",
+                jobTitle = "Test Job",
+                company = "Test Company",
+                firstName = "Test",
+                lastName = "User",
+                contactCellPhone = "123-456-7890",
+                contactEmail = "test@example.com"
+            ),
+            verifiedAccounts = listOf(createTestVerifiedAccountEntity())
+        )
+    }
+
+    private fun createTestVerifiedAccountEntity(id: Long = 1): VerifiedAccountEntity {
+        return VerifiedAccountEntity(
+            id = id,
+            profileUserId = 123,
+            serviceLabel = "TestService",
+            serviceType = "type",
+            serviceIcon = "https://example.com/icon.png",
+            url = "https://example.com/testuser",
+            isHidden = false
         )
     }
 }

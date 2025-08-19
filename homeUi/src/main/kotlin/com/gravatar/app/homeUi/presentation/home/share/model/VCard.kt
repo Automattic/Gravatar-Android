@@ -15,8 +15,10 @@ internal class VCard private constructor(
     val email: String? = null,
     val location: String? = null,
     val photo: Drawable? = null,
+    val verifiedAccounts: List<URL> = emptyList(),
 ) {
 
+    @Suppress("CyclomaticComplexMethod")
     fun exportToString(withPhoto: Boolean = true): String {
         val contentBuilder = StringBuilder().append("BEGIN:VCARD\n")
             .append("VERSION:3.0\n")
@@ -55,6 +57,9 @@ internal class VCard private constructor(
                 }
             }
         }
+        verifiedAccounts.takeIf { it.isNotEmpty() }?.let { vCardURLS ->
+            contentBuilder.append(vCardURLS.toVCardFormat() + "\n")
+        }
 
         contentBuilder.append("END:VCARD")
         return contentBuilder.toString()
@@ -64,6 +69,12 @@ internal class VCard private constructor(
 
     // We've seen issues with newlines in the vCard content causing problems when importing the contact so removing them
     private fun String.escaped() = this.replace("\n", " ")
+
+    private fun List<URL>.toVCardFormat(): String {
+        return joinToString(separator = "\n") { url ->
+            "URL;TYPE=\"${url.label}\":${url.url}"
+        }
+    }
 
     class Builder(
         private var firstName: String? = null,
@@ -77,6 +88,7 @@ internal class VCard private constructor(
         private var email: String? = null,
         private var location: String? = null,
         private var photo: Drawable? = null,
+        private var verifiedAccounts: List<URL> = emptyList(),
     ) {
         fun firstName(firstName: String?) = apply { this.firstName = firstName }
         fun lastName(lastName: String?) = apply { this.lastName = lastName }
@@ -89,6 +101,7 @@ internal class VCard private constructor(
         fun email(email: String?) = apply { this.email = email }
         fun location(location: String?) = apply { this.location = location }
         fun photo(photo: Drawable?) = apply { this.photo = photo }
+        fun verifiedAccounts(verifiedAccounts: List<URL>) = apply { this.verifiedAccounts = verifiedAccounts }
 
         fun build() = VCard(
             firstName = firstName,
@@ -102,6 +115,12 @@ internal class VCard private constructor(
             email = email,
             location = location,
             photo = photo,
+            verifiedAccounts = verifiedAccounts,
         )
     }
+
+    data class URL(
+        val label: String,
+        val url: String,
+    )
 }

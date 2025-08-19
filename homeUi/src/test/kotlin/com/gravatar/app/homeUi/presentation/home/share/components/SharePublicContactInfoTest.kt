@@ -7,10 +7,13 @@ import com.gravatar.app.testUtils.roborazzi.RoborazziTest
 import com.gravatar.app.usercomponent.domain.model.UserSharePreferences
 import com.gravatar.extensions.defaultProfile
 import com.gravatar.restapi.models.Profile
+import com.gravatar.restapi.models.VerifiedAccount
 import org.junit.Test
 import java.net.URI
 
 class SharePublicContactInfoTest : RoborazziTest() {
+
+    val verifiedServiceUrl = "https://example.com/johndoe"
 
     val fullProfile = Profile {
         firstName = "John"
@@ -27,6 +30,15 @@ class SharePublicContactInfoTest : RoborazziTest() {
         avatarAltText = "John Doe's Gravatar"
         pronouns = "he/him"
         pronunciation = "John Doe"
+        verifiedAccounts = listOf(
+            VerifiedAccount {
+                serviceIcon = URI.create("https://example.com/icon.png")
+                serviceLabel = "Example Service"
+                serviceType = "example"
+                url = URI.create(verifiedServiceUrl)
+                isHidden = false
+            }
+        )
     }
 
     @Test
@@ -55,6 +67,7 @@ class SharePublicContactInfoTest : RoborazziTest() {
                     profileUrl = false,
                     privateEmail = false,
                     privatePhone = false,
+                    verifiedAccounts = mapOf(verifiedServiceUrl to false)
                 ),
                 onUserPreferenceChanged = {},
                 modifier = Modifier.fillMaxWidth()

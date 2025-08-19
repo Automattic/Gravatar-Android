@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.gravatar.restapi.models.Profile
 import com.gravatar.restapi.models.ProfileContactInfo
+import com.gravatar.restapi.models.VerifiedAccount
 import java.net.URI
 
 @Entity(tableName = "user_profiles")
@@ -46,7 +47,7 @@ data class ProfileEntity(
     /**
      * Converts this entity to a Profile model.
      */
-    fun toProfile(): Profile {
+    fun toProfile(verifiedAccounts: List<VerifiedAccount> = emptyList()): Profile {
         return Profile {
             userId = this@ProfileEntity.userId
             hash = this@ProfileEntity.hash
@@ -66,7 +67,7 @@ data class ProfileEntity(
                 cellPhone = this@ProfileEntity.contactCellPhone
                 email = this@ProfileEntity.contactEmail
             }
-            verifiedAccounts = emptyList()
+            this.verifiedAccounts = verifiedAccounts
         }
     }
 
