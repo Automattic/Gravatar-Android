@@ -28,6 +28,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
+import com.gravatar.app.design.components.Screen
 import com.gravatar.app.design.theme.GravatarAppTheme
 import com.gravatar.app.homeUi.GravatarFileProvider
 import com.gravatar.app.homeUi.presentation.home.components.topbar.components.about.AboutAppDialog
@@ -73,12 +74,16 @@ internal fun ShareScreen(
         }
     }
 
-    ShareScreen(
-        uiState = uiState,
-        onEvent = { event ->
-            viewModel.onEvent(event)
-        }
-    )
+    Screen(
+        appearanceLightStatusBars = false
+    ) {
+        ShareScreen(
+            uiState = uiState,
+            onEvent = { event ->
+                viewModel.onEvent(event)
+            }
+        )
+    }
 }
 
 @Composable

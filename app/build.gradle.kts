@@ -16,6 +16,7 @@ dependencies {
     implementation(project(":clock"))
     implementation(project(":design"))
     implementation(project(":networkMonitor"))
+    implementation(project(":crashlogging"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

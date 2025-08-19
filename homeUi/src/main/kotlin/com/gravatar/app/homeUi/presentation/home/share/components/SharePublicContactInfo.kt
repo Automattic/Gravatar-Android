@@ -28,8 +28,8 @@ internal fun SharePublicContactInfo(
     ) {
         ShareSectionTitle(
             title = R.string.share_tab_public_info_title,
-            rightIcon = R.drawable.gravatar,
-            rightIconTint = MaterialTheme.colorScheme.primary,
+            icon = R.drawable.gravatar,
+            iconTint = MaterialTheme.colorScheme.primary,
             Modifier.padding(top = 8.dp, bottom = 28.dp, start = horizontalPadding, end = horizontalPadding)
         )
         profile.fullName?.let { fullName ->
@@ -91,6 +91,21 @@ internal fun SharePublicContactInfo(
                 value = profileUrl,
                 checked = userSharePreferences.profileUrl,
                 onCheckedChange = { onUserPreferenceChanged(ShareFieldType.ProfileUrl(it)) },
+                modifier = Modifier.padding(horizontal = horizontalPadding),
+            )
+            ItemDivider()
+        }
+
+        profile.verifiedAccounts.forEach { account ->
+            SharePublicRow(
+                label = stringResource(R.string.share_tab_verified_service_account_label, account.serviceLabel),
+                value = account.url.toString(),
+                checked = userSharePreferences.verifiedAccountUrlChecked(account.url.toString()),
+                onCheckedChange = {
+                    onUserPreferenceChanged(
+                        ShareFieldType.VerifiedAccount(account.url.toString(), it)
+                    )
+                },
                 modifier = Modifier.padding(horizontal = horizontalPadding),
             )
             ItemDivider()

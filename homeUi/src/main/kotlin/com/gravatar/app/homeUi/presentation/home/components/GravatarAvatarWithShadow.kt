@@ -1,12 +1,10 @@
 package com.gravatar.app.homeUi.presentation.home.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -29,28 +27,12 @@ internal fun GravatarAvatarWithShadow(
         )
     }
 
-    var loaded by remember {
-        mutableStateOf(false)
-    }
-
-    val finalModifier = remember(loaded, borderShape, modifier) {
-        if (loaded) {
-            modifier
-                .clip(borderShape)
-                .background(Brush.linearGradient(colorStops = colorStops))
-                .padding(1.dp)
-                .shadow(1.dp, borderShape)
-        } else {
-            modifier
-                .padding(1.dp)
-                .clip(borderShape)
-        }
-    }
-    Box(
-        modifier = finalModifier
-    ) {
-        AsyncImageWithCachePlaceholder(url, Modifier.clip(borderShape), onLoadedState = {
-            loaded = it
-        })
-    }
+    AsyncImageWithCachePlaceholder(
+        url = url,
+        modifier = modifier
+            .clip(borderShape)
+            .background(Brush.linearGradient(colorStops = colorStops))
+            .padding(1.dp)
+            .shadow(1.dp, borderShape),
+    )
 }

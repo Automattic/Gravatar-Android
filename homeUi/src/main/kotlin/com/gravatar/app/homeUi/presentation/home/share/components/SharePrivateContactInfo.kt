@@ -24,9 +24,9 @@ internal fun SharePrivateContactInfo(
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp), modifier = modifier) {
         ShareSectionTitle(
-            leftIcon = R.drawable.share_section_title_warning,
+            accessoryIcon = R.drawable.share_section_title_warning,
             title = R.string.share_tab_private_contact_info_title,
-            rightIcon = R.drawable.share_section_title_lock,
+            icon = R.drawable.share_section_title_lock,
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {

@@ -22,6 +22,7 @@ dependencies {
     compileOnly(libs.compose.compiler.gradlePlugin)
     compileOnly(libs.detekt.gradlePlugin)
     implementation(libs.roborazzi.gradlePlugin)
+    implementation(libs.sentry.gradlePlugin)
 }
 
 tasks {

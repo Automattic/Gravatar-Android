@@ -36,6 +36,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
+import com.gravatar.app.design.components.Screen
 import com.gravatar.app.design.components.snackbar.SnackbarType
 import com.gravatar.app.design.components.snackbar.showGravatarSnackbar
 import com.gravatar.app.homeUi.R
@@ -79,12 +80,16 @@ internal fun ProfileScreen(
         }
     }
 
-    ProfileScreen(
-        uiState = uiState,
-        onEvent = { event ->
-            viewModel.onEvent(profileEvent = event)
-        }
-    )
+    Screen(
+        appearanceLightStatusBars = false
+    ) {
+        ProfileScreen(
+            uiState = uiState,
+            onEvent = { event ->
+                viewModel.onEvent(profileEvent = event)
+            }
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)

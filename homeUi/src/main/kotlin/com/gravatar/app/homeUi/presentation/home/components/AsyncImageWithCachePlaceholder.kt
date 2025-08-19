@@ -20,9 +20,8 @@ import coil.request.ImageRequest
 internal fun AsyncImageWithCachePlaceholder(
     url: String,
     modifier: Modifier = Modifier,
-    onLoadedState: (Boolean) -> Unit = {},
 ) {
-    var oldImage: MemoryCache.Key? by remember {
+    var oldImageKey: MemoryCache.Key? by remember {
         mutableStateOf(null)
     }
 
@@ -31,20 +30,17 @@ internal fun AsyncImageWithCachePlaceholder(
             .data(url)
             .diskCachePolicy(CachePolicy.ENABLED)
             .memoryCachePolicy(CachePolicy.ENABLED)
-            .placeholderMemoryCacheKey(oldImage)
+            .placeholderMemoryCacheKey(oldImageKey)
             .placeholder(Color.LightGray.toArgb().toDrawable())
-            .listener { _, successResult ->
-                oldImage = successResult.memoryCacheKey
-            }
             .build(),
         contentDescription = null,
         contentScale = ContentScale.Crop,
-        onLoading = {
-            onLoadedState.invoke(false)
-        },
-        onSuccess = {
-            onLoadedState.invoke(true)
-        },
-        modifier = modifier
+        modifier = modifier,
+        onSuccess = { state ->
+            val newKey = state.result.memoryCacheKey
+            if (newKey != oldImageKey) {
+                oldImageKey = newKey
+            }
+        }
     )
 }

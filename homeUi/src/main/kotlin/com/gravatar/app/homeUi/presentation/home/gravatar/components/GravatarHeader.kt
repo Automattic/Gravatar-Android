@@ -28,6 +28,7 @@ import androidx.constraintlayout.compose.ExperimentalMotionApi
 import androidx.constraintlayout.compose.MotionLayout
 import androidx.constraintlayout.compose.MotionScene
 import androidx.constraintlayout.compose.layoutId
+import com.gravatar.app.design.theme.GravatarAppTheme
 import com.gravatar.app.homeUi.R
 import com.gravatar.app.homeUi.presentation.home.components.BlurredHeaderBackground
 import com.gravatar.app.homeUi.presentation.home.components.GravatarAvatarWithShadow
@@ -59,55 +60,57 @@ internal fun GravatarHeader(
             .decodeToString()
     }
 
-    BlurredHeaderBackground(
-        avatarUrl = avatarUrl,
-        modifier = modifier.fillMaxWidth(),
-    ) {
-        MotionLayout(
-            motionScene = MotionScene(content = motionScene),
-            progress = progress,
-            modifier = modifier
-                .systemBarsPadding()
-                .fillMaxWidth()
-                .height(expandedHeight)
+    GravatarAppTheme(darkTheme = true) {
+        BlurredHeaderBackground(
+            avatarUrl = avatarUrl,
+            modifier = modifier.fillMaxWidth(),
         ) {
-            // Main circular avatar
-            GravatarAvatarWithShadow(
-                url = avatarUrl,
-                borderShape = CircleShape,
-                modifier = Modifier
-                    .layoutId("avatar1")
-            )
-
-            // Secondary square avatar
-            GravatarAvatarWithShadow(
-                url = avatarUrl,
-                borderShape = RoundedCornerShape(8.dp),
-                modifier = Modifier
-                    .layoutId("avatar2")
-            )
-
-            // Menu button
-            IconButton(
-                onClick = {
-                    topBarMenuVisible = true
-                },
-                modifier = Modifier
-                    .layoutId("menuButton")
+            MotionLayout(
+                motionScene = MotionScene(content = motionScene),
+                progress = progress,
+                modifier = modifier
+                    .systemBarsPadding()
+                    .fillMaxWidth()
+                    .height(expandedHeight)
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.more_button),
-                    contentDescription = stringResource(R.string.gravatar_tab_header_more_options),
+                // Main circular avatar
+                GravatarAvatarWithShadow(
+                    url = avatarUrl,
+                    borderShape = CircleShape,
+                    modifier = Modifier
+                        .layoutId("avatar1")
                 )
-            }
 
-            Box(modifier = Modifier.layoutId("menuPopup")) {
-                if (topBarMenuVisible) {
-                    TopBarPickerPopup(
-                        anchorAlignment = Alignment.End,
-                        onDismissRequest = { topBarMenuVisible = false },
-                        onAboutAppClicked = onAboutAppClicked
+                // Secondary square avatar
+                GravatarAvatarWithShadow(
+                    url = avatarUrl,
+                    borderShape = RoundedCornerShape(8.dp),
+                    modifier = Modifier
+                        .layoutId("avatar2")
+                )
+
+                // Menu button
+                IconButton(
+                    onClick = {
+                        topBarMenuVisible = true
+                    },
+                    modifier = Modifier
+                        .layoutId("menuButton")
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.more_button),
+                        contentDescription = stringResource(R.string.gravatar_tab_header_more_options),
                     )
+                }
+
+                Box(modifier = Modifier.layoutId("menuPopup")) {
+                    if (topBarMenuVisible) {
+                        TopBarPickerPopup(
+                            anchorAlignment = Alignment.End,
+                            onDismissRequest = { topBarMenuVisible = false },
+                            onAboutAppClicked = onAboutAppClicked
+                        )
+                    }
                 }
             }
         }

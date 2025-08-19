@@ -9,6 +9,7 @@ data class UserSharePreferences(
     val organization: Boolean,
     val description: Boolean,
     val profileUrl: Boolean,
+    val verifiedAccounts: Map<String, Boolean>,
 ) {
     companion object {
         val Default = UserSharePreferences(
@@ -19,7 +20,10 @@ data class UserSharePreferences(
             title = true,
             organization = true,
             description = true,
-            profileUrl = true
+            profileUrl = true,
+            verifiedAccounts = emptyMap()
         )
     }
+
+    fun verifiedAccountUrlChecked(url: String) = verifiedAccounts[url] ?: true
 }

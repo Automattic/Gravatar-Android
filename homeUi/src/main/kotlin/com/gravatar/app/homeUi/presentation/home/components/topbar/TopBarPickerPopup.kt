@@ -52,13 +52,15 @@ internal fun TopBarPickerPopup(
         }
     }
 
-    TopBarPickerPopup(
-        anchorAlignment = anchorAlignment,
-        offset = offset,
-        onAboutAppClicked = onAboutAppClicked,
-        onDismissRequest = onDismissRequest,
-        onEvent = viewModel::onEvent
-    )
+    GravatarTheme {
+        TopBarPickerPopup(
+            anchorAlignment = anchorAlignment,
+            offset = offset,
+            onAboutAppClicked = onAboutAppClicked,
+            onDismissRequest = onDismissRequest,
+            onEvent = viewModel::onEvent
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -87,10 +89,10 @@ internal fun TopBarPickerPopup(
                     },
                 ),
                 PickerPopupItem(
-                    text = stringResource(R.string.gravatar_tab_topbar_menu_share),
+                    text = stringResource(R.string.gravatar_tab_topbar_menu_share_profile),
                     iconRes = R.drawable.top_bar_menu_share,
                     contentDescription = stringResource(
-                        R.string.gravatar_tab_topbar_menu_share
+                        R.string.gravatar_tab_topbar_menu_share_profile
                     ),
                     onClick = {
                         onEvent(TopBarPickerPopupEvent.OnShareProfileClicked)

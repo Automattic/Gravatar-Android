@@ -1,5 +1,6 @@
 package com.gravatar.app.homeUi.presentation.home.gravatar
 
+import android.net.Uri
 import com.gravatar.app.design.theme.GravatarAppTheme
 import com.gravatar.app.testUtils.roborazzi.RoborazziTest
 import com.gravatar.restapi.models.Avatar
@@ -49,6 +50,23 @@ class GravatarScreenTest : RoborazziTest() {
                             selected = false
                         }
                     },
+                    selectedAvatarId = null
+                ),
+                onEvent = { },
+                onTakePictureClicked = { },
+                onPickMediaClicked = { },
+            )
+        }
+    }
+
+    @Test
+    fun gravatarScreenWithOnlyOneAvatarBeingUploaded() = screenshotTest {
+        GravatarAppTheme {
+            GravatarScreen(
+                uiState = GravatarUiState(
+                    isLoading = false,
+                    avatars = emptyList(),
+                    uploadingAvatar = Uri.EMPTY,
                     selectedAvatarId = null
                 ),
                 onEvent = { },

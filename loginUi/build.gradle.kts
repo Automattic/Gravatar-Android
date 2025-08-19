@@ -1,4 +1,3 @@
-import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
@@ -7,7 +6,7 @@ plugins {
     alias(libs.plugins.gravatar.android.compose)
 }
 
-fun localProperties(): Properties {
+fun secretsProperties(): Properties {
     return rootProject.extra["secretsProperties"] as Properties
 }
 
@@ -16,7 +15,7 @@ android {
 
     buildFeatures.buildConfig = true
     defaultConfig {
-        localProperties().let { properties ->
+        secretsProperties().let { properties ->
             buildConfigField(
                 "String",
                 "OAUTH_CLIENT_ID",
