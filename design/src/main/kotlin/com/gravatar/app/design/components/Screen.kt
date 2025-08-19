@@ -3,7 +3,6 @@ package com.gravatar.app.design.components
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
@@ -25,13 +24,10 @@ fun Screen(
         controller?.isAppearanceLightStatusBars = appearanceLightStatusBars
     }
 
-    // Track when the screen becomes visible
-    LaunchedEffect(screenName) {
-        tracker.trackEvent(DesignEvent.ScreenView(screenName))
-    }
-
-    // Track when the screen is no longer visible / disposed
+    // Track when the screen becomes visible or is no longer visible
     DisposableEffect(screenName) {
+        tracker.trackEvent(DesignEvent.ScreenView(screenName))
+
         onDispose {
             tracker.trackEvent(DesignEvent.ScreenLeave(screenName))
         }
