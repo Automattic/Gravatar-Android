@@ -18,4 +18,8 @@ internal sealed class ProfileEvent {
     object OnAboutAppClicked : ProfileEvent()
 
     object OnDismissAboutAppDialog : ProfileEvent()
+
+    object OnPrivacySettingClicked : ProfileEvent()
+
+    object OnPrivacySettingDismissed : ProfileEvent()
 }

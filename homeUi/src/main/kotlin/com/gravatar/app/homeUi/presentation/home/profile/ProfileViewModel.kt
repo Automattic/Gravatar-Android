@@ -44,6 +44,8 @@ internal class ProfileViewModel(
             ProfileEvent.OnProfileLinkClicked -> openProfileUrl()
             ProfileEvent.OnAboutAppClicked -> showAboutAppDialog()
             ProfileEvent.OnDismissAboutAppDialog -> dismissAboutAppDialog()
+            ProfileEvent.OnPrivacySettingClicked -> showPrivacySettings()
+            ProfileEvent.OnPrivacySettingDismissed -> dismissPrivacySettings()
         }
     }
 
@@ -158,6 +160,18 @@ internal class ProfileViewModel(
     private fun dismissAboutAppDialog() {
         _uiState.update { currentState ->
             currentState.copy(isAboutAppDialogVisible = false)
+        }
+    }
+
+    private fun showPrivacySettings() {
+        _uiState.update { currentState ->
+            currentState.copy(isPrivacySettingsVisible = true)
+        }
+    }
+
+    private fun dismissPrivacySettings() {
+        _uiState.update { currentState ->
+            currentState.copy(isPrivacySettingsVisible = false)
         }
     }
 }
