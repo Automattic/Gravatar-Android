@@ -46,6 +46,7 @@ import org.koin.compose.koinInject
 @Composable
 internal fun AboutAppDialog(
     onDismissRequest: () -> Unit,
+    onPrivacySettingsClicked: () -> Unit,
     viewModel: AboutAppDialogViewModel = koinViewModel()
 ) {
     val appVersion: AppVersion = koinInject()
@@ -66,6 +67,7 @@ internal fun AboutAppDialog(
                 AboutAppDialogContent(
                     appVersion = appVersion.value,
                     onDone = onDismissRequest,
+                    onPrivacySettingsClicked = onPrivacySettingsClicked,
                     onEvent = viewModel::onEvent,
                     modifier = Modifier
                 )
@@ -75,7 +77,9 @@ internal fun AboutAppDialog(
                     onDismissRequest = { viewModel.dismissErrorMessage() }
                 ) {
                     Surface(
-                        modifier = Modifier.wrapContentWidth().wrapContentHeight(),
+                        modifier = Modifier
+                            .wrapContentWidth()
+                            .wrapContentHeight(),
                         shape = MaterialTheme.shapes.large,
                         tonalElevation = AlertDialogDefaults.TonalElevation
                     ) {
@@ -108,6 +112,7 @@ internal fun AboutAppDialogContent(
     appVersion: String,
     onDone: () -> Unit,
     onEvent: (AboutAppDialogEvent) -> Unit,
+    onPrivacySettingsClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -161,9 +166,9 @@ internal fun AboutAppDialogContent(
                 }
             )
             DialogText(
-                text = stringResource(R.string.about_app_dialog_privacy_policy),
+                text = stringResource(R.string.about_app_dialog_privacy_settings),
                 modifier = Modifier.clickable {
-                    context.openPrivacyPolicy()
+                    onPrivacySettingsClicked()
                 }
             )
         }
@@ -208,8 +213,6 @@ private fun Context.openSupportPage() = openUrl("https://$SUPPORT_URL")
 
 private fun Context.openTermsOfService() = openUrlInApp(TERMS_OF_SERVICE_URL)
 
-private fun Context.openPrivacyPolicy() = openUrlInApp(PRIVACY_POLICY_URL)
-
 private fun Context.openUrl(url: String) {
     val intent = Intent(Intent.ACTION_VIEW, url.toUri())
     startActivity(intent)
@@ -221,7 +224,6 @@ private fun Context.openUrlInApp(url: String) =
 private const val SUPPORT_URL = "support.gravatar.com"
 private const val SUPPORT_EMAIL = "support@gravatar.com"
 private const val TERMS_OF_SERVICE_URL = "https://wordpress.com/tos/"
-private const val PRIVACY_POLICY_URL = "https://automattic.com/privacy/"
 
 @Preview(showBackground = true)
 @Composable
@@ -231,6 +233,7 @@ private fun AboutAppDialogContentPreview() {
             appVersion = "0.0.1",
             onDone = { },
             onEvent = { _ -> },
+            onPrivacySettingsClicked = { },
             modifier = Modifier.fillMaxWidth()
         )
     }

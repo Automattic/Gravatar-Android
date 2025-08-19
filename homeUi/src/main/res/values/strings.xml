@@ -75,7 +75,7 @@
     <string name="about_app_dialog_get_help">Get help</string>
     <string name="about_app_dialog_legal">Legal</string>
     <string name="about_app_dialog_terms_of_service">Terms of Service</string>
-    <string name="about_app_dialog_privacy_policy">Privacy Policy</string>
+    <string name="about_app_dialog_privacy_settings">Privacy Settings</string>
     <string name="about_app_dialog_delete_account">Delete account</string>
     <string name="done_button_cta">Done</string>
     <string name="share_tab_public_info_title">Share info from your Gravatar profile.</string>
@@ -95,4 +95,10 @@
     <string name="about_app_dialog_delete_profile_confirmation_cancel">Cancel</string>
     <string name="about_app_dialog_delete_profile_error_message">An error has occurred while deleting your account</string>
     <string name="share_tab_verified_service_account_label">%s account</string>
+    <string name="privacy_settings_top_bar_title">Privacy Settings</string>
+    <string name="privacy_settings_share_analytics_data_tittle">Share Analytics Data</string>
+    <string name="privacy_settings_share_analytics_data_description">Share information with our analytics tool about how you interact with this app and our services.\n\nThis information helps us improve our products, and offer you a better experience.</string>
+    <string name="privacy_settings_share_crash_reports_title">Share Crash Reports</string>
+    <string name="privacy_settings_share_crash_reports_description">To help us improve the app’s performance and fix occasional bugs, enable automatic crash reports</string>
+    <string name="privacy_settings_privacy_policy">Privacy Policy</string>
 </resources>
