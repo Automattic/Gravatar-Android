@@ -4,10 +4,14 @@ import org.json.JSONObject
 
 interface Event {
     val name: String
-    val properties: Properties?
-        get() = null
+    val properties: Map<String, Any>
+        get() = emptyMap()
+}
 
-    interface Properties {
-        fun toJson(): JSONObject
+internal fun Map<String, Any>.asJson(): JSONObject {
+    return JSONObject().apply {
+        this@asJson.forEach { (key, value) ->
+            put(key, value)
+        }
     }
 }
