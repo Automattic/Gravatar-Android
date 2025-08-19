@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="home_screen_navigation_item_gravatar">Gravatar</string>
-    <string name="home_screen_navigation_item_share">Share</string>
+    <string name="home_screen_navigation_item_qr">QR</string>
     <string name="home_screen_navigation_item_profile">Profile</string>
     <string name="about_field_label_first_name">First</string>
     <string name="about_field_label_last_name">Last</string>

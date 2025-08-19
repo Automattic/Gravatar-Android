@@ -72,7 +72,7 @@ internal sealed class HomeDestination(
     @Serializable
     data object Share : HomeDestination(
         iconRes = com.gravatar.app.homeUi.R.drawable.qr_code_icon,
-        labelRes = com.gravatar.app.homeUi.R.string.home_screen_navigation_item_share,
+        labelRes = com.gravatar.app.homeUi.R.string.home_screen_navigation_item_qr,
         position = 2
     )
 
