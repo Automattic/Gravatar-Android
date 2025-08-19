@@ -14,6 +14,7 @@ internal data class ShareUiState(
     val userSharePreferences: UserSharePreferences = UserSharePreferences.Default,
     val isPrivateInformationDialogVisible: Boolean = false,
     val isQrCodeExpanded: Boolean = false,
+    val isPrivacySettingVisible: Boolean = false,
     private val avatarDrawable: Drawable? = null,
 ) {
     val privateContactState = PrivateContactState(

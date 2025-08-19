@@ -77,6 +77,8 @@ internal class ShareViewModel(
             ShareEvent.OnShareClick -> shareVCard()
             ShareEvent.OnExpandQrCodeClick -> expandQrCode()
             ShareEvent.OnDismissExpandedQrCode -> hideExpandedQrCode()
+            ShareEvent.OnPrivacySettingClicked -> showPrivacySetting()
+            ShareEvent.OnPrivacySettingDismissed -> hidePrivacySetting()
         }
     }
 
@@ -152,6 +154,18 @@ internal class ShareViewModel(
     private fun hidePrivateInformationDialog() {
         _uiState.update { currentState ->
             currentState.copy(isPrivateInformationDialogVisible = false)
+        }
+    }
+
+    private fun showPrivacySetting() {
+        _uiState.update { currentState ->
+            currentState.copy(isPrivacySettingVisible = true)
+        }
+    }
+
+    private fun hidePrivacySetting() {
+        _uiState.update { currentState ->
+            currentState.copy(isPrivacySettingVisible = false)
         }
     }
 

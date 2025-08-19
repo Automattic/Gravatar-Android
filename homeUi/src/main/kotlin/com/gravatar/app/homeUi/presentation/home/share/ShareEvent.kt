@@ -11,4 +11,6 @@ internal sealed class ShareEvent {
     data object OnShareClick : ShareEvent()
     data object OnExpandQrCodeClick : ShareEvent()
     data object OnDismissExpandedQrCode : ShareEvent()
+    data object OnPrivacySettingClicked : ShareEvent()
+    data object OnPrivacySettingDismissed : ShareEvent()
 }
