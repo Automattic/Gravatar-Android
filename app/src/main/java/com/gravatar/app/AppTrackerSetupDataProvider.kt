@@ -15,7 +15,7 @@ class AppTrackerSetupDataProvider(
     private val userRepository: UserRepository,
 ) : TrackerSetupDataProvider {
     override fun getTrackerSetupData(): Flow<TrackerSetupData> {
-        val userIdFlow: Flow<String?> = userRepository.getProfile().map { it?.userId?.toString() }.distinctUntilChanged()
+        val userIdFlow: Flow<String?> = userRepository.getProfile().map { it?.userLogin }.distinctUntilChanged()
         return getPrivacySettings()
             .combine(userIdFlow) { privacySettings, userId ->
                 TrackerSetupData(

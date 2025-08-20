@@ -62,7 +62,7 @@ class AppTrackerSetupDataProviderTest {
     @Test
     fun `emits ENABLED when analytics enabled and non-null user id`() = runTest {
         // Given
-        val profile = createProfile(123)
+        val profile = createProfile("user")
 
         provider.getTrackerSetupData().test {
             // When: emit both flows (combine requires both)
@@ -70,7 +70,7 @@ class AppTrackerSetupDataProviderTest {
             profileFlow.emit(profile)
 
             // Then
-            assertEquals(TrackerSetupData(TrackingState.ENABLED, "123"), awaitItem())
+            assertEquals(TrackerSetupData(TrackingState.ENABLED, "user"), awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -91,7 +91,9 @@ class AppTrackerSetupDataProviderTest {
     @Test
     fun `updates when privacy settings or user id changes and skips duplicate user id`() = runTest {
         // Given initial emissions
-        val profile = createProfile(1)
+        val user1 = "user1"
+        val user2 = "user2"
+        val profile = createProfile(user1)
 
         provider.getTrackerSetupData().test {
             privacySettingsFlow.emit(PrivacySettings(analyticsEnabled = true, crashReportingEnabled = true))
@@ -99,14 +101,14 @@ class AppTrackerSetupDataProviderTest {
 
             // First combined emission
             assertEquals(
-                TrackerSetupData(trackingState = TrackingState.ENABLED, userId = "1"),
+                TrackerSetupData(trackingState = TrackingState.ENABLED, userId = user1),
                 awaitItem()
             )
 
             // When: change privacy to disabled => new emission expected
             privacySettingsFlow.emit(PrivacySettings(analyticsEnabled = false, crashReportingEnabled = true))
             assertEquals(
-                TrackerSetupData(trackingState = TrackingState.DISABLED, userId = "1"),
+                TrackerSetupData(trackingState = TrackingState.DISABLED, userId = user1),
                 awaitItem()
             )
 
@@ -115,10 +117,10 @@ class AppTrackerSetupDataProviderTest {
             expectNoEvents()
 
             // When: emit profile with new userId (2) => new emission expected
-            val profile2 = createProfile(2)
+            val profile2 = createProfile(user2)
             profileFlow.emit(profile2)
             assertEquals(
-                TrackerSetupData(trackingState = TrackingState.DISABLED, userId = "2"),
+                TrackerSetupData(trackingState = TrackingState.DISABLED, userId = user2),
                 awaitItem()
             )
 
@@ -126,7 +128,7 @@ class AppTrackerSetupDataProviderTest {
         }
     }
 
-    private fun createProfile(id: Int): Profile {
+    private fun createProfile(user: String): Profile {
         return Profile {
             firstName = "John"
             lastName = "Doe"
@@ -143,7 +145,7 @@ class AppTrackerSetupDataProviderTest {
             pronouns = "he/him"
             pronunciation = "John Doe"
             verifiedAccounts = emptyList()
-            userId = id
+            userLogin = user
         }
     }
 }
