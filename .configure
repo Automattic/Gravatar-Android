@@ -1,7 +1,7 @@
 {
   "project_name": "Gravatar-Android",
   "branch": "trunk",
-  "pinned_hash": "3c8238c6aa7b0098bd4ccf24e0a7b6178e3ee2a7",
+  "pinned_hash": "ef6f012d234d67a5d9bca642ede2c37be9436ff2",
   "files_to_copy": [
     {
       "file": "android/Gravatar-Android/secrets.properties",

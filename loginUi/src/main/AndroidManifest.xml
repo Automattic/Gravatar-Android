@@ -7,13 +7,14 @@
             android:launchMode="singleTask"
             android:theme="@style/GravatarOAuth">
 
-            <intent-filter>
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
+                    android:path="${OAUTH_REDIRECT_URI_PATH}"
                     android:host="${OAUTH_REDIRECT_URI_HOST}"
                     android:scheme="${OAUTH_REDIRECT_URI_SCHEME}" />
             </intent-filter>
