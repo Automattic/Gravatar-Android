@@ -9,11 +9,12 @@ import com.gravatar.analytics.asJson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import org.koin.core.annotation.Provided
 import java.util.UUID
 
 internal class TracksTracker(
-    trackerSetupDataProvider: TrackerSetupDataProvider,
-    applicationScope: CoroutineScope,
+    @Provided trackerSetupDataProvider: TrackerSetupDataProvider,
+    @Provided applicationScope: CoroutineScope,
     private val tracksClient: TracksClient,
 ) : Tracker() {
 

@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.gravatar.android.library)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -10,6 +11,8 @@ dependencies {
 
     implementation(project.dependencies.platform(libs.koin.bom))
     implementation(libs.koin.core)
+    implementation(libs.koin.annotations)
+    ksp(libs.koin.ksp.compiler)
     implementation(libs.kotlinx.coroutines)
     implementation(libs.automattic.tracks)
 
