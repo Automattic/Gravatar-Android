@@ -1,3 +1,4 @@
+import java.net.URI
 import java.util.Properties
 
 plugins {
@@ -31,10 +32,11 @@ android {
                 "OAUTH_CLIENT_SECRET",
                 "\"${properties["oauth.clientSecret"]?.toString() ?: ""}\"",
             )
-            manifestPlaceholders["OAUTH_REDIRECT_URI_HOST"] =
-                properties["oauth.redirectUri"]?.toString()?.split("://")?.get(1) ?: ""
-            manifestPlaceholders["OAUTH_REDIRECT_URI_SCHEME"] =
-                properties["oauth.redirectUri"]?.toString()?.split("://")?.first() ?: ""
+
+            val redirectUri = properties["oauth.redirectUri"]?.let { URI(it.toString()) }
+            manifestPlaceholders["OAUTH_REDIRECT_URI_PATH"] = redirectUri?.path.orEmpty()
+            manifestPlaceholders["OAUTH_REDIRECT_URI_HOST"] = redirectUri?.host.orEmpty()
+            manifestPlaceholders["OAUTH_REDIRECT_URI_SCHEME"] = redirectUri?.scheme.orEmpty()
         }
     }
 }
