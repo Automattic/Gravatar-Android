@@ -10,6 +10,7 @@ dependencies {
 
     implementation(project.dependencies.platform(libs.koin.bom))
     implementation(libs.koin.core)
+    implementation(libs.kotlinx.coroutines)
     implementation(libs.automattic.tracks)
 
     testImplementation(libs.junit)
