@@ -60,7 +60,7 @@ class AppTrackerSetupDataProviderTest {
     }
 
     @Test
-    fun `emits ENABLED when analytics enabled with non-null user id`() = runTest {
+    fun `emits ENABLED when analytics enabled and non-null user id`() = runTest {
         // Given
         val profile = createProfile(123)
 
@@ -76,7 +76,7 @@ class AppTrackerSetupDataProviderTest {
     }
 
     @Test
-    fun `emits DISABLED when analytics disabled with null profile`() = runTest {
+    fun `emits DISABLED when analytics disabled and null user Id when profile is null`() = runTest {
         provider.getTrackerSetupData().test {
             // When
             privacySettingsFlow.emit(PrivacySettings(analyticsEnabled = false, crashReportingEnabled = true))
