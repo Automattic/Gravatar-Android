@@ -13,7 +13,6 @@ dependencies {
     implementation(project(":userComponent"))
     implementation(project(":design"))
     implementation(project(":networkMonitor"))
-    implementation(project(":crashlogging"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.material3)
