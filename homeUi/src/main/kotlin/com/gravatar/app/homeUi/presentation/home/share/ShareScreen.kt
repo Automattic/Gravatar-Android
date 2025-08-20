@@ -75,7 +75,8 @@ internal fun ShareScreen(
     }
 
     Screen(
-        appearanceLightStatusBars = false
+        screenName = "qr",
+        appearanceLightStatusBars = false,
     ) {
         ShareScreen(
             uiState = uiState,

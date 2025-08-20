@@ -27,7 +27,14 @@ class TrackTrackerTest {
 
         tracker.trackEvent(event)
 
-        verify { mockClient.track(event.name, any(), TracksClient.NosaraUserType.ANON) }
+        verify {
+            mockClient.track(
+                "${TracksTracker.TRACKS_EVENT_NAME_PREFIX}${event.name}",
+                any(),
+                any(),
+                TracksClient.NosaraUserType.ANON
+            )
+        }
     }
 
     @Test
@@ -39,7 +46,14 @@ class TrackTrackerTest {
 
         tracker.trackEvent(event)
 
-        verify { mockClient.track(event.name, "someUserId", TracksClient.NosaraUserType.WPCOM) }
+        verify {
+            mockClient.track(
+                "${TracksTracker.TRACKS_EVENT_NAME_PREFIX}${event.name}",
+                any(),
+                "someUserId",
+                TracksClient.NosaraUserType.WPCOM
+            )
+        }
     }
 
     @Test

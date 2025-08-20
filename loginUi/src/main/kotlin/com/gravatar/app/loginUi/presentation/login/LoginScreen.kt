@@ -55,7 +55,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun LoginScreen() {
-    Screen {
+    Screen(screenName = "login") {
         LoginScreen(
             viewModel = koinViewModel(),
         )
