@@ -70,6 +70,20 @@ internal class GravatarViewModel(
             GravatarEvent.OnDismissDeleteConfirmation -> dismissDeleteConfirmation()
             GravatarEvent.OnAboutAppClicked -> showAboutAppDialog()
             GravatarEvent.OnDismissAboutAppDialog -> dismissAboutAppDialog()
+            GravatarEvent.OnPrivacySettingClicked -> showPrivacySetting()
+            GravatarEvent.OnPrivacySettingDismissed -> dismissPrivacySetting()
+        }
+    }
+
+    private fun showPrivacySetting() {
+        _uiState.update { currentState ->
+            currentState.copy(isPrivacySettingVisible = true)
+        }
+    }
+
+    private fun dismissPrivacySetting() {
+        _uiState.update { currentState ->
+            currentState.copy(isPrivacySettingVisible = false)
         }
     }
 

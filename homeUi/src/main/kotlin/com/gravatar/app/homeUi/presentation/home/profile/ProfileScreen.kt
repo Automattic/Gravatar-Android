@@ -40,6 +40,7 @@ import com.gravatar.app.design.components.Screen
 import com.gravatar.app.design.components.snackbar.SnackbarType
 import com.gravatar.app.design.components.snackbar.showGravatarSnackbar
 import com.gravatar.app.homeUi.R
+import com.gravatar.app.homeUi.presentation.home.components.privacySetting.PrivacySettingsBottomSheet
 import com.gravatar.app.homeUi.presentation.home.components.topbar.components.about.AboutAppDialog
 import com.gravatar.app.homeUi.presentation.home.profile.about.AboutInputField
 import com.gravatar.app.homeUi.presentation.home.profile.about.AboutSection
@@ -173,6 +174,16 @@ internal fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> U
     if (uiState.isAboutAppDialogVisible) {
         AboutAppDialog(
             onDismissRequest = { onEvent(ProfileEvent.OnDismissAboutAppDialog) },
+            onPrivacySettingsClicked = {
+                onEvent(ProfileEvent.OnPrivacySettingClicked)
+                onEvent(ProfileEvent.OnDismissAboutAppDialog)
+            },
+        )
+    }
+
+    if (uiState.isPrivacySettingsVisible) {
+        PrivacySettingsBottomSheet(
+            onDismissRequest = { onEvent(ProfileEvent.OnPrivacySettingDismissed) }
         )
     }
 }

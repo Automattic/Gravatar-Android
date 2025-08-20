@@ -55,6 +55,7 @@ import com.gravatar.app.homeUi.GravatarFileProvider
 import com.gravatar.app.homeUi.R
 import com.gravatar.app.homeUi.presentation.home.components.ErrorViewWithRetry
 import com.gravatar.app.homeUi.presentation.home.components.PermissionRationaleDialog
+import com.gravatar.app.homeUi.presentation.home.components.privacySetting.PrivacySettingsBottomSheet
 import com.gravatar.app.homeUi.presentation.home.components.topbar.components.about.AboutAppDialog
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.AvatarDeletionConfirmationDialog
 import com.gravatar.app.homeUi.presentation.home.gravatar.components.AvatarOption
@@ -335,6 +336,12 @@ internal fun GravatarScreen(
         if (uiState.isAboutAppDialogVisible) {
             AboutAppDialog(
                 onDismissRequest = { onEvent(GravatarEvent.OnDismissAboutAppDialog) },
+                onPrivacySettingsClicked = { onEvent(GravatarEvent.OnPrivacySettingClicked) }
+            )
+        }
+        if (uiState.isPrivacySettingVisible) {
+            PrivacySettingsBottomSheet(
+                onDismissRequest = { onEvent(GravatarEvent.OnPrivacySettingDismissed) }
             )
         }
     }

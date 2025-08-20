@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.gravatar.app.foundations.DispatcherProvider
 import com.gravatar.app.usercomponent.di.UserPrefs
+import com.gravatar.app.usercomponent.domain.model.PrivacySettings
 import com.gravatar.app.usercomponent.domain.model.PrivateContactInfo
 import com.gravatar.app.usercomponent.domain.model.UserSharePreferences
 import kotlinx.coroutines.flow.Flow
@@ -45,10 +46,21 @@ internal interface PrivateContactInfoStorage {
     suspend fun savePrivateContactInfo(privateContactInfo: PrivateContactInfo)
 }
 
+internal interface PrivacySettingsStorage {
+    fun getPrivacySettings(): Flow<PrivacySettings>
+
+    suspend fun savePrivacySettings(privacySettings: PrivacySettings)
+}
+
 /**
  * Convenient interface to clear all user related data in one call.
  */
-internal interface UserStorage : AuthTokenStorage, AvatarCacheBusterStorage, UserSharePreferencesStorage, PrivateContactInfoStorage {
+internal interface UserStorage :
+    AuthTokenStorage,
+    AvatarCacheBusterStorage,
+    UserSharePreferencesStorage,
+    PrivateContactInfoStorage,
+    PrivacySettingsStorage {
     suspend fun clear()
 }
 
@@ -71,6 +83,8 @@ internal class DatastoreUserPrefsStorage(
         private const val USER_SHARE_PRIVATE_PHONE_VALUE_KEY = "private_phone_value"
         private const val USER_SHARE_PRIVATE_EMAIL_VALUE_KEY = "private_email_value"
         private const val USER_SHARE_VERIFIED_ACCOUNTS_KEY = "verified_accounts"
+        private const val PRIVACY_SETTING_ANALYTICS_KEY = "privacy_setting_analytics"
+        private const val PRIVACY_SETTING_CRASH_REPORTING_KEY = "privacy_setting_crash_reporting"
     }
 
     private val tokenKey = stringPreferencesKey(AUTH_TOKEN_KEY)
@@ -86,6 +100,8 @@ internal class DatastoreUserPrefsStorage(
     private val userSharePrivatePhoneValueKey = stringPreferencesKey(USER_SHARE_PRIVATE_PHONE_VALUE_KEY)
     private val userSharePrivateEmailValueKey = stringPreferencesKey(USER_SHARE_PRIVATE_EMAIL_VALUE_KEY)
     private val userShareVerifiedAccounts = stringPreferencesKey(USER_SHARE_VERIFIED_ACCOUNTS_KEY)
+    private val privacySettingAnalyticsKey = booleanPreferencesKey(PRIVACY_SETTING_ANALYTICS_KEY)
+    private val privacySettingCrashReportingKey = booleanPreferencesKey(PRIVACY_SETTING_CRASH_REPORTING_KEY)
 
     override suspend fun getToken(): String? {
         return try {
@@ -195,5 +211,26 @@ internal class DatastoreUserPrefsStorage(
         return runCatching { Json.decodeFromString<Map<String, Boolean>>(this@toCustomMapStringBoolean) }
             .getOrNull()
             ?: emptyMap()
+    }
+
+    override fun getPrivacySettings(): Flow<PrivacySettings> {
+        return dataStore.data
+            .map { preferences ->
+                PrivacySettings(
+                    analyticsEnabled = preferences[privacySettingAnalyticsKey] ?: true,
+                    crashReportingEnabled = preferences[privacySettingCrashReportingKey] ?: true
+                )
+            }
+            .catch { emit(PrivacySettings(analyticsEnabled = true, crashReportingEnabled = true)) }
+            .flowOn(dispatcherProvider.io)
+    }
+
+    override suspend fun savePrivacySettings(privacySettings: PrivacySettings) {
+        withContext(dispatcherProvider.io) {
+            dataStore.edit { preferences ->
+                preferences[privacySettingAnalyticsKey] = privacySettings.analyticsEnabled
+                preferences[privacySettingCrashReportingKey] = privacySettings.crashReportingEnabled
+            }
+        }
     }
 }

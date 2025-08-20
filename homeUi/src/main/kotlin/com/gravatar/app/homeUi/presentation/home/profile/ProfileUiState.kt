@@ -12,6 +12,7 @@ internal data class ProfileUiState(
     val isSavingProfile: Boolean = false,
     val isRefreshing: Boolean = false,
     val isAboutAppDialogVisible: Boolean = false,
+    val isPrivacySettingsVisible: Boolean = false,
 ) {
 
     val originalAboutFields: Set<AboutEditorField> = profile?.aboutFields() ?: emptySet()

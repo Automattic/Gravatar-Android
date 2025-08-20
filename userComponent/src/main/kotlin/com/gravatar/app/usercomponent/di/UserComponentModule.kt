@@ -21,6 +21,8 @@ import com.gravatar.app.usercomponent.domain.usecase.FetchAvatarsUseCase
 import com.gravatar.app.usercomponent.domain.usecase.FetchUserAvatars
 import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrl
 import com.gravatar.app.usercomponent.domain.usecase.GetAvatarUrlUseCase
+import com.gravatar.app.usercomponent.domain.usecase.GetPrivacySettings
+import com.gravatar.app.usercomponent.domain.usecase.GetPrivacySettingsUseCase
 import com.gravatar.app.usercomponent.domain.usecase.GetPrivateContactInfo
 import com.gravatar.app.usercomponent.domain.usecase.GetPrivateContactInfoUseCase
 import com.gravatar.app.usercomponent.domain.usecase.GetUserSharePreferences
@@ -33,6 +35,8 @@ import com.gravatar.app.usercomponent.domain.usecase.Logout
 import com.gravatar.app.usercomponent.domain.usecase.LogoutUseCase
 import com.gravatar.app.usercomponent.domain.usecase.SelectAvatarUseCase
 import com.gravatar.app.usercomponent.domain.usecase.SelectUserAvatar
+import com.gravatar.app.usercomponent.domain.usecase.UpdatePrivacySettings
+import com.gravatar.app.usercomponent.domain.usecase.UpdatePrivacySettingsUseCase
 import com.gravatar.app.usercomponent.domain.usecase.UpdatePrivateContactInfo
 import com.gravatar.app.usercomponent.domain.usecase.UpdatePrivateContactInfoUseCase
 import com.gravatar.app.usercomponent.domain.usecase.UpdateUserSharePreferences
@@ -63,6 +67,8 @@ val userComponentModule = module {
     factoryOf(::DeleteUserProfileUseCase) { bind<DeleteUserProfile>() }
     factoryOf(::UserSharePreferencesOperations) { bind<UserSharePreferencesFacade>() }
     factoryOf(::PrivateContactInfoOperations) { bind<PrivateContactInfoFacade>() }
+    factoryOf(::GetPrivacySettingsUseCase) { bind<GetPrivacySettings>() }
+    factoryOf(::UpdatePrivacySettingsUseCase) { bind<UpdatePrivacySettings>() }
     factoryOf(::WordPressClient)
     singleOf(::InMemoryUserSessionPersistence) { bind<UserSessionPersistence>() }
     includes(httpClientModule)

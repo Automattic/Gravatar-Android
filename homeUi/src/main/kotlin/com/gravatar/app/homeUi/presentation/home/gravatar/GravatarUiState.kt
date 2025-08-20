@@ -16,6 +16,7 @@ internal data class GravatarUiState(
     val failedUploadDialog: AvatarUploadFailure? = null,
     val confirmAvatarDeletionId: String? = null,
     val isAboutAppDialogVisible: Boolean = false,
+    val isPrivacySettingVisible: Boolean = false,
 ) {
     val avatarsUi: List<AvatarUi>? = avatars?.let {
         buildList {
