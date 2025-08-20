@@ -43,6 +43,8 @@ data class ProfileEntity(
     val contactCellPhone: String? = null,
     @ColumnInfo(name = "contact_email")
     val contactEmail: String? = null,
+    @ColumnInfo(name = "user_login")
+    val userLogin: String? = null,
 ) {
     /**
      * Converts this entity to a Profile model.
@@ -63,6 +65,7 @@ data class ProfileEntity(
             company = this@ProfileEntity.company
             firstName = this@ProfileEntity.firstName
             lastName = this@ProfileEntity.lastName
+            userLogin = this@ProfileEntity.userLogin
             contactInfo = ProfileContactInfo {
                 cellPhone = this@ProfileEntity.contactCellPhone
                 email = this@ProfileEntity.contactEmail
@@ -93,6 +96,7 @@ data class ProfileEntity(
                 lastName = profile.lastName,
                 contactCellPhone = profile.contactInfo?.cellPhone,
                 contactEmail = profile.contactInfo?.email,
+                userLogin = profile.userLogin,
             )
         }
     }
